@@ -1,0 +1,38 @@
+# prompts.py
+from langchain.prompts import ChatPromptTemplate
+
+sentence_prompt = ChatPromptTemplate.from_template("""
+You are a medical assistant analyzing a clinical note from an AML cancer patient.
+
+Extract and return only the **exact sentences** from the note that correspond to the following categories:
+
+1. AML Diagnosis
+2. Precedent Disease (prior cancers or conditions with dates)
+3. Performance Status (ECOG/KPS)
+4. Mutational Status (NPM1, TP53, etc.)
+5. Treatment Plans (chemo, aza/ven, radiation)
+6. Hospitalization Reasons (e.g. fatigue, fever)
+7. Lab Results (creatinine, WBC, etc.)
+8. Genetic Mutations (e.g. IDH1, NRAS, DNMT3A)
+9. Admission/Discharge or Follow-up Plans
+10. General Diagnostic Summary
+
+Only extract sentences, do not summarize.
+
+Text:
+{context}
+
+Return JSON like:
+{
+  "aml_diagnosis_sentences": [],
+  "precedent_disease_sentences": [],
+  "performance_status_sentences": [],
+  "mutational_status_sentences": [],
+  "treatment_sentences": [],
+  "hospitalization_reason_sentences": [],
+  "lab_result_sentences": [],
+  "genetic_mutations_sentences": [],
+  "admission_discharge_plan_sentences": [],
+  "diagnosis_summary_sentences": []
+}
+""")
