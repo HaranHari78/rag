@@ -1,125 +1,32 @@
+C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py 
+C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py:8: LangChainDeprecationWarning: Importing InMemoryDocstore from langchain.docstore is deprecated. Please replace deprecated imports:
+
+>> from langchain.docstore import InMemoryDocstore
+
+with new imports of:
+
+>> from langchain_community.docstore.in_memory import InMemoryDocstore
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+  from langchain.docstore.in_memory import InMemoryDocstore
+C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py:11: LangChainDeprecationWarning: Importing InMemoryDocstore from langchain.docstore is deprecated. Please replace deprecated imports:
+
+>> from langchain.docstore import InMemoryDocstore
+
+with new imports of:
+
+>> from langchain_community.docstore.in_memory import InMemoryDocstore
+You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+  from langchain.docstore import InMemoryDocstore
 Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
-    self._validate_conn(conn)
-    ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
-    conn.connect()
-    ~~~~~~~~~~~~^^
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connection.py", line 741, in connect
-    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
-        sock=sock,
-    ...<14 lines>...
-        assert_fingerprint=self.assert_fingerprint,
-    )
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
-    ssl_sock = ssl_wrap_socket(
-        sock=sock,
-    ...<8 lines>...
-        tls_in_tls=tls_in_tls,
-    )
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
-    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
-    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
-           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.1008.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 455, in wrap_socket
-    return self.sslsocket_class._create(
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-        sock=sock,
-        ^^^^^^^^^^
-    ...<5 lines>...
-        session=session
-        ^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.1008.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 1076, in _create
-    self.do_handshake()
-    ~~~~~~~~~~~~~~~~~^^
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.1008.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 1372, in do_handshake
-    self._sslobj.do_handshake()
-    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
-ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
-    response = self._make_request(
-        conn,
-    ...<10 lines>...
-        **response_kw,
-    )
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
-    raise new_e
-urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
-    resp = conn.urlopen(
-        method=request.method,
-    ...<9 lines>...
-        chunked=chunked,
-    )
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
-    retries = retries.increment(
-        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
-    )
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
-    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='openaipublic.blob.core.windows.net', port=443): Max retries exceeded with url: /encodings/cl100k_base.tiktoken (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\vector_db.py", line 50, in <module>
-    vectorstore = FAISS.from_documents(chunks, embedding_model)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_core\vectorstores\base.py", line 848, in from_documents
-    return cls.from_texts(texts, embedding, metadatas=metadatas, **kwargs)
-           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 1043, in from_texts
-    embeddings = embedding.embed_documents(texts)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_openai\embeddings\base.py", line 590, in embed_documents
-    return self._get_len_safe_embeddings(
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-        texts, engine=engine, chunk_size=chunk_size, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_openai\embeddings\base.py", line 475, in _get_len_safe_embeddings
-    _iter, tokens, indices = self._tokenize(texts, _chunk_size)
-                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_openai\embeddings\base.py", line 409, in _tokenize
-    encoding = tiktoken.encoding_for_model(model_name)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\model.py", line 110, in encoding_for_model
-    return get_encoding(encoding_name_for_model(model_name))
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\registry.py", line 86, in get_encoding
-    enc = Encoding(**constructor())
-                     ~~~~~~~~~~~^^
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken_ext\openai_public.py", line 76, in cl100k_base
-    mergeable_ranks = load_tiktoken_bpe(
-        "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken",
-        expected_hash="223921b76ee99bde995b7ff738513eef100fb51d18c93597a113bcffe865b2a7",
-    )
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\load.py", line 148, in load_tiktoken_bpe
-    contents = read_file_cached(tiktoken_bpe_file, expected_hash)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\load.py", line 63, in read_file_cached
-    contents = read_file(blobpath)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\load.py", line 22, in read_file
-    resp = requests.get(blobpath)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\api.py", line 73, in get
-    return request("get", url, params=params, **kwargs)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\api.py", line 59, in request
-    return session.request(method=method, url=url, **kwargs)
-           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
-    resp = self.send(prep, **send_kwargs)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
-    r = adapter.send(request, **kwargs)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\adapters.py", line 698, in send
-    raise SSLError(e, request=request)
-requests.exceptions.SSLError: HTTPSConnectionPool(host='openaipublic.blob.core.windows.net', port=443): Max retries exceeded with url: /encodings/cl100k_base.tiktoken (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py", line 88, in <module>
+    top_results = vectorstore.similarity_search_with_score(query, k=TOP_K)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 516, in similarity_search_with_score
+    docs = self.similarity_search_with_score_by_vector(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 428, in similarity_search_with_score_by_vector
+    doc = self.docstore.search(_id)
+          ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'search'
 
 Process finished with exit code 1
