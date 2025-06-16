@@ -5,10 +5,11 @@ import pandas as pd
 import configparser
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
 
-# 🔧 Custom Embedding class with normalization
+# 🔧 Normalized embedding wrapper for cosine similarity
 class NormalizedAzureOpenAIEmbeddings(AzureOpenAIEmbeddings):
     def embed_documents(self, texts):
         vectors = super().embed_documents(texts)
@@ -22,12 +23,14 @@ class NormalizedAzureOpenAIEmbeddings(AzureOpenAIEmbeddings):
         norm = np.linalg.norm(vec)
         return (np.array(vec) / norm).tolist() if norm > 0 else vec
 
-# Set top-k
+# Parameters
 TOP_K = 5
 
-# Load config
+# Load config.ini
 config = configparser.ConfigParser()
 config.read("config.ini")
+
+# Azure config
 AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
 AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
 AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
@@ -35,11 +38,11 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-# Load medical data
+# Load CSV
 csv_path = r"C:\Users\HariharaM12\Downloads\Medical_Data.csv"
 df = pd.read_csv(csv_path)
 
-# Build LangChain documents
+# Convert to LangChain Documents
 documents = []
 for _, row in df.iterrows():
     if pd.isna(row["text"]):
@@ -49,24 +52,11 @@ for _, row in df.iterrows():
         metadata={"source": row["title"]}
     ))
 
-# Show text from first document
-print("📄 FULL TEXT OF FIRST DOCUMENT:\n")
-print(documents[0].page_content)
-first_doc_title = documents[0].metadata["source"]
-
-# Split into chunks
+# Chunk documents
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
 chunks = splitter.split_documents(documents)
 
-# Show chunks from first document
-print("\n🧩 CHUNKS FOR FIRST DOCUMENT:\n")
-for i, chunk in enumerate(chunks):
-    if chunk.metadata["source"] == first_doc_title:
-        print(f"[Chunk {i+1}]")
-        print(chunk.page_content)
-        print("-" * 80)
-
-# Init normalized embedding model
+# Embedding model (normalized)
 embedding_model = NormalizedAzureOpenAIEmbeddings(
     deployment=EMBEDDING_DEPLOYMENT,
     model=EMBEDDING_MODEL,
@@ -76,26 +66,28 @@ embedding_model = NormalizedAzureOpenAIEmbeddings(
     chunk_size=1000
 )
 
-# Manually embed and build cosine-based FAISS index
+# Embed and build FAISS index
 texts = [doc.page_content for doc in chunks]
-metadatas = [doc.metadata for doc in chunks]
 embeddings = embedding_model.embed_documents(texts)
+embeddings = np.array(embeddings).astype("float32")
 
-index = faiss.IndexFlatIP(len(embeddings[0]))  # cosine = inner product on normalized vectors
-index.add(np.array(embeddings).astype("float32"))
+index = faiss.IndexFlatIP(embeddings.shape[1])  # cosine similarity
+index.add(embeddings)
 
-# Build FAISS vector store manually
-vectorstore = FAISS(embedding_model, index, texts=chunks, documents=chunks)
+# Build docstore & index mapping
+docstore = InMemoryDocstore({str(i): chunks[i] for i in range(len(chunks))})
+index_to_docstore = {i: str(i) for i in range(len(chunks))}
+
+# Vector store with cosine similarity
+vectorstore = FAISS(embedding_model, index, chunks, index_to_docstore, docstore)
 vectorstore.save_local("faiss_index_cosine")
 
-# Define clinical query
+# Query
 query = "Based on the clinical note, what medications has the patient received, and what is the current status of those treatments?"
-
-# Search with cosine similarity
 top_results = vectorstore.similarity_search_with_score(query, k=TOP_K)
 docs_only = [doc for doc, _ in top_results]
 
-# Initialize LLM
+# LLM
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -105,30 +97,26 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Compose clinical prompt
+# Prompt
 context = "\n\n".join([doc.page_content for doc in docs_only])
 full_prompt = f"""
 You are a clinical assistant specialized in analyzing oncology patient records.
-
 Your task is to read the provided clinical notes and answer the medical question based only on the given context.
-
-If the answer is not found in the context, respond with "Not mentioned in the context."
+If the answer is not found in the context, respond with \"Not mentioned in the context.\"
 
 ---
-
 📄 Context:
 {context}
 
 ---
-
 ❓ Question:
 {query}
 """
 
-# Get LLM response
+# Run LLM
 response = llm.invoke(full_prompt)
 
-# Print answer
+# Output
 print(f"\n📘 Answer:\n{response.content}")
 print(f"\n🔍 Top {TOP_K} Retrieved Chunks with Cosine Similarity:\n")
 
