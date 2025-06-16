@@ -1,3 +1,5 @@
+
+
 import os
 import faiss
 import numpy as np
@@ -125,3 +127,51 @@ for i, (doc, score) in enumerate(top_results):
     print(f"🔗 Cosine Similarity Score: {score:.4f}")
     print(doc.page_content)
     print("-" * 100)
+
+
+import faiss
+import numpy as np
+from langchain_community.vectorstores import FAISS
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_openai import AzureOpenAIEmbeddings
+
+# Load embeddings
+embedding_model = AzureOpenAIEmbeddings(
+    deployment="your_deployment_name",
+    model="text-embedding-3-large",
+    openai_api_key="your_api_key",
+    azure_endpoint="your_endpoint",
+    openai_api_version="your_version"
+)
+
+# Prepare documents
+documents = [Document(page_content="Patient started azacitidine and venetoclax.", metadata={"source": "doc1"})]
+
+# Split docs
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+chunks = splitter.split_documents(documents)
+
+# Embed and normalize
+embeddings = embedding_model.embed_documents([doc.page_content for doc in chunks])
+embeddings = np.array(embeddings)
+faiss.normalize_L2(embeddings)  # ✅ normalize for cosine
+
+# FAISS Index with Cosine (using Inner Product on normalized vectors)
+dimension = embeddings.shape[1]
+index = faiss.IndexFlatIP(dimension)
+index.add(embeddings)
+
+# Build vectorstore manually
+vectorstore = FAISS(embedding_function=embedding_model.embed_query, index=index, documents=chunks)
+
+# Query
+query = "What treatment is the patient receiving?"
+query_vector = embedding_model.embed_query(query)
+faiss.normalize_L2(np.array([query_vector]))  # ✅ normalize query too
+
+# Search
+results = vectorstore.similarity_search_with_score(query, k=3)
+for doc, score in results:
+    print("📄", doc.page_content[:60])
+    print("🔢 Cosine Similarity:", score)
