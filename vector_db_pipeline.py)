@@ -21,7 +21,7 @@ EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
 # Step 1: Load data
-df = pd.read_csv("medicaldata.csv")  # CSV with 'title' and 'text'
+df = pd.read_csv(r"C:\Users\HariharaM12\Downloads\Medical_Data.csv")  # CSV with 'title' and 'text'
 documents = []
 
 # Step 2: Create LangChain Document objects with metadata
