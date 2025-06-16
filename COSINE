@@ -175,3 +175,125 @@ results = vectorstore.similarity_search_with_score(query, k=3)
 for doc, score in results:
     print("📄", doc.page_content[:60])
     print("🔢 Cosine Similarity:", score)
+
+
+3RD:::
+
+
+
+import os
+import pandas as pd
+import configparser
+import faiss
+import numpy as np
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+
+# Load config.ini
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+# Azure credentials
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Load your CSV dataset
+csv_path = r"C:\Users\HariharaM12\Downloads\Medical_Data.csv"
+df = pd.read_csv(csv_path)
+
+# Create LangChain Documents
+documents = []
+for _, row in df.iterrows():
+    if pd.isna(row["text"]):
+        continue
+    documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
+
+# Chunk the documents
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
+chunks = splitter.split_documents(documents)
+
+# Create Azure embedding model
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+# Embed the chunks
+texts = [chunk.page_content for chunk in chunks]
+metadatas = [chunk.metadata for chunk in chunks]
+embeddings = embedding_model.embed_documents(texts)
+embeddings = np.array(embeddings).astype("float32")
+
+# Normalize vectors to enable cosine similarity
+faiss.normalize_L2(embeddings)
+
+# Build FAISS index using cosine similarity (IndexFlatIP)
+index = faiss.IndexFlatIP(embeddings.shape[1])
+index.add(embeddings)
+
+# Define query
+query = "Based on the clinical note, what medications has the patient received, and what is the current status of those treatments?"
+
+# Embed and normalize query
+query_embedding = embedding_model.embed_query(query)
+query_embedding = np.array([query_embedding]).astype("float32")
+faiss.normalize_L2(query_embedding)
+
+# Perform similarity search
+TOP_K = 5
+D, I = index.search(query_embedding, TOP_K)
+
+# Get top-K documents
+top_docs = [(chunks[i], D[0][rank]) for rank, i in enumerate(I[0])]
+
+# Prepare context for LLM
+context = "\n\n".join([doc.page_content for doc, _ in top_docs])
+full_prompt = f"""
+You are a clinical assistant specialized in analyzing oncology patient records.
+
+Your task is to read the provided clinical notes and answer the medical question based only on the given context.
+
+If the answer is not found in the context, respond with "Not mentioned in the context."
+
+---
+
+📄 Context:
+{context}
+
+---
+
+❓ Question:
+{query}
+"""
+
+# Call LLM
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+response = llm.invoke(full_prompt)
+
+# Show result
+print(f"\n📘 Answer:\n{response.content}")
+print(f"\n🔍 Top {TOP_K} Retrieved Chunks with Cosine Similarity Scores:\n")
+
+for i, (doc, score) in enumerate(top_docs):
+    print(f"--- [Chunk {i+1}] from Document: {doc.metadata['source']} ---")
+    print(f"🔢 Cosine Similarity Score: {score:.4f}")
+    print(doc.page_content)
+    print("-" * 100)
+
