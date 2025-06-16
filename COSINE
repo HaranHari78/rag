@@ -39,7 +39,7 @@ EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
 # Load CSV
-csv_path = r"C:\Users\HariharaM12\Downloads\Medical_Data.csv"
+csv_path = r"d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
 # Convert to LangChain Documents
