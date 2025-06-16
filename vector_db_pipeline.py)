@@ -1,18 +1,17 @@
 import os
 import pandas as pd
 import configparser
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
-from langchain.embeddings import AzureOpenAIEmbeddings
-from langchain.chat_models import AzureChatOpenAI
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 from langchain.chains import RetrievalQA
 
-# Load config
+# Load config.ini
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-# Azure settings
+# Azure OpenAI credentials
 AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
 AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
 AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
@@ -20,11 +19,11 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-# Step 1: Load data
-df = pd.read_csv(r"C:\Users\HariharaM12\Downloads\Medical_Data.csv")  # CSV with 'title' and 'text'
-documents = []
+# Load CSV data
+csv_path = r"C:\Users\HariharaM12\Downloads\Medical_Data.csv"
+df = pd.read_csv(csv_path)
 
-# Step 2: Create LangChain Document objects with metadata
+documents = []
 for _, row in df.iterrows():
     if pd.isna(row["text"]):
         continue
@@ -33,43 +32,34 @@ for _, row in df.iterrows():
         metadata={"source": row["title"]}
     ))
 
-# Step 3: Split into chunks
+# Split documents into chunks
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 chunks = splitter.split_documents(documents)
 
-# Step 4: Azure OpenAI Embedding model
+# Embedding model
 embedding_model = AzureOpenAIEmbeddings(
     deployment=EMBEDDING_DEPLOYMENT,
     model=EMBEDDING_MODEL,
     openai_api_key=AZURE_OPENAI_API_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    openai_api_version=AZURE_OPENAI_API_VERSION
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000  # required to avoid KeyError
 )
 
-# Step 5: Build FAISS vector DB
+# Build and save FAISS vector store
 vectorstore = FAISS.from_documents(chunks, embedding_model)
-vectorstore.save_local("faiss_index")  # Save to disk
+vectorstore.save_local("faiss_index")
 
-# Step 6: RetrievalQA chain using GPT model (optional)
+# Create retriever and QA chain
+retriever = vectorstore.as_retriever()
+
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
-    openai_api_version=AZURE_OPENAI_API_VERSION,
     openai_api_key=AZURE_OPENAI_API_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
     temperature=0
 )
 
-retriever = vectorstore.as_retriever()
-qa_chain = RetrievalQA.from_chain_type(
-    llm=llm,
-    retriever=retriever,
-    return_source_documents=True
-)
-
-# Step 7: Ask a question
-query = "What diagnosis is mentioned in the document?"
-response = qa_chain({"query": query})
-
-print("📘 Answer:", response["result"])
-print("📎 Sources:", [doc.metadata["source"] for doc in response["source_documents"]])
+qa_chain = RetrievalQA.from_chain_t_
