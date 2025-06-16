@@ -1,4 +1,6 @@
 import os
+import certifi
+os.environ['SSL_CERT_FILE'] = certifi.where()
 import pandas as pd
 import configparser
 from langchain_core.documents import Document
@@ -6,6 +8,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 from langchain.chains import RetrievalQA
+
+TOP_K =5
 
 # Load config.ini
 config = configparser.ConfigParser()
@@ -20,7 +24,7 @@ EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
 # Load CSV data
-csv_path = r"C:\Users\HariharaM12\Downloads\Medical_Data.csv"
+csv_path = r"d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
 documents = []
@@ -31,10 +35,19 @@ for _, row in df.iterrows():
         page_content=row["text"],
         metadata={"source": row["title"]}
     ))
+print(" Full text before chunking:\n")
+print(documents[0].page_content)
+first_doc_title = documents[0].metadata["source"]
 
 # Split documents into chunks
-splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
 chunks = splitter.split_documents(documents)
+
+for i,chunk in enumerate(chunks,1):
+    if chunk.metadata["source"] == first_doc_title:
+        print(f"[chunk] {i+1}]")
+        print(chunk.page_content)
+        print("-" * 80)
 
 # Embedding model
 embedding_model = AzureOpenAIEmbeddings(
@@ -43,7 +56,7 @@ embedding_model = AzureOpenAIEmbeddings(
     openai_api_key=AZURE_OPENAI_API_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
     openai_api_version=AZURE_OPENAI_API_VERSION,
-    chunk_size=1000  # required to avoid KeyError
+    chunk_size=3000
 )
 
 # Build and save FAISS vector store
@@ -51,7 +64,7 @@ vectorstore = FAISS.from_documents(chunks, embedding_model)
 vectorstore.save_local("faiss_index")
 
 # Create retriever and QA chain
-retriever = vectorstore.as_retriever()
+retriever = vectorstore.as_retriever(search_kwargs={"k":TOP_K})
 
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
@@ -75,6 +88,10 @@ response = qa_chain({"query": query})
 print("📘 Answer:", response["result"])
 print("📎 Sources:", [doc.metadata["source"] for doc in response["source_documents"]])
 
+for i,doc in enumerate(response["source_documents"]):
+    print(f"---[Chunk {i+1}] from document: {doc.metadata['source']}---")
+    print(doc.page_content)
+    print("-" * 100)
 
 MY_CODE::
 
