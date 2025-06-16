@@ -216,6 +216,12 @@ for _, row in df.iterrows():
 # Chunk the documents
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
 chunks = splitter.split_documents(documents)
+target_doc_title = "2021-10-15_00:00:00.000_Telephone_Encounter"
+print(f"\n🧩 Chunks for document: {target_doc_title}\n" + "-"*100)
+for i, chunk in enumerate(chunks):
+    if chunk.metadata["source"] == target_doc_title:
+        print(f"[Chunk {i+1}]\n{chunk.page_content}")
+        print("-" * 100)
 
 # Create Azure embedding model
 embedding_model = AzureOpenAIEmbeddings(
