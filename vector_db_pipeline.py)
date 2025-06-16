@@ -62,4 +62,15 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-qa_chain = RetrievalQA.from_chain_t_
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    retriever=retriever,
+    return_source_documents=True
+)
+
+# Run query
+query = "What diagnosis is mentioned in the document?"
+response = qa_chain({"query": query})
+
+print("📘 Answer:", response["result"])
+print("📎 Sources:", [doc.metadata["source"] for doc in response["source_documents"]])
