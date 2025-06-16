@@ -1,0 +1,135 @@
+import os
+import faiss
+import numpy as np
+import pandas as pd
+import configparser
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores.faiss import FAISS
+from langchain_openai import AzureChatOpenAI
+from langchain_openai import AzureOpenAIEmbeddings
+
+# 🔧 Normalize vectors for cosine similarity
+class NormalizedAzureOpenAIEmbeddings(AzureOpenAIEmbeddings):
+    def embed_documents(self, texts):
+        vectors = super().embed_documents(texts)
+        return [self._normalize(vec) for vec in vectors]
+
+    def embed_query(self, text):
+        vector = super().embed_query(text)
+        return self._normalize(vector)
+
+    def _normalize(self, vec):
+        norm = np.linalg.norm(vec)
+        return (np.array(vec) / norm).tolist() if norm > 0 else vec
+
+# Set TOP_K
+TOP_K = 5
+
+# Load config.ini
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+# Azure OpenAI config
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Load CSV
+csv_path = r"C:\Users\HariharaM12\Downloads\Medical_Data.csv"
+df = pd.read_csv(csv_path)
+
+# Create documents
+documents = []
+for _, row in df.iterrows():
+    if pd.isna(row["text"]):
+        continue
+    documents.append(Document(
+        page_content=row["text"],
+        metadata={"source": row["title"]}
+    ))
+
+# Show full text of first doc
+print("📄 FULL TEXT OF FIRST DOCUMENT:\n")
+print(documents[0].page_content)
+first_doc_title = documents[0].metadata["source"]
+
+# Split into chunks
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
+chunks = splitter.split_documents(documents)
+
+# Show chunks for first doc
+print("\n🧩 CHUNKS FOR FIRST DOCUMENT:\n")
+for i, chunk in enumerate(chunks):
+    if chunk.metadata["source"] == first_doc_title:
+        print(f"[Chunk {i+1}]\n{chunk.page_content}")
+        print("-" * 80)
+
+# Normalized embedding model
+embedding_model = NormalizedAzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+# FAISS Index for cosine similarity
+index = faiss.IndexFlatIP(1536)  # 1536 = embedding dimension for text-embedding-3-large
+vectorstore = FAISS.from_documents(chunks, embedding_model, index=index)
+vectorstore.save_local("faiss_index_cosine")
+
+# Define clinical query
+query = "Based on the clinical note, what medications has the patient received, and what is the current status of those treatments?"
+
+# Retrieve top-k with cosine similarity
+top_results = vectorstore.similarity_search_with_score(query, k=TOP_K)
+docs_only = [doc for doc, _ in top_results]
+
+# LLM
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+# Build clinical assistant prompt
+context = "\n\n".join([doc.page_content for doc in docs_only])
+full_prompt = f"""
+You are a clinical assistant specialized in analyzing oncology patient records.
+
+Your task is to read the provided clinical notes and answer the medical question based only on the given context.
+
+If the answer is not found in the context, respond with "Not mentioned in the context."
+
+---
+
+📄 Context:
+{context}
+
+---
+
+❓ Question:
+{query}
+"""
+
+# Get answer from LLM
+response = llm.invoke(full_prompt)
+
+# Show answer
+print(f"\n📘 Answer:\n{response.content}")
+print(f"\n🔍 Top {TOP_K} Retrieved Chunks with Cosine Similarity:\n")
+
+# Print top-k chunks with cosine scores
+for i, (doc, score) in enumerate(top_results):
+    print(f"--- [Chunk {i+1}] from Document: {doc.metadata['source']} ---")
+    print(f"🔗 Cosine Similarity Score: {score:.4f}")
+    print(doc.page_content)
+    print("-" * 100)
