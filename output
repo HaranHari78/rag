@@ -12,3 +12,55 @@ C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py:84: LangCha
 📎 Sources: ['2021-12-22_00:00:00.000_Progress_Notes_91106', '2021-12-15_00:00:00.000_Progress_Notes_91091', '2021-12-23_00:00:00.000_Progress_Notes_91109', '2021-12-23_00:00:00.000_Progress_Notes_91109']
 
 Process finished with exit code 0
+
+C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py 
+📄 FULL TEXT OF FIRST DOCUMENT:
+
+ClinicalNoteId: 13d672caa4bc8ecf6dbae6e9b18bac3490d1b912780475c8e0648d98fe2a0588 PatientId: d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629 MasterPatientId: 79c35d0543d88a3689d61af6940d5d4e1ad21e3b1b3d5ef9464680c2ff2910e3 DataOwnerId: c877ef723bbc0de29171dcaa993fe3b86064bb0d0d7be4523bb0b71688ebbb72 NoteDateTime: 2021-10-15 00:00:00.000 NoteType: Telephone Encounter NoteText: **Note De-Identified via Obfuscation** Please include Intake Reception Pool in your reply to ensure our team can respond to any action items needed in a timely manner.    CC Office Telephone Consultation          Date:     10/15/2021   Source of referral:   Hutchdoc      Physician's Name:   Norris Cross, MD  Referring Facility:   Benton  Phone:    540-468-0800  Email:     Marcello Moores.tucker'@confluencehealth' .org    Location of Records in System  Care Everywhere:  10/6/21 Office Visit - Dr. Berline Lopes       Patient's Full Name:  Reyansh Kushnir Diarte   Date of Birth:    08/20/78  Age:    74 year old   U#:     R8381840    Phone (Preferred):  925 422 8293     Initial Diagnosis:  Multiple myeloma     Notes from inquiry/referral for CCO:  Requesting Transplant Consultation  "Myeloma on salvage chemo with good response; consider for auto-transplant"
+
+🧩 CHUNKS FOR FIRST DOCUMENT:
+
+[Chunk 1]
+ClinicalNoteId: 13d672caa4bc8ecf6dbae6e9b18bac3490d1b912780475c8e0648d98fe2a0588 PatientId: d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629 MasterPatientId: 79c35d0543d88a3689d61af6940d5d4e1ad21e3b1b3d5ef9464680c2ff2910e3 DataOwnerId: c877ef723bbc0de29171dcaa993fe3b86064bb0d0d7be4523bb0b71688ebbb72 NoteDateTime: 2021-10-15 00:00:00.000 NoteType: Telephone Encounter NoteText: **Note De-Identified via Obfuscation** Please include Intake Reception Pool in your reply to ensure our team can respond to any action items needed in a timely manner.    CC Office Telephone Consultation          Date:     10/15/2021   Source of referral:   Hutchdoc      Physician's Name:   Norris Cross, MD  Referring Facility:   Benton  Phone:    540-468-0800  Email:     Marcello Moores.tucker'@confluencehealth' .org    Location of Records in System  Care Everywhere:  10/6/21 Office Visit - Dr. Berline Lopes       Patient's Full Name:  Reyansh Kushnir Diarte   Date of Birth:    08/20/78  Age:
+--------------------------------------------------------------------------------
+[Chunk 2]
+Email:     Marcello Moores.tucker'@confluencehealth' .org    Location of Records in System  Care Everywhere:  10/6/21 Office Visit - Dr. Berline Lopes       Patient's Full Name:  Reyansh Kushnir Diarte   Date of Birth:    08/20/78  Age:    74 year old   U#:     R8381840    Phone (Preferred):  925 422 8293     Initial Diagnosis:  Multiple myeloma     Notes from inquiry/referral for CCO:  Requesting Transplant Consultation  "Myeloma on salvage chemo with good response; consider for auto-transplant"
+--------------------------------------------------------------------------------
+
+📘 Answer:
+The patient has been prescribed the following medications:
+
+1. Acyclovir 400 MG tablet - The patient is not taking this medication as reported on 12/23/2021.
+2. Calcium citrate-vitamin D 315-200 MG-UNIT tablet - The patient is instructed to take 2 tablets by mouth daily.
+3. Chlorhexidine gluconate 0.12% solution - The patient is instructed to swish 15 mL for 1 minute then spit 2 times a day for 16 days, without swallowing.
+4. Clindamycin 300 MG capsule - The patient is instructed to take 2 capsules 1 hour prior to a dental procedure.
+5. Multiple Vitamins-Minerals (CertaVite Senior) tablet - The patient is instructed to take 1 tablet by mouth daily.
+6. Potassium chloride ER 10 MEQ ER tablet - The patient is instructed to take 2 tablets by mouth daily.
+7. Valacyclovir 500 MG tablet - The patient is instructed to take 1 tablet (500 mg) by mouth every 12 hours.
+
+The current status of these treatments is that the patient is not taking acyclovir, as reported on 12/23/2021. The status of the other medications is not specifically mentioned beyond the instructions provided.
+
+🔍 Top 5 Retrieved Chunks with Similarity Scores:
+
+--- [Chunk 1] from Document: 2021-12-23_00:00:00.000_Progress_Notes_91107 ---
+🔢 Similarity Score: 0.8724
+Rectal area without rash, lesions, external mass.  GENITOURINARY:  No CVA tenderness.  Genitals  deferred  MUSCULOSKELETAL:  Full range of motion, normal gait.  NEUROLOGIC:  CN intact.  Strength and reflexes normal. No focal deficits.  SKIN:  No rash or lesions. Visible left scalp mass. Needle mark at L3/4, healing well, no ecchymosis, swelling, or exudate noted  LINES: Hickman line present. No erythema, tenderness, exudate, or swelling at the insertion site.        Home Medications:     Current Outpatient Medications:     acyclovir 400 MG tablet, Take 400 mg by mouth. (Patient not taking: Reported on 12/23/2021), Disp: , Rfl:     calcium citrate-vitamin D 315-200 MG-UNIT tablet, Take 2 tablets by mouth daily., Disp: 60 tablet, Rfl: 0    chlorhexidine gluconate 0.12 % solution, Swish 15 mL for 1 minute then spit 2 times a day for 16 days. Don't swallow., Disp: 473 mL, Rfl: 0    Multiple Vitamins-Minerals (CertaVite Senior) tablet, Take 1 tablet by mouth daily., Disp: 100 tablet, Rfl:
+----------------------------------------------------------------------------------------------------
+--- [Chunk 2] from Document: 2021-12-16_00:00:00.000_Progress_Notes_91094 ---
+🔢 Similarity Score: 0.8785
+ClinicalNoteId: 36364aeb1a0e1d2c9cc262f264894ad8827085362abf2a4434d2734d9823a0c9 PatientId: d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629 MasterPatientId: 79c35d0543d88a3689d61af6940d5d4e1ad21e3b1b3d5ef9464680c2ff2910e3 DataOwnerId: c877ef723bbc0de29171dcaa993fe3b86064bb0d0d7be4523bb0b71688ebbb72 NoteDateTime: 2021-12-16 00:00:00.000 NoteType: Progress Notes NoteText: **Note De-Identified via Obfuscation** Transition Services Note       Transition Team: Team 1 785-090-9014)            Case rate information  Case Rate Status: None                    Patient Pharmacy   Oral Medication Source: Whitewater; Memorial Hospital Of Converse County Pharmacy     Pharmacy Benefits Manager: Other (comment) (High Ridge Medicaid (800) 440-866-8083)    IV Medication/Infusion Source: SCCA Infusions in Clinic Wildcreek Surgery Center & financial assistance, no home infusion benef)              Home Infusion Options Letter: Provided to patient            Patient Lines/Drains/Airways
+----------------------------------------------------------------------------------------------------
+--- [Chunk 3] from Document: 2021-12-27_00:00:00.000_Progress_Notes_91111 ---
+🔢 Similarity Score: 0.8929
+No rash noted.   Neurologic:  Cranial Nerves II-XII are grossly intact.    Cognition and Speech:  Speech clear and coherent.         Lines and Tubes: None          Home Medications:     Current Outpatient Medications:     acyclovir 400 MG tablet, Take 400 mg by mouth. (Patient not taking: Reported on 12/23/2021), Disp: , Rfl:     calcium citrate-vitamin D 315-200 MG-UNIT tablet, Take 2 tablets by mouth daily., Disp: 60 tablet, Rfl: 0    chlorhexidine gluconate 0.12 % solution, Swish 15 mL for 1 minute then spit 2 times a day for 16 days. Don't swallow., Disp: 473 mL, Rfl: 0    clindamycin 300 MG capsule, Take 2 capsules 1 hour prior to the dental procedure, Disp: 2 capsule, Rfl: 1    Multiple Vitamins-Minerals (CertaVite Senior) tablet, Take 1 tablet by mouth daily., Disp: 100 tablet, Rfl: 2    potassium chloride ER 10 MEQ ER tablet, Take 2 tablets by mouth daily., Disp: , Rfl:     valACYclovir 500 MG tablet, Take 1 tablet (500 mg) by mouth every 12 hours., Disp: 60 tablet, Rfl: 2
+----------------------------------------------------------------------------------------------------
+--- [Chunk 4] from Document: 2021-12-21_00:00:00.000_Progress_Notes_91103 ---
+🔢 Similarity Score: 0.9809
+ClinicalNoteId: 9be4fedc97b98167ed644a27d630271a8ed576af11feb76034c101700222329d PatientId: d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629 MasterPatientId: 79c35d0543d88a3689d61af6940d5d4e1ad21e3b1b3d5ef9464680c2ff2910e3 DataOwnerId: c877ef723bbc0de29171dcaa993fe3b86064bb0d0d7be4523bb0b71688ebbb72 NoteDateTime: 2021-12-21 00:00:00.000 NoteType: Progress Notes NoteText: **Note De-Identified via Obfuscation** Procedures SCCA Oral Medicine Information Intake    12/21/2021    Visit Type: Oral Medicine Information Intake    Michele Mcalpine Lebert Lovern was seen in the Oral Medicine Service in preparation for the Faculty Arrival examination.      1. The Arroyo Hondo consent for care as presented. Patient had no questions, consent obtained.    2. The Review of Systems was collected  3. The New Patient History was collected.  4. The Medication list was reviewed and reconciled.   5. The patient was given a copy of the consent, the consent signature page, preferred provider
+----------------------------------------------------------------------------------------------------
+--- [Chunk 5] from Document: 2021-12-23_00:00:00.000_Progress_Notes_91108 ---
+🔢 Similarity Score: 0.9908
+ClinicalNoteId: ce1161f711331b3022de5ebf71ad09285383214a8e19106ca028ff4014ab937b PatientId: d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629 MasterPatientId: 79c35d0543d88a3689d61af6940d5d4e1ad21e3b1b3d5ef9464680c2ff2910e3 DataOwnerId: c877ef723bbc0de29171dcaa993fe3b86064bb0d0d7be4523bb0b71688ebbb72 NoteDateTime: 2021-12-23 00:00:00.000 NoteType: Progress Notes NoteText: **Note De-Identified via Obfuscation** SCCA BMT NURSE NOTE      Subjective / Visit Information:    Reason for Visit: Team Visit      Participants: Patient, Spouse and Interpreter      Transplant Phase: Evaluation        Objective:   Vitals:    12/23/21 1144 12/23/21 1146   BP: (!) 141/82 (!) 149/90   BP Site: Right Arm Right Arm   Pulse: 83 94   Resp: 17    Temp:  36.8 C   TempSrc:  Oral   SpO2: 99%          Assessment and Plan:     Summary: pt reports feeling well. Denies any new or worsening symptoms. LP site healing well, patient denies any HA or other problems post LP.   Discussed upcoming schedule.
+----------------------------------------------------------------------------------------------------
+
+Process finished with exit code 0
