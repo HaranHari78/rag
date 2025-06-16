@@ -1,77 +1,125 @@
 Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain\_api\module_import.py", line 69, in import_by_name
-    module = importlib.import_module(new_module)
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.1008.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py", line 88, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1310, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
-ModuleNotFoundError: No module named 'langchain_community'
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.1008.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.1008.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.1008.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
 
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\vector_db.py", line 5, in <module>
-    from langchain.vectorstores import FAISS
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain\vectorstores\__init__.py", line 186, in __getattr__
-    return _import_attribute(name)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain\_api\module_import.py", line 72, in import_by_name
-    raise ModuleNotFoundError(
-    ...<3 lines>...
-    ) from e
-ModuleNotFoundError: Module langchain_community.vectorstores not found. Please install langchain-community to access this module. You can install it using `pip install -U langchain-community`
-
-ERROR:
-
->> from langchain.vectorstores import FAISS
-
-with new imports of:
-
->> from langchain_community.vectorstores import FAISS
-You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-  from langchain.vectorstores import FAISS
-C:\Users\HariharaM12\PycharmProjects\rag_proj\vector_db.py:6: LangChainDeprecationWarning: Importing AzureOpenAIEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
-
->> from langchain.embeddings import AzureOpenAIEmbeddings
-
-with new imports of:
-
->> from langchain_community.embeddings import AzureOpenAIEmbeddings
-You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-  from langchain.embeddings import AzureOpenAIEmbeddings
-C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain\chat_models\__init__.py:33: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
-
-`from langchain_community.chat_models import AzureChatOpenAI`.
-
-To install langchain-community run `pip install -U langchain-community`.
-  warnings.warn(
-C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain\chat_models\__init__.py:33: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
-
-`from langchain_community.chat_models import AzureChatOpenAI`.
-
-To install langchain-community run `pip install -U langchain-community`.
-  warnings.warn(
-C:\Users\HariharaM12\PycharmProjects\rag_proj\vector_db.py:40: LangChainDeprecationWarning: The class `AzureOpenAIEmbeddings` was deprecated in LangChain 0.0.9 and will be removed in 1.0. An updated version of the class exists in the :class:`~langchain-openai package and should be used instead. To use it run `pip install -U :class:`~langchain-openai` and import as `from :class:`~langchain_openai import AzureOpenAIEmbeddings``.
-  embedding_model = AzureOpenAIEmbeddings(
-Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\vector_db.py", line 40, in <module>
-    embedding_model = AzureOpenAIEmbeddings(
-        deployment=EMBEDDING_DEPLOYMENT,
-    ...<3 lines>...
-        openai_api_version=AZURE_OPENAI_API_VERSION
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
     )
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_core\_api\deprecation.py", line 224, in warn_if_direct_instance
-    return wrapped(self, *args, **kwargs)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_core\_api\deprecation.py", line 224, in warn_if_direct_instance
-    return wrapped(self, *args, **kwargs)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\pydantic\main.py", line 253, in __init__
-    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
-  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_community\embeddings\azure_openai.py", line 105, in validate_environment
-    values["chunk_size"] = min(values["chunk_size"], 2048)
-                               ~~~~~~^^^^^^^^^^^^^^
-KeyError: 'chunk_size'
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='openaipublic.blob.core.windows.net', port=443): Max retries exceeded with url: /encodings/cl100k_base.tiktoken (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\vector_db.py", line 50, in <module>
+    vectorstore = FAISS.from_documents(chunks, embedding_model)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_core\vectorstores\base.py", line 848, in from_documents
+    return cls.from_texts(texts, embedding, metadatas=metadatas, **kwargs)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 1043, in from_texts
+    embeddings = embedding.embed_documents(texts)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_openai\embeddings\base.py", line 590, in embed_documents
+    return self._get_len_safe_embeddings(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        texts, engine=engine, chunk_size=chunk_size, **kwargs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_openai\embeddings\base.py", line 475, in _get_len_safe_embeddings
+    _iter, tokens, indices = self._tokenize(texts, _chunk_size)
+                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\langchain_openai\embeddings\base.py", line 409, in _tokenize
+    encoding = tiktoken.encoding_for_model(model_name)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\model.py", line 110, in encoding_for_model
+    return get_encoding(encoding_name_for_model(model_name))
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\registry.py", line 86, in get_encoding
+    enc = Encoding(**constructor())
+                     ~~~~~~~~~~~^^
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken_ext\openai_public.py", line 76, in cl100k_base
+    mergeable_ranks = load_tiktoken_bpe(
+        "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken",
+        expected_hash="223921b76ee99bde995b7ff738513eef100fb51d18c93597a113bcffe865b2a7",
+    )
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\load.py", line 148, in load_tiktoken_bpe
+    contents = read_file_cached(tiktoken_bpe_file, expected_hash)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\load.py", line 63, in read_file_cached
+    contents = read_file(blobpath)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\tiktoken\load.py", line 22, in read_file
+    resp = requests.get(blobpath)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\HariharaM12\PycharmProjects\rag_proj\.venv\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='openaipublic.blob.core.windows.net', port=443): Max retries exceeded with url: /encodings/cl100k_base.tiktoken (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+Process finished with exit code 1
