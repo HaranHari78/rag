@@ -1,4 +1,7 @@
- 
+
+
+im getting this error:LangChainDeprecationWarning: The class `LLMChain` was deprecated in LangChain 0.1.17 and will be removed in 1.0. Use :meth:`~RunnableSequence, e.g., `prompt | llm`` instead.
+  llm_chain = LLMChain(llm=llm, prompt=prompt_template) 
 Kappa free light chains (mg/L)	Lambda free light chains (mg/L)	Ratio of kappa/lambda
 
 
