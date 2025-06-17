@@ -1,3 +1,97 @@
+C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Rag1\Task\main.py 
+
+📘 LLM Output:
+[
+  {
+    "kappa_flc": "129.54mg/dL",
+    "lambda_flc": "15mg/dL",
+    "kappa_lambda_ratio": "914.29",
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": [
+      "11/28/23: kappa free light chain (KFLC) 129.54mg /dL, lambda free light chain (LFLC) 15mg /dL, kappa/lambda ratio >914.29."
+    ]
+  },
+  {
+    "kappa_flc": "242.66",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": "1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "1/16/24: KFLC 242.66, LFLC <0.15, kappa/lambda ratio >1733.29."
+    ]
+  },
+  {
+    "kappa_flc": "203.94",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "1/24/24: KFLC 203.94, LFLC <0.15, ratio >1456.71."
+    ]
+  },
+  {
+    "kappa_flc": "16.18",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": "115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "2/22/24: KFLC 16.18, LFLC <0.15, kappa/lambda ratio >115.57."
+    ]
+  }
+]
+✅ Output directory exists: C:\Users\HariharaM12\PycharmProjects\Rag1\Task
+❌ Failed to parse or save JSON:
+```json
+[
+  {
+    "kappa_flc": "129.54mg/dL",
+    "lambda_flc": "15mg/dL",
+    "kappa_lambda_ratio": "914.29",
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": [
+      "11/28/23: kappa free light chain (KFLC) 129.54mg /dL, lambda free light chain (LFLC) 15mg /dL, kappa/lambda ratio >914.29."
+    ]
+  },
+  {
+    "kappa_flc": "242.66",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": "1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "1/16/24: KFLC 242.66, LFLC <0.15, kappa/lambda ratio >1733.29."
+    ]
+  },
+  {
+    "kappa_flc": "203.94",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "1/24/24: KFLC 203.94, LFLC <0.15, ratio >1456.71."
+    ]
+  },
+  {
+    "kappa_flc": "16.18",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": "115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "2/22/24: KFLC 16.18, LFLC <0.15, kappa/lambda ratio >115.57."
+    ]
+  }
+]
+```
+No module named 'openpyxl'
+
+Process finished with exit code 0
+
+
+
+
+
+
+
+
 ClinicalNoteId: 13d672caa4bc8ecf6dbae6e9b18bac3490d1b912780475c8e0648d98fe2a0588 PatientId: d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629 MasterPatientId: 79c35d0543d88a3689d61af6940d5d4e1ad21e3b1b3d5ef9464680c2ff2910e3 DataOwnerId: c877ef723bbc0de29171dcaa993fe3b86064bb0d0d7be4523bb0b71688ebbb72 NoteDateTime: 2021-10-15 00:00:00.000 NoteType: Telephone Encounter NoteText: **Note De-Identified via Obfuscation** Please include Intake Reception Pool in your reply to ensure our team can respond to any action items needed in a timely manner.    CC Office Telephone Consultation          Date:     10/15/2021   Source of referral:   Hutchdoc      Physician's Name:   Norris Cross, MD  Referring Facility:   Benton  Phone:    540-468-0800  Email:     Marcello Moores.tucker'@confluencehealth' .org    Location of Records in System  Care Everywhere:  10/6/21 Office Visit - Dr. Berline Lopes       Patient's Full Name:  Reyansh Kushnir Diarte   Date of Birth:    08/20/78  Age:    74 year old   U#:     R8381840    Phone (Preferred):  925 422 8293     Initial Diagnosis:  Multiple myeloma     Notes from inquiry/referral for CCO:  Requesting Transplant Consultation  "Myeloma on salvage chemo with good response; consider for auto-transplant"
 [chunk] 2]
 ClinicalNoteId: 13d672caa4bc8ecf6dbae6e9b18bac3490d1b912780475c8e0648d98fe2a0588 PatientId: d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629 MasterPatientId: 79c35d0543d88a3689d61af6940d5d4e1ad21e3b1b3d5ef9464680c2ff2910e3 DataOwnerId: c877ef723bbc0de29171dcaa993fe3b86064bb0d0d7be4523bb0b71688ebbb72 NoteDateTime: 2021-10-15 00:00:00.000 NoteType: Telephone Encounter NoteText: **Note De-Identified via Obfuscation** Please include Intake Reception Pool in your reply to ensure our team can respond to any action items needed in a timely manner.    CC Office Telephone Consultation          Date:     10/15/2021   Source of referral:   Hutchdoc      Physician's Name:   Norris Cross, MD  Referring Facility:   Benton  Phone:    540-468-0800  Email:     Marcello Moores.tucker'@confluencehealth' .org    Location of Records in System  Care Everywhere:  10/6/21 Office Visit - Dr. Berline Lopes       Patient's Full Name:  Reyansh Kushnir Diarte   Date of Birth:    08/20/78  Age:
