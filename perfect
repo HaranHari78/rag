@@ -372,6 +372,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 
+# Excel formatting
+from openpyxl import load_workbook
+from openpyxl.styles import Alignment
+
 # Load config.ini
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -537,26 +541,32 @@ output_path = os.path.join(output_dir, "light_chain_extracted_result.xlsx")
 df = pd.DataFrame(final_results)
 
 if not df.empty:
-    # Extract date and ID from source_document
+    # Extract date and ID from source_document with newline
     def extract_date_id(source):
         try:
             match = re.search(r'(\d{4}-\d{2}-\d{2}).*_(\d{5})$', source)
             if match:
                 date = match.group(1)
                 doc_id = match.group(2)
-                return f"{date}\n{doc_id}"
+                return f"{date}\n{doc_id}"  # Real newline
         except:
             pass
         return "Unknown"
 
-    # Add new column and reorder
+    # Create new column and reorder
     df["document_info"] = df["source_document"].apply(extract_date_id)
-
-    # Final column order
     df = df[["document_info", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "evidence_sentences"]]
 
+    # Save as Excel
     df.to_excel(output_path, index=False)
-    print(f"\n✅ Excel file saved at: {output_path}")
+
+    # Enable text wrapping for document_info column using openpyxl
+    wb = load_workbook(output_path)
+    ws = wb.active
+    for cell in ws["A"]:  # Column A = document_info
+        cell.alignment = Alignment(wrap_text=True)
+    wb.save(output_path)
+
+    print(f"\n✅ Excel file saved at: {output_path} (with wrapped date + ID)")
 else:
     print("⚠️ No valid data to save.")
-
