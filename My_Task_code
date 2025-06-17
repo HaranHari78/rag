@@ -1,0 +1,137 @@
+import os
+import pandas as pd
+import configparser
+import faiss
+import numpy as np
+import json
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+
+# Load config.ini
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+# Azure credentials
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Load CSV data
+csv_path = r"C:\Users\HariharaM12\Downloads\Medical_Data.csv"
+df = pd.read_csv(csv_path)
+
+# Convert to LangChain documents
+documents = []
+for _, row in df.iterrows():
+    if pd.isna(row["text"]):
+        continue
+    documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
+
+# Chunking
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
+chunks = splitter.split_documents(documents)
+
+# Embedding setup
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+# Create vector index
+texts = [chunk.page_content for chunk in chunks]
+metadatas = [chunk.metadata for chunk in chunks]
+embeddings = embedding_model.embed_documents(texts)
+embeddings = np.array(embeddings).astype("float32")
+faiss.normalize_L2(embeddings)
+index = faiss.IndexFlatIP(embeddings.shape[1])
+index.add(embeddings)
+
+# New query
+query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
+
+# Embed query
+query_embedding = embedding_model.embed_query(query)
+query_embedding = np.array([query_embedding]).astype("float32")
+faiss.normalize_L2(query_embedding)
+
+# Vector search
+TOP_K = 5
+D, I = index.search(query_embedding, TOP_K)
+top_docs = [(chunks[i], D[0][rank]) for rank, i in enumerate(I[0])]
+
+# Prompt template
+context = "\n\n".join([doc.page_content for doc, _ in top_docs])
+full_prompt = f"""
+You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
+
+Extract the following values **only if explicitly stated**:
+- Kappa free light chains (mg/L)
+- Lambda free light chains (mg/L)
+- Kappa/Lambda ratio
+- Lab test date associated with these values
+- Supporting evidence sentences
+
+⚠️ Do not guess or infer values. Only include notes where at least one of the values and the date are clearly stated.
+
+Respond in strict JSON format like below:
+
+[
+  {{
+    "kappa_flc": "<value with unit>",
+    "lambda_flc": "<value with unit>",
+    "kappa_lambda_ratio": "<numeric ratio>",
+    "date_of_lab": "<YYYY-MM-DD>",
+    "evidence_sentences": ["<sentence 1>", "<sentence 2>", ...]
+  }}
+]
+
+---
+
+📄 Context:
+{context}
+"""
+
+# Setup LLM
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+# Run LLM
+response = llm.invoke(full_prompt)
+
+# Try to parse and export
+print("\n📘 LLM Output:")
+try:
+    content = response.content.strip()
+    if content.startswith("```json"):
+        content = content.split("```json")[-1].split("```")[0].strip()
+    elif content.startswith("```"):
+        content = content.split("```")[-1].strip()
+    result = json.loads(content)
+    print(json.dumps(result, indent=2))
+
+    # Convert result to DataFrame and save to Excel
+    if result:
+        df = pd.DataFrame(result)
+        df = df[["kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]]
+        output_excel_path = "light_chain_extracted_results.xlsx"
+        df.to_excel(output_excel_path, index=False)
+        print(f"\n📁 Saved extracted light chain results to: {output_excel_path}")
+
+except Exception as e:
+    print("⚠️ Failed to parse JSON:")
+    print(response.content)
+    print(e)
