@@ -1,0 +1,170 @@
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+
+# Load config.ini
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+# Azure credentials
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Batchify utility
+def batchify(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+# Parse LLM JSON output
+def parse_llm_json(raw_text: str) -> str:
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError:
+        fixed = raw_text.replace("'", '"')
+        parsed = json.loads(fixed)
+    return json.dumps(parsed)
+
+# Normalize text for filtering
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+# Load CSV data
+csv_path = r"d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+df = pd.read_csv(csv_path)
+
+# Convert to documents
+documents = []
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    if pd.isna(row["text"]):
+        continue
+    documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
+
+# Chunk documents
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
+chunks = splitter.split_documents(documents)
+batches = list(batchify(chunks, 20))
+
+# Embedding model setup
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+# Build FAISS index in parallel
+def build_faiss(batch):
+    return FAISS.from_documents(batch, embedding_model)
+
+sub_indexes = []
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(build_faiss, batch): batch for batch in batches}
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        try:
+            sub_indexes.append(future.result())
+        except Exception as e:
+            print(f"Batch failed: {e}")
+
+main_index = sub_indexes[0]
+for sub_index in sub_indexes[1:]:
+    main_index.merge_from(sub_index)
+main_index.save_local("faiss_index")
+
+# Load FAISS DB and search
+vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
+query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
+results = vectorstore.similarity_search(query, k=1000)
+
+# Filter relevant chunks
+filtered_chunks = []
+for doc in results:
+    norm_text = normalize_text(doc.page_content)
+    if 'kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text:
+        filtered_chunks.append((doc.metadata.get("source", "Unknown"), doc.page_content))
+
+# LLM setup
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+# Build and run prompt
+final_results = []
+batches = list(batchify(filtered_chunks, 10))
+for i, batch in enumerate(batches):
+    context = "\n\n".join(f"Note {i + 1}:\n{doc}" for i, (_, doc) in enumerate(batch))
+    full_prompt = f"""
+You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
+
+Extract the following values **only if explicitly stated**:
+- Kappa free light chains (mg/L)
+- Lambda free light chains (mg/L)
+- Kappa/Lambda ratio
+- Lab test date associated with these values
+- Supporting evidence sentences
+
+⚠️ Do not guess or infer values. Only include notes where at least one of the values and the date are clearly stated.
+
+Respond in strict JSON format like below:
+
+[
+  {{
+    "kappa_flc": "<value with unit>",
+    "lambda_flc": "<value with unit>",
+    "kappa_lambda_ratio": "<numeric ratio>",
+    "date_of_lab": "<YYYY-MM-DD>",
+    "evidence_sentences": ["<sentence 1>", "<sentence 2>", ...]
+  }}
+]
+
+---
+📄 Context:
+{context}
+"""
+    try:
+        print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
+        response = llm.invoke(full_prompt)
+        cleaned = parse_llm_json(response.content)
+        batch_result = json.loads(cleaned)
+        final_results.extend(batch_result)
+    except Exception as e:
+        print(f"❌ Failed batch {i + 1}: {e}")
+
+# Save to Excel
+output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "light_chain_extracted_result.xlsx")
+
+df = pd.DataFrame(final_results)
+if not df.empty:
+    df = df[["kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]]
+    df.to_excel(output_path, index=False)
+    print(f"\n✅ Excel file saved at: {output_path}")
+else:
+    print("⚠️ No valid data to save.")
