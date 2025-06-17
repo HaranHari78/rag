@@ -543,15 +543,22 @@ df = pd.DataFrame(final_results)
 if not df.empty:
     # Extract date and ID from source_document with newline
     def extract_date_id(source):
-        try:
-            match = re.search(r'(\d{4}-\d{2}-\d{2}).*_(\d{5})$', source)
-            if match:
-                date = match.group(1)
-                doc_id = match.group(2)
-                return f"{date}\n{doc_id}"  # Real newline
-        except:
-            pass
-        return "Unknown"
+    try:
+        date_match = re.search(r'(\d{4}-\d{2}-\d{2})', source)
+        id_match = re.search(r'_(\d{5})$', source)
+        date = date_match.group(1) if date_match else None
+        doc_id = id_match.group(1) if id_match else None
+
+        if date and doc_id:
+            return f"{date}\n{doc_id}"
+        elif date:
+            return date
+        elif doc_id:
+            return doc_id
+    except:
+        pass
+    return "Unknown"
+
 
     # Create new column and reorder
     df["document_info"] = df["source_document"].apply(extract_date_id)
