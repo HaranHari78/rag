@@ -159,13 +159,18 @@ Respond ONLY in valid JSON like this:
 --- CONTEXT END ---
 """
     try:
-        print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
-        response = llm.invoke(full_prompt)
-        cleaned = parse_llm_json(response.content)
-        batch_result = json.loads(cleaned)
-        final_results.extend(batch_result)
-    except Exception as e:
-        print(f"❌ Failed batch {i + 1}: {e}")
+    print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
+    response = llm.invoke(full_prompt)
+    cleaned = parse_llm_json(response.content)
+    extracted_items = json.loads(cleaned)
+
+    # Manually override the source_document from batch titles
+    for item, (source_title, _) in zip(extracted_items, batch):
+        item["source_document"] = source_title  # force full title
+        final_results.append(item)
+
+except Exception as e:
+    print(f"❌ Failed batch {i + 1}: {e}")
 
 # Save to Excel
 output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
