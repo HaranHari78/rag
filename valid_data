@@ -450,6 +450,7 @@ final_results = []
 batches = list(batchify(filtered_chunks, 10))
 for i, batch in enumerate(batches):
     context = "\n\n".join(f"Note {i + 1}:\n{doc}" for i, (_, doc) in enumerate(batch))
+    titles = [title for title,_ in batch]
     full_prompt = f"""
 You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
 
@@ -483,6 +484,8 @@ Respond in strict JSON format like below:
         response = llm.invoke(full_prompt)
         cleaned = parse_llm_json(response.content)
         batch_result = json.loads(cleaned)
+        for item,title in zip(batch_result,titles):
+            item["source_document"] = title
         final_results.extend(batch_result)
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
@@ -523,9 +526,9 @@ df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "da
 df.drop_duplicates(inplace=True)
 
 # Export to Excel
-output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
+output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Task2"
 os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "light_chain_final_output.xlsx")
+output_path = os.path.join(output_dir, "Chain_Final_Output.xlsx")
 df.to_excel(output_path, index=False)
 
 # Wrap source_document column in Excel
