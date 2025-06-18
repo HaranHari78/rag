@@ -315,6 +315,8 @@ if final_results:
     df = pd.DataFrame(final_results)
     df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x) if isinstance(x, list) else str(x))
     df = df.drop_duplicates()
+    column_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]
+    df = df[column_order]
     df.to_excel(output_path, index=False)
     print(f"\n✅ Saved final output to: {output_path}")
 else:
