@@ -132,35 +132,27 @@ Yes.
  
 
 
-C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py 
-C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py:8: LangChainDeprecationWarning: Importing InMemoryDocstore from langchain.docstore is deprecated. Please replace deprecated imports:
-
->> from langchain.docstore import InMemoryDocstore
-
-with new imports of:
-
->> from langchain_community.docstore.in_memory import InMemoryDocstore
-You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-  from langchain.docstore.in_memory import InMemoryDocstore
-C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py:11: LangChainDeprecationWarning: Importing InMemoryDocstore from langchain.docstore is deprecated. Please replace deprecated imports:
-
->> from langchain.docstore import InMemoryDocstore
-
-with new imports of:
-
->> from langchain_community.docstore.in_memory import InMemoryDocstore
-You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-  from langchain.docstore import InMemoryDocstore
 Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\vector_db.py", line 88, in <module>
-    top_results = vectorstore.similarity_search_with_score(query, k=TOP_K)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 516, in similarity_search_with_score
-    docs = self.similarity_search_with_score_by_vector(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\pythonProject\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 428, in similarity_search_with_score_by_vector
-    doc = self.docstore.search(_id)
-          ^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'list' object has no attribute 'search'
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\main.py", line 179, in <module>
+    df = pd.DataFrame(final_results).drop_duplicates()
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\frame.py", line 6825, in drop_duplicates
+    result = self[-self.duplicated(subset, keep=keep)]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\frame.py", line 6965, in duplicated
+    labels, shape = map(list, zip(*map(f, vals)))
+                              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\frame.py", line 6933, in f
+    labels, shape = algorithms.factorize(vals, size_hint=len(self))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\algorithms.py", line 795, in factorize
+    codes, uniques = factorize_array(
+                     ^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\algorithms.py", line 595, in factorize_array
+    uniques, codes = table.factorize(
+                     ^^^^^^^^^^^^^^^^
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7293, in pandas._libs.hashtable.PyObjectHashTable.factorize
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7203, in pandas._libs.hashtable.PyObjectHashTable._unique
+TypeError: unhashable type: 'list'
 
 Process finished with exit code 1
