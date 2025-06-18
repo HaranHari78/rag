@@ -455,6 +455,8 @@ for i, batch in enumerate(batches):
 You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
 
 Extract the following values **only if explicitly stated**:
+- If the date is incomplete (e.g., only month and year), fill the missing parts with "XX".
+- DO NOT guess or infer dates.
 - Kappa free light chains (mg/L)
 - Lambda free light chains (mg/L)
 - Kappa/Lambda ratio
@@ -507,14 +509,7 @@ df.drop(columns=["evidence_key"], inplace=True)
 # Export to Excel
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
 os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "Chain_Final_Output.xlsx")
+output_path = os.path.join(output_dir, "Final_Output1.xlsx")
 df.to_excel(output_path, index=False)
 
-# Wrap source_document column
-wb = load_workbook(output_path)
-ws = wb.active
-for cell in ws["A"]:  # column A
-    cell.alignment = Alignment(wrap_text=True)
-wb.save(output_path)
 
-print(f"\n✅ Final Excel file saved: {output_path}")
