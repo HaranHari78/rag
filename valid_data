@@ -497,56 +497,42 @@ for row in final_results:
 # Create DataFrame
 df = pd.DataFrame(final_results)
 
-# Extract lab_date from evidence
-def extract_lab_date(evidence):
-    if not isinstance(evidence, str):
-        return "Unknown"
-    mdy = re.search(r'(\d{1,2})/(\d{1,2})/(\d{2,4})', evidence)
-    if mdy:
-        m, d, y = mdy.groups()
-        y = f"20{y}" if len(y) == 2 else y
-        return f"{y.zfill(4)}-{m.zfill(2)}-{d.zfill(2)}"
-    my = re.search(r'(\d{1,2})/(\d{4})', evidence)
-    if my:
-        m, y = my.groups()
-        return f"{y.zfill(4)}-{m.zfill(2)}-XX"
-    y_only = re.search(r'(\d{4})', evidence)
-    if y_only:
-        return f"{y_only.group(1)}-XX-XX"
-    return "Unknown"
+# Rename to match correct.xlsx format
+df.rename(columns={
+    "kappa_lambda_ratio": "kappa_lambda_ratio",
+    "date_of_lab": "date_of_lab",
+    "kappa_flc": "kappa_flc",
+    "lambda_flc": "lambda_flc",
+    "evidence_sentences": "evidence_sentences"
+}, inplace=True)
 
-df["lab_date"] = df["evidence_sentences"].apply(extract_lab_date)
-
-# Create source_document column (use matched title from original metadata)
+# Create `source_document` column from evidence (date + doc title)
 def extract_source_document(evidence):
-    title_match = re.search(r'(Telephone_Encounter_\d+|Progress_Notes_\d+|Encounter_\d+)', evidence)
     date_match = re.search(r'(\d{4}-\d{2}-\d{2})', evidence)
-    text = title_match.group(1) if title_match else ""
-    date = date_match.group(1) if date_match else ""
-    if date and text:
-        return f"{date}\n{text}"
-    elif text:
-        return text
-    elif date:
-        return date
+    doc_id_match = re.search(r'(Progress_Notes_\d+|Encounter_\d+|Telephone_Encounter_\d+)', evidence)
+    if date_match and doc_id_match:
+        return f"{date_match.group(1)}_00:00:00.000_{doc_id_match.group(1)}"
     return "Unknown"
 
 df["source_document"] = df["evidence_sentences"].apply(extract_source_document)
 
-# Reorder columns
-df = df[["source_document", "lab_date", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "evidence_sentences"]]
+# Final column order
+df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]]
 
-# Save to Excel
+# Drop duplicates
+df.drop_duplicates(inplace=True)
+
+# Export to Excel
 output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
 os.makedirs(output_dir, exist_ok=True)
 output_path = os.path.join(output_dir, "light_chain_final_output.xlsx")
 df.to_excel(output_path, index=False)
 
-# Wrap text in source_document column
+# Wrap source_document column in Excel
 wb = load_workbook(output_path)
 ws = wb.active
-for cell in ws["A"]:  # source_document = column A
+for cell in ws["A"]:  # column A
     cell.alignment = Alignment(wrap_text=True)
 wb.save(output_path)
 
-print(f"\n✅ Final Excel file saved at: {output_path}")
+print(f"\n✅ Final Excel file saved with correct structure at: {output_path}")
