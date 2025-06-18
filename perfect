@@ -371,8 +371,6 @@ from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
-
-# Excel formatting
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment
 
@@ -499,13 +497,9 @@ From the context below, extract the following values **only if they are explicit
 
 🟡 IMPORTANT:
 - If the date is incomplete (e.g., only month and year are mentioned), fill the missing parts with \"XX\".
-  - For example:
-    - June 2021 → \"2021-06-XX\"
-    - 2021 only → \"2021-XX-XX\"
 - DO NOT make up or infer dates that aren't clearly stated.
 - Return a list of structured JSON objects. One object per lab result.
-- Include the evidence sentence for each result.
-- Also include the document title (provided) as \"source_document\".
+- Include the evidence sentence and the document title (as "source_document").
 
 Respond ONLY in valid JSON like this:
 
@@ -538,41 +532,50 @@ output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
 os.makedirs(output_dir, exist_ok=True)
 output_path = os.path.join(output_dir, "fields_chain_extracted_result.xlsx")
 
-df = pd.DataFrame(final_results).drop_duplicates()
+# Flatten list before deduplication
+for row in final_results:
+    if isinstance(row.get("evidence_sentences"), list):
+        row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
 
-if not df.empty:
-    # Extract date and ID from source_document with newline
-    def extract_date_id(source):
-        try:
-            date_match = re.search(r'(\d{4}-\d{2}-\d{2})', source)
-            id_match = re.search(r'_(\d{5})$', source)
-            date = date_match.group(1) if date_match else None
-            doc_id = id_match.group(1) if id_match else None
+# Create DataFrame
+df = pd.DataFrame(final_results)
 
-            if date and doc_id:
-                return f"{date}\n{doc_id}"
-            elif date:
-                return date
-            elif doc_id:
-                return doc_id
-        except:
-            pass
-        return "Unknown"
+# Extract date and ID from source_document
+def extract_date_id(source):
+    try:
+        date_match = re.search(r'(\d{4}-\d{2}-\d{2})', source)
+        id_match = re.search(r'_(\d{5})$', source)
+        date = date_match.group(1) if date_match else None
+        doc_id = id_match.group(1) if id_match else None
 
-    # Create new column and reorder
-    df["document_info"] = df["source_document"].apply(extract_date_id)
-    df = df[["document_info", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "evidence_sentences"]]
+        if date and doc_id:
+            return f"{date}\n{doc_id}"
+        elif date:
+            return date
+        elif doc_id:
+            return doc_id
+    except:
+        pass
+    return "Unknown"
 
-    # Save as Excel
-    df.to_excel(output_path, index=False)
+# Create new column
+df["document_info"] = df["source_document"].apply(extract_date_id)
 
-    # Enable text wrapping for document_info column using openpyxl
-    wb = load_workbook(output_path)
-    ws = wb.active
-    for cell in ws["A"]:  # Column A = document_info
-        cell.alignment = Alignment(wrap_text=True)
-    wb.save(output_path)
+# Drop duplicates by important fields
+df = df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "document_info"])
 
-    print(f"\n✅ Excel file saved at: {output_path} (with wrapped date + ID)")
-else:
-    print("⚠️ No valid data to save.")
+# Reorder columns
+df = df[["document_info", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "evidence_sentences"]]
+
+# Save to Excel
+df.to_excel(output_path, index=False)
+
+# Wrap text in document_info
+wb = load_workbook(output_path)
+ws = wb.active
+for cell in ws["A"]:  # document_info = column A
+    cell.alignment = Alignment(wrap_text=True)
+wb.save(output_path)
+
+print(f"\n✅ Excel file saved at: {output_path} (deduplicated and formatted)")
+
