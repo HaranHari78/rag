@@ -174,3 +174,156 @@ if not df.empty:
     print(f"\n✅ Saved at: {output_path}")
 else:
     print("⚠️ No data extracted.")
+
+
+
+THIS IS ALSO CORRECT :::
+
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+
+# Load config
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Helpers
+def parse_llm_json(raw_text: str) -> str:
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
+    try:
+        return json.dumps(json.loads(raw_text))
+    except json.JSONDecodeError:
+        fixed = raw_text.replace("'", '"')
+        return json.dumps(json.loads(fixed))
+
+# Load CSV
+df = pd.read_csv("d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv")
+documents = [Document(page_content=row["text"], metadata={"source": row["title"]})
+             for _, row in df.iterrows() if pd.notna(row["text"])]
+
+# Chunking
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
+chunks = splitter.split_documents(documents)
+
+# Embedding
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+vectorstore = FAISS.from_documents(chunks, embedding_model)
+
+# LLM setup
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+final_results = []
+
+# Run one doc at a time (to match working logic)
+for doc in tqdm(documents):
+    title = doc.metadata["source"]
+    related_chunks = vectorstore.similarity_search(doc.page_content, k=20)
+    same_doc_chunks = [c.page_content for c in related_chunks if c.metadata.get("source") == title and any(x in c.page_content.lower() for x in ["kappa", "lambda", "ratio"])]
+
+    if not same_doc_chunks:
+        continue
+
+    context = "\n\n".join(same_doc_chunks)
+
+    full_prompt = f"""
+You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
+
+From the context below, extract the following values — but **only if all conditions below are met**:
+
+- The value is explicitly mentioned in the text
+- Units are clearly stated (e.g., mg/L, mg/dL)
+- The phrase clearly refers to one of the following:
+    - Kappa free light chains (KFLC)
+    - Lambda free light chains (LFLC)
+    - Kappa/Lambda ratio
+- DO NOT infer, estimate, or guess any values
+- If a value is mentioned without a numeric value (e.g., “KFLC elevated”), **skip it**
+- If the lab date is mentioned, extract it in `YYYY-MM-DD` format
+  - If partially mentioned, use `XX` for unknown parts (e.g., `2021-06-XX`)
+  - Do NOT hallucinate or fabricate any date
+
+Your response must be a valid JSON list. Each object should include:
+
+- "kappa_flc": value and unit
+- "lambda_flc": value and unit
+- "kappa_lambda_ratio": ratio or inequality (e.g., >914.29)
+- "date_of_lab": date string in YYYY-MM-DD or with XX
+- "evidence_sentences": the exact sentence(s) where the values were found
+- "source_document": the document title (you will be given this)
+
+Respond only in JSON like below:
+
+[
+  {{
+    "kappa_flc": "129.54 mg/dL",
+    "lambda_flc": "15 mg/dL",
+    "kappa_lambda_ratio": ">914.29",
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": ["11/28/23: kappa free light chain (KFLC) 129.54, lambda free light chain 15, ratio >914.29."],
+    "source_document": "{title}"
+  }}
+]
+
+--- CONTEXT START ---
+{context}
+--- CONTEXT END ---
+"""
+
+    try:
+        print(f"\n🧠 Processing: {title}")
+        response = llm.invoke(full_prompt)
+        parsed = json.loads(parse_llm_json(response.content))
+
+        for item in parsed:
+            item["source_document"] = title
+            final_results.append(item)
+
+    except Exception as e:
+        print(f"❌ Failed for {title}: {e}")
+
+# Save to Excel
+output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "extracted_results.xlsx")
+
+if final_results:
+    df = pd.DataFrame(final_results)
+    df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x) if isinstance(x, list) else str(x))
+    df.to_excel(output_path, index=False)
+    print(f"\n✅ Excel saved at: {output_path}")
+else:
+    print("\n⚠️ No results extracted.")
