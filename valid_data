@@ -255,15 +255,15 @@ llm = AzureChatOpenAI(
 
 final_results = []
 query = (
-    "Extract free light-chain assay values: kappa free light chains (mg/L or mg/dL), "
-    "lambda free light chains (mg/L or mg/dL), and kappa/lambda ratio (with inequality if any). "
-    "Return actual numerical values and units only if present. Include dates only when explicitly mentioned."
+    "Extract values related to the free light-chain assay including: "
+    "kappa free light chains (mg/L or mg/dL), lambda free light chains (mg/L or mg/dL), and kappa/lambda ratio. "
+    "Return numeric values with units when available. Include dates if clearly stated nearby. Partial extraction is allowed."
 )
 
 # Run per document
 for doc in tqdm(documents):
     title = doc.metadata["source"]
-    similar_chunks = vectorstore.similarity_search(query, k=30)
+    similar_chunks = vectorstore.similarity_search(query, k=50)
     same_doc_chunks = [c.page_content for c in similar_chunks if c.metadata.get("source") == title]
     if not same_doc_chunks:
         continue
@@ -271,31 +271,31 @@ for doc in tqdm(documents):
     context = "\n\n".join(same_doc_chunks)
 
     full_prompt = f"""
-You are a medical data extraction assistant. Extract free light-chain assay lab results from the context below.
+You are a clinical data extraction assistant. From the clinical context below, extract **any available** of the following:
+- Kappa free light chains (mg/L or mg/dL)
+- Lambda free light chains (mg/L or mg/dL)
+- Kappa/Lambda ratio (e.g., 1.72, >914.29)
 
-Extract only if:
-- Numerical values are explicitly mentioned.
-- Units must be included (e.g., mg/L, mg/dL).
-- Fields are:
-  - Kappa free light chains (kappa_flc)
-  - Lambda free light chains (lambda_flc)
-  - Kappa/Lambda ratio (kappa_lambda_ratio)
-- If a date is available near the values, include it in YYYY-MM-DD or YYYY-MM-XX format.
-- Do NOT make up or infer values.
-- Return valid JSON list of results.
+Extraction rules:
+- Return each found field **individually** (even if only one appears).
+- Include the exact value **with units** (mg/L or mg/dL) or inequality if applicable.
+- Include the date if explicitly mentioned near the lab values (in format YYYY-MM-DD or YYYY-MM-XX).
+- Add the full sentence(s) from which the values were taken as "evidence_sentences".
+- Return your answer as a JSON list.
 
-Each entry must include:
-- "kappa_flc"
-- "lambda_flc"
-- "kappa_lambda_ratio"
-- "date_of_lab"
-- "evidence_sentences"
-- "source_document": {title}
+Each item in the list should look like:
+{
+  "kappa_flc": "",
+  "lambda_flc": "",
+  "kappa_lambda_ratio": "",
+  "date_of_lab": "",
+  "evidence_sentences": ["..."],
+  "source_document": "{title}"
+}
 
----
-Context:
+--- CONTEXT START ---
 {context}
----
+--- CONTEXT END ---
 """
     try:
         response = llm.invoke(full_prompt)
@@ -309,16 +309,15 @@ Context:
 # Save results
 output_dir = "output/fields"
 os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "kappa_lambda_51_results.xlsx")
+output_path = os.path.join(output_dir, "kappa_lambda_51_results_updated.xlsx")
 
 if final_results:
     df = pd.DataFrame(final_results)
     df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x) if isinstance(x, list) else str(x))
-    df = df.drop_duplicates()
+    df = df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "source_document"])
     column_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]
     df = df[column_order]
     df.to_excel(output_path, index=False)
     print(f"\n✅ Saved final output to: {output_path}")
 else:
     print("\n⚠️ No results extracted.")
-
