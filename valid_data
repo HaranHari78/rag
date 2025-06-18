@@ -185,7 +185,6 @@ import json
 import pandas as pd
 import configparser
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
@@ -247,12 +246,13 @@ llm = AzureChatOpenAI(
 )
 
 final_results = []
+query = "kappa lambda ratio lab value"
 
-# Run one doc at a time (to match working logic)
+# Run per document
 for doc in tqdm(documents):
     title = doc.metadata["source"]
-    related_chunks = vectorstore.similarity_search(doc.page_content, k=20)
-    same_doc_chunks = [c.page_content for c in related_chunks if c.metadata.get("source") == title and any(x in c.page_content.lower() for x in ["kappa", "lambda", "ratio"])]
+    similar_chunks = vectorstore.similarity_search(query, k=30)
+    same_doc_chunks = [c.page_content for c in similar_chunks if c.metadata.get("source") == title]
 
     if not same_doc_chunks:
         continue
