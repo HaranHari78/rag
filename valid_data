@@ -465,6 +465,9 @@ Extract the following values **only if explicitly stated**:
 
 ⚠️ Do not guess or infer values. Only include notes where at least one of the values and the date are clearly stated.
 
+📌 If the same lab evidence or sentence appears in multiple notes, extract it only once. 
+Avoid repeating extracted data from duplicate sentences across different notes or files.
+
 Respond in strict JSON format like below:
 
 [
