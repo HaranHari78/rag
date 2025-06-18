@@ -153,17 +153,21 @@ Respond in strict JSON format like below:
   ]
 }}
 
+---
+📄 Context:
+{context}
+"""
 
-    try:
-        print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
-        response = llm.invoke(full_prompt)
-        cleaned = parse_llm_json(response.content)
-        batch_result = json.loads(cleaned)
-        for item, title in zip(batch_result, titles):
-            item["source_document"] = title
-        final_results.extend(batch_result)
-    except Exception as e:
-        print(f"❌ Failed batch {i + 1}: {e}")
+try:
+    print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
+    response = llm.invoke(full_prompt)
+    cleaned = parse_llm_json(response.content)
+    batch_result = json.loads(cleaned)
+    for item, title in zip(batch_result, titles):
+        item["source_document"] = title
+    final_results.extend(batch_result)
+except Exception as e:
+    print(f"❌ Failed batch {i + 1}: {e}")
 
 # Post-process and save
 for row in final_results:
