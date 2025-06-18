@@ -180,6 +180,7 @@ output_path = os.path.join(output_dir, "extracted_results.xlsx")
 df = pd.DataFrame(final_results)
 if not df.empty:
     df = df[["kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "source_document"]]
+    df["source_document"] = df["source_document"].apply(lambda x: f"{x.split('_')[0]}\n{'_'.join(x.split('_')[3:])}" if isinstance(x, str) else x)
     df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x) if isinstance(x, list) else str(x))
 
     # Remove duplicate rows
