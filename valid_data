@@ -246,7 +246,7 @@ llm = AzureChatOpenAI(
 )
 
 final_results = []
-query = "kappa lambda ratio lab value"
+query = "kappa free light chains mg/l, lambda free light chain mg/l and ratio of kappa/lambda"
 
 # Run per document
 for doc in tqdm(documents):
