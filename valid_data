@@ -353,12 +353,11 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-# Batchify utility
+# Utilities
 def batchify(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-# Parse LLM JSON output
 def parse_llm_json(raw_text: str) -> str:
     pattern = r"```(?:json)?\s*(.*?)```"
     match = re.search(pattern, raw_text, flags=re.DOTALL)
@@ -372,18 +371,17 @@ def parse_llm_json(raw_text: str) -> str:
         parsed = json.loads(fixed)
     return json.dumps(parsed)
 
-# Normalize text for filtering
 def normalize_text(text):
     text = text.lower()
     text = re.sub(r'[^a-z0-9]', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-# Load CSV
-csv_path = r"d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+# Load dataset
+csv_path = "MEDICAL_DATAS.csv"
 df = pd.read_csv(csv_path)
 
-# Prepare documents
+# Prepare documents with correct title as metadata
 documents = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
@@ -428,14 +426,15 @@ vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter chunks
+# Filter chunks with matching content and keep original titles
 filtered_chunks = []
 for doc in results:
     norm_text = normalize_text(doc.page_content)
-    if 'kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text:
-        filtered_chunks.append((doc.metadata.get("source", "Unknown"), doc.page_content))
+    source_title = doc.metadata.get("source", "Unknown")
+    if source_title != "Unknown" and ('kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text):
+        filtered_chunks.append({"title": source_title, "content": doc.page_content})
 
-# LLM setup
+# Setup LLM
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -445,12 +444,13 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Run LLM
+# Run LLM on batches
 final_results = []
 batches = list(batchify(filtered_chunks, 10))
 for i, batch in enumerate(batches):
-    context = "\n\n".join(f"Note {i + 1}:\n{doc}" for i, (_, doc) in enumerate(batch))
-    titles = [title for title,_ in batch]
+    context = "\n\n".join(f"Note {j + 1}:\n{item['content']}" for j, item in enumerate(batch))
+    titles = [item["title"] for item in batch]
+
     full_prompt = f"""
 You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
 
@@ -479,63 +479,38 @@ Respond in strict JSON format like below:
 📄 Context:
 {context}
 """
+
     try:
         print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
         response = llm.invoke(full_prompt)
         cleaned = parse_llm_json(response.content)
         batch_result = json.loads(cleaned)
-        for item,title in zip(batch_result,titles):
+        for item, title in zip(batch_result, titles):
             item["source_document"] = title
         final_results.extend(batch_result)
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
 
-# ---------------------------- POST-PROCESSING ----------------------------
-
-# Flatten evidence_sentences
+# Post-process and save
 for row in final_results:
     if isinstance(row.get("evidence_sentences"), list):
         row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
 
-# Create DataFrame
 df = pd.DataFrame(final_results)
-
-# Rename to match correct.xlsx format
-df.rename(columns={
-    "kappa_lambda_ratio": "kappa_lambda_ratio",
-    "date_of_lab": "date_of_lab",
-    "kappa_flc": "kappa_flc",
-    "lambda_flc": "lambda_flc",
-    "evidence_sentences": "evidence_sentences"
-}, inplace=True)
-
-# Create `source_document` column from evidence (date + doc title)
-def extract_source_document(evidence):
-    date_match = re.search(r'(\d{4}-\d{2}-\d{2})', evidence)
-    doc_id_match = re.search(r'(Progress_Notes_\d+|Encounter_\d+|Telephone_Encounter_\d+)', evidence)
-    if date_match and doc_id_match:
-        return f"{date_match.group(1)}_00:00:00.000_{doc_id_match.group(1)}"
-    return "Unknown"
-
-df["source_document"] = df["evidence_sentences"].apply(extract_source_document)
-
-# Final column order
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]]
-
-# Drop duplicates
 df.drop_duplicates(inplace=True)
 
 # Export to Excel
-output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Task2"
+output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
 os.makedirs(output_dir, exist_ok=True)
 output_path = os.path.join(output_dir, "Chain_Final_Output.xlsx")
 df.to_excel(output_path, index=False)
 
-# Wrap source_document column in Excel
+# Wrap source_document column
 wb = load_workbook(output_path)
 ws = wb.active
 for cell in ws["A"]:  # column A
     cell.alignment = Alignment(wrap_text=True)
 wb.save(output_path)
 
-print(f"\n✅ Final Excel file saved with correct structure at: {output_path}")
+print(f"\n✅ Final Excel file saved: {output_path}")
