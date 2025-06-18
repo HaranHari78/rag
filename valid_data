@@ -246,7 +246,13 @@ llm = AzureChatOpenAI(
 )
 
 final_results = []
-query = "kappa free light chains mg/l, lambda free light chain mg/l and ratio of kappa/lambda"
+query = (
+    "Find values from the free light-chain assay including: "
+    "kappa free light chains (mg/L or mg/dL), "
+    "lambda free light chains (mg/L or mg/dL), and "
+    "kappa/lambda ratio (including inequalities like > or <). "
+    "Include associated dates if mentioned."
+)
 
 # Run per document
 for doc in tqdm(documents):
