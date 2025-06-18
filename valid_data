@@ -236,16 +236,14 @@ embedding_model = AzureOpenAIEmbeddings(
 # FAISS index path
 faiss_path = "faiss_index"
 
-# Load if exists, else build
+# Load or build FAISS
 if os.path.exists(faiss_path):
     vectorstore = FAISS.load_local(faiss_path, embeddings=embedding_model, allow_dangerous_deserialization=True)
-    print("✅ Loaded existing FAISS index from disk")
 else:
     vectorstore = FAISS.from_documents(chunks, embedding_model)
     vectorstore.save_local(faiss_path)
-    print("✅ Built and saved new FAISS index")
 
-# LLM setup
+# LLM
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -257,11 +255,9 @@ llm = AzureChatOpenAI(
 
 final_results = []
 query = (
-    "Find values from the free light-chain assay including: "
-    "kappa free light chains (mg/L or mg/dL), "
-    "lambda free light chains (mg/L or mg/dL), and "
-    "kappa/lambda ratio (including inequalities like > or <). "
-    "Include associated dates if mentioned."
+    "Extract free light-chain assay values: kappa free light chains (mg/L or mg/dL), "
+    "lambda free light chains (mg/L or mg/dL), and kappa/lambda ratio (with inequality if any). "
+    "Return actual numerical values and units only if present. Include dates only when explicitly mentioned."
 )
 
 # Run per document
@@ -269,78 +265,58 @@ for doc in tqdm(documents):
     title = doc.metadata["source"]
     similar_chunks = vectorstore.similarity_search(query, k=30)
     same_doc_chunks = [c.page_content for c in similar_chunks if c.metadata.get("source") == title]
-
     if not same_doc_chunks:
         continue
 
     context = "\n\n".join(same_doc_chunks)
 
     full_prompt = f"""
-You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
+You are a medical data extraction assistant. Extract free light-chain assay lab results from the context below.
 
-From the context below, extract the following values — but **only if all conditions below are met**:
+Extract only if:
+- Numerical values are explicitly mentioned.
+- Units must be included (e.g., mg/L, mg/dL).
+- Fields are:
+  - Kappa free light chains (kappa_flc)
+  - Lambda free light chains (lambda_flc)
+  - Kappa/Lambda ratio (kappa_lambda_ratio)
+- If a date is available near the values, include it in YYYY-MM-DD or YYYY-MM-XX format.
+- Do NOT make up or infer values.
+- Return valid JSON list of results.
 
-- The value is explicitly mentioned in the text
-- Units are clearly stated (e.g., mg/L, mg/dL)
-- The phrase clearly refers to one of the following:
-    - Kappa free light chains (KFLC)
-    - Lambda free light chains (LFLC)
-    - Kappa/Lambda ratio
-- DO NOT infer, estimate, or guess any values
-- If a value is mentioned without a numeric value (e.g., “KFLC elevated”), **skip it**
-- If the lab date is mentioned, extract it in `YYYY-MM-DD` format
-  - If partially mentioned, use `XX` for unknown parts (e.g., `2021-06-XX`)
-  - Do NOT hallucinate or fabricate any date
+Each entry must include:
+- "kappa_flc"
+- "lambda_flc"
+- "kappa_lambda_ratio"
+- "date_of_lab"
+- "evidence_sentences"
+- "source_document": {title}
 
-Your response must be a valid JSON list. Each object should include:
-
-- "kappa_flc": value and unit
-- "lambda_flc": value and unit
-- "kappa_lambda_ratio": ratio or inequality (e.g., >914.29)
-- "date_of_lab": date string in YYYY-MM-DD or with XX
-- "evidence_sentences": the exact sentence(s) where the values were found
-- "source_document": the document title (you will be given this)
-
-Respond only in JSON like below:
-
-[
-  {{
-    "kappa_flc": "129.54 mg/dL",
-    "lambda_flc": "15 mg/dL",
-    "kappa_lambda_ratio": ">914.29",
-    "date_of_lab": "2023-11-28",
-    "evidence_sentences": ["11/28/23: kappa free light chain (KFLC) 129.54, lambda free light chain 15, ratio >914.29."],
-    "source_document": "{title}"
-  }}
-]
-
---- CONTEXT START ---
+---
+Context:
 {context}
---- CONTEXT END ---
+---
 """
-
     try:
-        print(f"\n🧠 Processing: {title}")
         response = llm.invoke(full_prompt)
         parsed = json.loads(parse_llm_json(response.content))
-
         for item in parsed:
             item["source_document"] = title
             final_results.append(item)
-
     except Exception as e:
         print(f"❌ Failed for {title}: {e}")
 
-# Save to Excel
-output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
+# Save results
+output_dir = "output/fields"
 os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "extracted_results.xlsx")
+output_path = os.path.join(output_dir, "kappa_lambda_51_results.xlsx")
 
 if final_results:
     df = pd.DataFrame(final_results)
     df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x) if isinstance(x, list) else str(x))
     df = df.drop_duplicates()
     df.to_excel(output_path, index=False)
-    print(f"\n✅ Excel saved at: {output_path}")
+    print(f"\n✅ Saved final output to: {output_path}")
 else:
     print("\n⚠️ No results extracted.")
+
