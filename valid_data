@@ -467,23 +467,25 @@ for i, batch in enumerate(batches):
     titles = [item["title"] for item in batch]
 
     full_prompt = f"""
-You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
+You are a medical information extraction assistant. Your task is to extract precise and structured lab values from the provided clinical notes.
 
-Extract the following values **only if explicitly stated**:
-- If the date is incomplete (e.g., only month and year), fill the missing parts with "XX".
-- DO NOT guess or infer dates.
+Extract the following only when the evidence includes **explicit numeric values with units** (e.g., `mg/dL`, `mg/L`, or ratio values like `>914.29`):
+
 - Kappa free light chains (mg/L)
 - Lambda free light chains (mg/L)
 - Kappa/Lambda ratio
 - Lab test date associated with these values
 - Supporting evidence sentences
 
-⚠️ Do not guess or infer values. Only include notes where at least one of the values and the date are clearly stated.
+📌 Strict Rules:
+- Ignore vague phrases like "elevated kappa" or "abnormal lambda" without a value and unit.
+- If the value is not numeric or lacks a unit (e.g., just says "kappa abnormal"), skip it.
+- Extract only if the sentence includes clear numeric values (e.g., "kappa 129.5 mg/dL", "ratio >914.29").
+- If the date is incomplete (e.g., only month/year), format missing parts as "XX". E.g., "2021-06-XX".
+- Do not guess or infer values.
+- If the same evidence or sentence appears across multiple notes, extract it only once (skip duplicates).
 
-📌 If the same lab evidence or sentence appears in multiple notes, extract it only once. 
-Avoid repeating extracted data from duplicate sentences across different notes or files.
-
-Respond in strict JSON format like below:
+Respond in strict JSON format like this:
 
 [
   {{
