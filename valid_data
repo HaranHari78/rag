@@ -271,27 +271,42 @@ for doc in tqdm(documents):
     context = "\n\n".join(same_doc_chunks)
 
     full_prompt = f"""
-You are a clinical data extraction assistant. From the clinical context below, extract **any available** of the following:
-- Kappa free light chains (mg/L or mg/dL)
-- Lambda free light chains (mg/L or mg/dL)
-- Kappa/Lambda ratio (e.g., 1.72, >914.29)
+full_prompt = f"""
+You are a medical information extraction assistant. Your task is to extract precise and structured lab values from the provided clinical notes.
 
-Extraction rules:
-- Return each found field **individually** (even if only one appears).
-- Include the exact value **with units** (mg/L or mg/dL) or inequality if applicable.
-- Include the date if explicitly mentioned near the lab values (in format YYYY-MM-DD or YYYY-MM-XX).
-- Add the full sentence(s) from which the values were taken as "evidence_sentences".
-- Return your answer as a JSON list.
+Extract the following only when the evidence includes **explicit numeric values with units** (e.g., `mg/dL`, `mg/L`, or ratio values like `>914.29`):
 
-Each item in the list should look like:
-{
-  "kappa_flc": "",
-  "lambda_flc": "",
-  "kappa_lambda_ratio": "",
-  "date_of_lab": "",
-  "evidence_sentences": ["..."],
-  "source_document": "{title}"
-}
+- Kappa free light chains (mg/L)
+- Lambda free light chains (mg/L)
+- Kappa/Lambda ratio
+- Lab test date associated with these values
+- Supporting evidence sentences
+
+📌 Strict Rules:
+- Ignore vague phrases like "elevated kappa" or "abnormal lambda" without a value and unit.
+- If the value is not numeric or lacks a unit (e.g., just says "kappa abnormal"), skip it.
+- Extract only if the sentence includes clear numeric values (e.g., "kappa 129.5 mg/dL", "ratio >914.29").
+- If the date is incomplete (e.g., only month/year), format missing parts as "XX". E.g., "2021-06-XX".
+- Do not guess or infer values.
+- If the same evidence or sentence appears across multiple notes, extract it only once (skip duplicates).
+
+Respond in strict JSON format like this:
+
+[
+  {{
+    "kappa_flc": "<value with unit>",
+    "lambda_flc": "<value with unit>",
+    "kappa_lambda_ratio": "<numeric ratio>",
+    "date_of_lab": "<YYYY-MM-DD>",
+    "evidence_sentences": ["<sentence 1>", "<sentence 2>", ...]
+  }}
+]
+
+---
+📄 Context:
+{context}
+"""
+
 
 --- CONTEXT START ---
 {context}
