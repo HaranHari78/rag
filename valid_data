@@ -498,7 +498,11 @@ for row in final_results:
 
 df = pd.DataFrame(final_results)
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]]
-df.drop_duplicates(inplace=True)
+# Normalize evidence text and drop duplicates
+df["evidence_key"] = df["evidence_sentences"].str.lower().str.replace(r'\s+', ' ', regex=True).str.strip()
+df = df.drop_duplicates(subset=["evidence_key"])
+df.drop(columns=["evidence_key"], inplace=True)
+
 
 # Export to Excel
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
