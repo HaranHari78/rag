@@ -358,8 +358,6 @@ else:
     print("⚠️ No valid data to save.")
 
 
-THIS ALSO WORKS :::: HAVING BOTH DATE AND ID IN ONE COL
-
 import os
 import re
 import json
@@ -412,23 +410,23 @@ def normalize_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-# Load CSV data
+# Load CSV
 csv_path = r"d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
-# Convert to documents
+# Prepare documents
 documents = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
         continue
     documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
 
-# Chunk documents
+# Chunking
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
 chunks = splitter.split_documents(documents)
 batches = list(batchify(chunks, 20))
 
-# Embedding model setup
+# Embedding model
 embedding_model = AzureOpenAIEmbeddings(
     deployment=EMBEDDING_DEPLOYMENT,
     model=EMBEDDING_MODEL,
@@ -438,7 +436,7 @@ embedding_model = AzureOpenAIEmbeddings(
     chunk_size=1000
 )
 
-# Build FAISS index in parallel
+# Build FAISS index
 def build_faiss(batch):
     return FAISS.from_documents(batch, embedding_model)
 
@@ -456,12 +454,12 @@ for sub_index in sub_indexes[1:]:
     main_index.merge_from(sub_index)
 main_index.save_local("faiss_index")
 
-# Load FAISS DB and search
+# Vector DB search
 vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter relevant chunks
+# Filter chunks
 filtered_chunks = []
 for doc in results:
     norm_text = normalize_text(doc.page_content)
@@ -478,45 +476,38 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Build and run prompt
+# Run LLM
 final_results = []
 batches = list(batchify(filtered_chunks, 10))
 for i, batch in enumerate(batches):
-    context = "\n\n".join(f"Note {i + 1} from {source}::\n{doc}" for i, (source, doc) in enumerate(batch))
+    context = "\n\n".join(f"Note {i + 1}:\n{doc}" for i, (_, doc) in enumerate(batch))
     full_prompt = f"""
 You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
 
-From the context below, extract the following values **only if they are explicitly mentioned**:
-
+Extract the following values **only if explicitly stated**:
 - Kappa free light chains (mg/L)
 - Lambda free light chains (mg/L)
 - Kappa/Lambda ratio
-- Lab test date (YYYY-MM-DD format)
-- Supporting evidence sentence
-- The document title the sentence came from (you will be given that)
+- Lab test date associated with these values
+- Supporting evidence sentences
 
-🟡 IMPORTANT:
-- If the date is incomplete (e.g., only month and year are mentioned), fill the missing parts with \"XX\".
-- DO NOT make up or infer dates that aren't clearly stated.
-- Return a list of structured JSON objects. One object per lab result.
-- Include the evidence sentence and the document title (as "source_document").
+⚠️ Do not guess or infer values. Only include notes where at least one of the values and the date are clearly stated.
 
-Respond ONLY in valid JSON like this:
+Respond in strict JSON format like below:
 
 [
   {{
     "kappa_flc": "<value with unit>",
     "lambda_flc": "<value with unit>",
     "kappa_lambda_ratio": "<numeric ratio>",
-    "date_of_lab": "<YYYY-MM-DD or use XX where missing>",
-    "evidence_sentences": ["<sentence 1>"],
-    "source_document": "<title of the source document>"
+    "date_of_lab": "<YYYY-MM-DD>",
+    "evidence_sentences": ["<sentence 1>", "<sentence 2>", ...]
   }}
 ]
 
---- CONTEXT START ---
+---
+📄 Context:
 {context}
---- CONTEXT END ---
 """
     try:
         print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
@@ -527,12 +518,9 @@ Respond ONLY in valid JSON like this:
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
 
-# Save to Excel
-output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
-os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "fields_chain_extracted_result.xlsx")
+# ---------------------------- POST-PROCESSING ----------------------------
 
-# Flatten list before deduplication
+# Flatten evidence_sentences
 for row in final_results:
     if isinstance(row.get("evidence_sentences"), list):
         row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
@@ -540,42 +528,56 @@ for row in final_results:
 # Create DataFrame
 df = pd.DataFrame(final_results)
 
-# Extract date and ID from source_document
-def extract_date_id(source):
-    try:
-        date_match = re.search(r'(\d{4}-\d{2}-\d{2})', source)
-        id_match = re.search(r'_(\d{5})$', source)
-        date = date_match.group(1) if date_match else None
-        doc_id = id_match.group(1) if id_match else None
-
-        if date and doc_id:
-            return f"{date}\n{doc_id}"
-        elif date:
-            return date
-        elif doc_id:
-            return doc_id
-    except:
-        pass
+# Extract lab_date from evidence
+def extract_lab_date(evidence):
+    if not isinstance(evidence, str):
+        return "Unknown"
+    mdy = re.search(r'(\d{1,2})/(\d{1,2})/(\d{2,4})', evidence)
+    if mdy:
+        m, d, y = mdy.groups()
+        y = f"20{y}" if len(y) == 2 else y
+        return f"{y.zfill(4)}-{m.zfill(2)}-{d.zfill(2)}"
+    my = re.search(r'(\d{1,2})/(\d{4})', evidence)
+    if my:
+        m, y = my.groups()
+        return f"{y.zfill(4)}-{m.zfill(2)}-XX"
+    y_only = re.search(r'(\d{4})', evidence)
+    if y_only:
+        return f"{y_only.group(1)}-XX-XX"
     return "Unknown"
 
-# Create new column
-df["document_info"] = df["source_document"].apply(extract_date_id)
+df["lab_date"] = df["evidence_sentences"].apply(extract_lab_date)
 
-# Drop duplicates by important fields
-df = df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "document_info"])
+# Create source_document column (use matched title from original metadata)
+def extract_source_document(evidence):
+    title_match = re.search(r'(Telephone_Encounter_\d+|Progress_Notes_\d+|Encounter_\d+)', evidence)
+    date_match = re.search(r'(\d{4}-\d{2}-\d{2})', evidence)
+    text = title_match.group(1) if title_match else ""
+    date = date_match.group(1) if date_match else ""
+    if date and text:
+        return f"{date}\n{text}"
+    elif text:
+        return text
+    elif date:
+        return date
+    return "Unknown"
+
+df["source_document"] = df["evidence_sentences"].apply(extract_source_document)
 
 # Reorder columns
-df = df[["document_info", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "evidence_sentences"]]
+df = df[["source_document", "lab_date", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "evidence_sentences"]]
 
 # Save to Excel
+output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "light_chain_final_output.xlsx")
 df.to_excel(output_path, index=False)
 
-# Wrap text in document_info
+# Wrap text in source_document column
 wb = load_workbook(output_path)
 ws = wb.active
-for cell in ws["A"]:  # document_info = column A
+for cell in ws["A"]:  # source_document = column A
     cell.alignment = Alignment(wrap_text=True)
 wb.save(output_path)
 
-print(f"\n✅ Excel file saved at: {output_path} (deduplicated and formatted)")
-
+print(f"\n✅ Final Excel file saved at: {output_path}")
