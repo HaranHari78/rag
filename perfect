@@ -536,29 +536,28 @@ Respond ONLY in valid JSON like this:
 # Save to Excel
 output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
 os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "light_chain_extracted_result.xlsx")
+output_path = os.path.join(output_dir, "fields_chain_extracted_result.xlsx")
 
-df = pd.DataFrame(final_results)
+df = pd.DataFrame(final_results).drop_duplicates()
 
 if not df.empty:
     # Extract date and ID from source_document with newline
     def extract_date_id(source):
-    try:
-        date_match = re.search(r'(\d{4}-\d{2}-\d{2})', source)
-        id_match = re.search(r'_(\d{5})$', source)
-        date = date_match.group(1) if date_match else None
-        doc_id = id_match.group(1) if id_match else None
+        try:
+            date_match = re.search(r'(\d{4}-\d{2}-\d{2})', source)
+            id_match = re.search(r'_(\d{5})$', source)
+            date = date_match.group(1) if date_match else None
+            doc_id = id_match.group(1) if id_match else None
 
-        if date and doc_id:
-            return f"{date}\n{doc_id}"
-        elif date:
-            return date
-        elif doc_id:
-            return doc_id
-    except:
-        pass
-    return "Unknown"
-
+            if date and doc_id:
+                return f"{date}\n{doc_id}"
+            elif date:
+                return date
+            elif doc_id:
+                return doc_id
+        except:
+            pass
+        return "Unknown"
 
     # Create new column and reorder
     df["document_info"] = df["source_document"].apply(extract_date_id)
