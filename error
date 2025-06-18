@@ -131,28 +131,19 @@ Hariharan Murugesan 37 minutes 49 seconds
 Yes.
  
 
-
+C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Rag1\Task\main.py 
+100%|██████████| 517/517 [00:00<00:00, 18956.35it/s]
+100%|██████████| 126/126 [00:24<00:00,  5.22it/s]
 Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\main.py", line 179, in <module>
-    df = pd.DataFrame(final_results).drop_duplicates()
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\frame.py", line 6825, in drop_duplicates
-    result = self[-self.duplicated(subset, keep=keep)]
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\frame.py", line 6965, in duplicated
-    labels, shape = map(list, zip(*map(f, vals)))
-                              ^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\frame.py", line 6933, in f
-    labels, shape = algorithms.factorize(vals, size_hint=len(self))
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\algorithms.py", line 795, in factorize
-    codes, uniques = factorize_array(
-                     ^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\.venv\Lib\site-packages\pandas\core\algorithms.py", line 595, in factorize_array
-    uniques, codes = table.factorize(
-                     ^^^^^^^^^^^^^^^^
-  File "pandas/_libs/hashtable_class_helper.pxi", line 7293, in pandas._libs.hashtable.PyObjectHashTable.factorize
-  File "pandas/_libs/hashtable_class_helper.pxi", line 7203, in pandas._libs.hashtable.PyObjectHashTable._unique
-TypeError: unhashable type: 'list'
+  File "C:\Users\HariharaM12\PycharmProjects\Rag1\Task\main.py", line 122, in <module>
+    full_prompt = f"""
+                  ^^^^
+ValueError: Invalid format specifier ' "129.54 mg/dL",
+    "lambda_flc": "15 mg/dL",
+    "kappa_lambda_ratio": ">914.29",
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": ["11/28/23: kappa free light chain (KFLC) 129.54, lambda free light chain 15, ratio >914.29."],
+    "source_document": "2024-04-17_00:00:00.000_Progress_Notes_91591"
+  ' for object of type 'str'
 
 Process finished with exit code 1
