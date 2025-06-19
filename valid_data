@@ -478,12 +478,14 @@ Extract the following only when the evidence includes **explicit numeric values 
 - Supporting evidence sentences
 
 📌 Strict Rules:
+   
 - Ignore vague phrases like "elevated kappa" or "abnormal lambda" without a value and unit.
 - If the value is not numeric or lacks a unit (e.g., just says "kappa abnormal"), skip it.
-- Extract only if the sentence includes clear numeric values (e.g., "kappa 129.5 mg/dL", "ratio >914.29").
+- Extract only if the sentence includes clear numeric values (e.g., "kappa 129.5 mg/dL", "ratio >914.29").that are clearly stated as lab results,Double-check that the date refers to the lab result.
 - If the date is incomplete (e.g., only month/year), format missing parts as "XX". E.g., "2021-06-XX".
 - Do not guess or infer values.
 - If the same evidence or sentence appears across multiple notes, extract it only once (skip duplicates).
+- Double-check that the date refers to the lab result.
 
 Respond in strict JSON format like this:
 
