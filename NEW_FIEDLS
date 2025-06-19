@@ -1,22 +1,11 @@
 C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Task2\main.py 
-📄 Loading documents: 100%|██████████| 517/517 [00:00<00:00, 20275.60it/s]
-100%|██████████| 126/126 [00:18<00:00,  6.97it/s]
-❌ Failed batch 24: Both regex and fallback JSON parse failed: Expecting value: line 1 column 1 (char 0)
+📄 Loading documents: 100%|██████████| 517/517 [00:00<00:00, 18345.80it/s]
+100%|██████████| 126/126 [00:18<00:00,  6.99it/s]
 ❌ Failed batch 27: Both regex and fallback JSON parse failed: Expecting value: line 1 column 1 (char 0)
-❌ Failed batch 41: Both regex and fallback JSON parse failed: Expecting value: line 1 column 1 (char 0)
-Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 198, in <module>
-    score = max([evidence_score(ev, ratio) for ev in evs]) if evs else 0
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 198, in <listcomp>
-    score = max([evidence_score(ev, ratio) for ev in evs]) if evs else 0
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 69, in evidence_score
-    if ratio and ratio in evidence:
-                 ^^^^^^^^^^^^^^^^^
-TypeError: 'in <string>' requires string as left operand, not float
+⚠️ No valid cleaned data to save.
 
-Process finished with exit code 1
+Process finished with exit code 0
+
 
 
 
