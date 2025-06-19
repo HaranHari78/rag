@@ -1,13 +1,17 @@
-raceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 195, in <module>
-    lambda_vals = [e["lambda_flc"] for e in entries if "mg/dL" in e.get("lambda_flc", "")]
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 195, in <listcomp>
-    lambda_vals = [e["lambda_flc"] for e in entries if "mg/dL" in e.get("lambda_flc", "")]
-                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```...
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 196, in <module>
+    ratio_vals = [e["kappa_lambda_ratio"] for e in entries if any(op in e.get("kappa_lambda_ratio", "") for op in ["<", ">"])]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 196, in <listcomp>
+    ratio_vals = [e["kappa_lambda_ratio"] for e in entries if any(op in e.get("kappa_lambda_ratio", "") for op in ["<", ">"])]
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 196, in <genexpr>
+    ratio_vals = [e["kappa_lambda_ratio"] for e in entries if any(op in e.get("kappa_lambda_ratio", "") for op in ["<", ">"])]
+                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 TypeError: argument of type 'NoneType' is not iterable
 
-Process finished with exit code
+Process finished with exit code 1
 
 
 
