@@ -212,10 +212,47 @@ merged_df = df.groupby("source_document").agg({
     "context": lambda x: "\n".join(sorted(set(x.dropna().astype(str))))
 }).reset_index()
 
+# === Post-process according to custom logic ===
+
+def filter_mgdl_values(value_str):
+    values = value_str.split(";")
+    mgdl_values = [v.strip() for v in values if "mg/dL" in v]
+    return mgdl_values[0] if mgdl_values else values[0]
+
+def extract_ratio(value_str):
+    values = value_str.split(";")
+    for v in values:
+        if ">" in v or "<" in v:
+            return v.strip()
+    return values[0].strip() if values else ""
+
+def get_oldest_date(date_str):
+    try:
+        dates = pd.to_datetime(date_str.split(";"), errors="coerce")
+        dates = dates.dropna()
+        return str(min(dates).date()) if not dates.empty else date_str.split(";")[0]
+    except:
+        return date_str.split(";")[0]
+
+def filter_best_evidence(evidence):
+    lines = evidence.split("\n")
+    for line in lines:
+        lower = line.lower()
+        if "mg/dl" in lower and "kappa" in lower and "lambda" in lower and (">" in line or "<" in line):
+            return line.strip()
+    return lines[0].strip() if lines else ""
+
+# Apply custom logic
+merged_df["kappa_flc"] = merged_df["kappa_flc"].astype(str).apply(filter_mgdl_values)
+merged_df["lambda_flc"] = merged_df["lambda_flc"].astype(str).apply(filter_mgdl_values)
+merged_df["kappa_lambda_ratio"] = merged_df["kappa_lambda_ratio"].astype(str).apply(extract_ratio)
+merged_df["date_of_lab"] = merged_df["date_of_lab"].astype(str).apply(get_oldest_date)
+merged_df["evidence_sentences"] = merged_df["evidence_sentences"].astype(str).apply(filter_best_evidence)
+
 # Save to Excel
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
 os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "Chain_Final_Output_Merged.xlsx")
+output_path = os.path.join(output_dir, "Chain_Final_Output_Cleaned_Logic.xlsx")
 merged_df.to_excel(output_path, index=False)
 
-print(f"\n✅ Merged Excel file saved: {output_path}")
+print(f"\n✅ Final cleaned Excel file saved: {output_path}")
