@@ -190,35 +190,37 @@ except Exception as e:
 # Remove invalid entries (non-dicts)
 final_results = [row for row in final_results if isinstance(row, dict)]
 
-# Fill missing keys with None
+# Define required fields
 required_keys = [
     "source_document", "talquetamab_initiation_date", "talquetamab_dose",
     "talquetamab_frequency", "talquetamab_duration", "talquetamab_response",
     "talquetamab_toxicity", "talquetamab_trial_participation", "evidence_sentences"
 ]
 
+# Add missing keys with None
 for row in final_results:
     for key in required_keys:
-        row.setdefault(key, None)  # Add missing fields as None
+        row.setdefault(key, None)
 
-# Create DataFrame
+# Convert to DataFrame
 df = pd.DataFrame(final_results)
 
-# Convert evidence_sentences from list to joined string
+# Join list of evidence sentences into string if column exists
 if "evidence_sentences" in df.columns:
     df["evidence_sentences"] = df["evidence_sentences"].apply(
         lambda x: "\n".join(x) if isinstance(x, list) else x
     )
 
-# Deduplicate based on normalized evidence
-df["evidence_key"] = df["evidence_sentences"].astype(str).str.lower().str.replace(r"\s+", " ", regex=True).str.strip()
-df = df.drop_duplicates(subset=["evidence_key"])
-df.drop(columns=["evidence_key"], inplace=True)
+    # Normalize and deduplicate by evidence content
+    df["evidence_key"] = df["evidence_sentences"].astype(str).str.lower().str.replace(r"\s+", " ", regex=True).str.strip()
+    df = df.drop_duplicates(subset=["evidence_key"])
+    df.drop(columns=["evidence_key"], inplace=True)
 
-# Reorder columns
-df = df[required_keys]
+# Reorder columns safely if present
+existing_cols = [col for col in required_keys if col in df.columns]
+df = df[existing_cols]
 
-# Save to Excel
+# Save
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task3"
 os.makedirs(output_dir, exist_ok=True)
 output_path = os.path.join(output_dir, "Talquetamab_Extraction_Output.xlsx")
