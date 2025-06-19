@@ -182,11 +182,13 @@ for row in final_results:
     if isinstance(row.get("evidence_sentences"), list):
         row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
     row["context"] = json.dumps({
-        "kappa_flc": row["kappa_flc"],
-        "lambda_flc": row["lambda_flc"],
-        "kappa_lambda_ratio": row["kappa_lambda_ratio"],
-        "date_of_lab": row["date_of_lab"],
-        "evidence_sentences": row["evidence_sentences"]
+    "kappa_flc": row.get("kappa_flc", ""),
+    "lambda_flc": row.get("lambda_flc", ""),
+    "kappa_lambda_ratio": row.get("kappa_lambda_ratio", ""),
+    "date_of_lab": row.get("date_of_lab", ""),
+    "evidence_sentences": row.get("evidence_sentences", "")
+})
+
     })
 
 df = pd.DataFrame(final_results)
