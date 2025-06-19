@@ -21,47 +21,42 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-# === Paths ===
+# === File paths ===
 csv_path = "MEDICAL_DATAS.csv"
-output_dir = "output/kappa"
+output_dir = "output/kappa_only"
 os.makedirs(output_dir, exist_ok=True)
-output_excel_path = os.path.join(output_dir, "kappa_extracted_results.xlsx")
-output_json_path = os.path.join(output_dir, "kappa_extracted_results.json")
+output_path = os.path.join(output_dir, "kappa_only_results.xlsx")
+json_path = os.path.join(output_dir, "kappa_only_results.json")
 
-# === Helpers ===
+# === Helper functions ===
 def batchify(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-def parse_llm_json(raw_text: str) -> str:
+def parse_llm_json(raw_text: str):
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
     try:
-        pattern = r"```(?:json)?\s*(.*?)```"
-        match = re.search(pattern, raw_text, flags=re.DOTALL)
-        content = match.group(1).strip() if match else raw_text.strip()
-        if content.startswith("json"):
-            content = content[len("json"):].strip()
-        return json.dumps(json.loads(content))
-    except Exception:
-        return json.dumps(json.loads(raw_text.strip()))
+        return json.loads(raw_text)
+    except json.JSONDecodeError:
+        return []
 
 def normalize_text(text):
-    text = text.lower()
-    text = re.sub(r'[^a-z0-9]', ' ', text)
-    text = re.sub(r'\s+', ' ', text).strip()
-    return text
+    return re.sub(r"[^a-z0-9]", " ", text.lower())
 
-# === Load CSV and Chunk ===
+# === Load CSV and chunk ===
 df = pd.read_csv(csv_path)
-documents = []
-for _, row in tqdm(df.iterrows(), total=len(df), desc="📄 Loading documents"):
-    if pd.notna(row["text"]):
-        documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
+documents = [Document(page_content=row["text"], metadata={"source": row["title"]})
+             for _, row in tqdm(df.iterrows(), total=len(df), desc="📄 Loading documents") if pd.notna(row["text"])]
 
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
 chunks = splitter.split_documents(documents)
 chunk_batches = list(batchify(chunks, 20))
 
-# === Embedding ===
+# === Embedding setup ===
 embedding_model = AzureOpenAIEmbeddings(
     deployment=EMBEDDING_DEPLOYMENT,
     model=EMBEDDING_MODEL,
@@ -71,14 +66,13 @@ embedding_model = AzureOpenAIEmbeddings(
     chunk_size=1000
 )
 
-# === Build FAISS Index ===
 def build_faiss(batch):
     return FAISS.from_documents(batch, embedding_model)
 
 sub_indexes = []
 with ThreadPoolExecutor(max_workers=4) as executor:
     futures = {executor.submit(build_faiss, batch): batch for batch in chunk_batches}
-    for future in tqdm(as_completed(futures), total=len(futures)):
+    for future in tqdm(as_completed(futures), total=len(futures), desc="🔍 Building FAISS"):
         try:
             sub_indexes.append(future.result())
         except Exception as e:
@@ -87,21 +81,20 @@ with ThreadPoolExecutor(max_workers=4) as executor:
 main_index = sub_indexes[0]
 for sub_index in sub_indexes[1:]:
     main_index.merge_from(sub_index)
-main_index.save_local("faiss_index_kappa")
+main_index.save_local("faiss_index")
 
-# === Similarity Search ===
-query = "Extract kappa free light chain values in mg/dL from the clinical note"
-vectorstore = FAISS.load_local("faiss_index_kappa", embeddings=embedding_model, allow_dangerous_deserialization=True)
+# === Similarity search for Kappa only ===
+query = "Extract kappa free light chain mg/dL"
+vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
 results = vectorstore.similarity_search(query, k=1000)
+print(f"🔍 Retrieved {len(results)} chunks")
 
-# === Filter Chunks ===
 filtered_chunks = []
 for doc in results:
     norm = normalize_text(doc.page_content)
-    if "kappa" in norm and "mg/dl" in norm:
+    if "kappa" in norm:
         filtered_chunks.append((doc.metadata.get("source", "Unknown"), doc.page_content))
 
-# === LLM Setup ===
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -111,64 +104,64 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# === Run LLM on batches ===
+# === Prompting for kappa only ===
 final_results = []
 batches = list(batchify(filtered_chunks, 10))
-
 for i, batch in enumerate(batches):
-    context = [{"source": src, "content": doc} for src, doc in batch]
-    prompt = f"""
-You are a medical extraction assistant. From the clinical notes below, extract the following only if explicitly stated:
+    context = [f"Note {j + 1} from {source}::\n{doc}" for j, (source, doc) in enumerate(batch)]
+    full_prompt = f"""
+Extract the following from the clinical notes below:
+- kappa free light chain (mg/dL only)
+- lab test date (YYYY-MM-DD or partial)
+- most relevant evidence sentence
+- source document title
 
-- Kappa free light chain (in mg/dL)
-- Associated lab date (YYYY-MM-DD or partial)
-- The best sentence that supports the extracted value
-
-Respond in strict JSON like this:
-
+Return list of JSON objects like:
 [
   {{
-    "kappa_flc": "0.25 mg/dL",
-    "date_of_lab": "2023-06-21",
-    "evidence_sentences": "...",
-    "source_document": "2023-06-21_Lab_123"
+    "kappa_flc": "<value mg/dL>",
+    "date_of_lab": "<date>",
+    "evidence_sentences": ["<sentence>"],
+    "source_document": "<title>"
   }}
 ]
 
-DO NOT guess. Only include entries that mention "kappa" and "mg/dL".
-
 --- CONTEXT START ---
-{json.dumps(context, indent=2)}
+{json.dumps(context)}
 --- CONTEXT END ---
 """
     try:
-        response = llm.invoke(prompt)
-        cleaned = parse_llm_json(response.content)
-        extracted_items = json.loads(cleaned)
-        for item in extracted_items:
-            final_results.append(item)
+        response = llm.invoke(full_prompt)
+        print(f"🧠 Batch {i+1} response preview: {response.content[:300]}")
+        parsed = parse_llm_json(response.content)
+        final_results.extend(parsed)
     except Exception as e:
-        print(f"❌ Batch {i+1} failed: {e}")
-        continue
+        print(f"❌ Failed batch {i + 1}: {e}")
 
-# === Deduplicate and filter ===
-filtered = []
-seen_docs = set()
+# === Filter valid kappa and export ===
+valid_entries = []
 for item in final_results:
     kappa = item.get("kappa_flc", "")
-    if isinstance(kappa, str) and "mg/dL" in kappa and item["source_document"] not in seen_docs:
-        seen_docs.add(item["source_document"])
-        item["context"] = json.dumps({
-            "kappa_flc": item["kappa_flc"],
-            "date_of_lab": item.get("date_of_lab", ""),
-            "evidence_sentences": item.get("evidence_sentences", "")
+    if isinstance(kappa, str) and "mg/dl" in kappa.lower():
+        evs = item.get("evidence_sentences", [])
+        evs = evs[0] if isinstance(evs, list) and evs else ""
+        valid_entries.append({
+            "source_document": item.get("source_document", ""),
+            "kappa_flc": kappa.strip(),
+            "date_of_lab": item.get("date_of_lab", "").strip(),
+            "evidence_sentences": evs.strip(),
+            "context": json.dumps({
+                "kappa_flc": kappa.strip(),
+                "date_of_lab": item.get("date_of_lab", "").strip(),
+                "evidence_sentences": evs.strip()
+            })
         })
-        filtered.append(item)
 
-# === Save output ===
-df_kappa = pd.DataFrame(filtered)
-df_kappa.to_excel(output_excel_path, index=False)
-with open(output_json_path, "w", encoding="utf-8") as jf:
-    json.dump(filtered, jf, indent=2, ensure_ascii=False)
+kappa_df = pd.DataFrame(valid_entries)
+kappa_df.drop_duplicates(subset=["source_document", "kappa_flc", "date_of_lab", "evidence_sentences"], inplace=True)
+kappa_df.to_excel(output_path, index=False)
+with open(json_path, "w", encoding="utf-8") as jf:
+    json.dump(valid_entries, jf, indent=2, ensure_ascii=False)
 
-print(f"✅ Saved extracted kappa values to:\n- Excel: {output_excel_path}\n- JSON:  {output_json_path}")
+print(f"✅ Saved Excel: {output_path}")
+print(f"✅ Saved JSON: {json_path}")
