@@ -1,9 +1,10 @@
 
+
 Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 177, in <module>
-    "kappa_lambda_ratio": row["kappa_lambda_ratio"],
-                          ~~~^^^^^^^^^^^^^^^^^^^^^^
-KeyError: 'kappa_lambda_ratio'
+  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 175, in <module>
+    "kappa_flc": row.get["kappa_flc"],
+                 ~~~~~~~^^^^^^^^^^^^^
+TypeError: 'builtin_function_or_method' object is not subscriptable
 
 
 
