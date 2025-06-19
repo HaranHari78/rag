@@ -116,16 +116,20 @@ llm = AzureChatOpenAI(
 )
 
 # Run LLM on batches
+# Run LLM on batches
 final_results = []
 batches = list(batchify(filtered_chunks, 10))
 for i, batch in enumerate(batches):
-    context = "\n\n".join(f"Note {j + 1}:\n{item['content']}" for j, item in enumerate(batch))
+    json_context = [
+        {"note_id": j + 1, "title": item["title"], "content": item["content"]}
+        for j, item in enumerate(batch)
+    ]
     titles = [item["title"] for item in batch]
 
     full_prompt = f"""
-You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
+You are a medical information extraction assistant. Your task is to extract lab results from clinical notes.
 
-Extract the following values **only if explicitly stated**:
+Extract the following values only if explicitly stated:
 - Kappa free light chains (mg/L)
 - Lambda free light chains (mg/L)
 - Kappa/Lambda ratio
@@ -147,8 +151,8 @@ Respond in strict JSON format like below:
 ]
 
 ---
-📄 Context:
-{context}
+📄 Context (as JSON input):
+{json.dumps(json_context, indent=2)}
 """
 
     try:
@@ -162,14 +166,23 @@ Respond in strict JSON format like below:
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
 
+
 # Post-process and save
 for row in final_results:
     if isinstance(row.get("evidence_sentences"), list):
         row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
+    row["context"] = json.dumps({
+        "kappa_flc": row["kappa_flc"],
+        "lambda_flc": row["lambda_flc"],
+        "kappa_lambda_ratio": row["kappa_lambda_ratio"],
+        "date_of_lab": row["date_of_lab"],
+        "evidence_sentences": row["evidence_sentences"]
+    })
 
 df = pd.DataFrame(final_results)
-df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]]
-df.drop_duplicates(inplace=True)
+df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
+
+df.drop_duplicates(subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"], inplace=True)
 
 # Export to Excel
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
