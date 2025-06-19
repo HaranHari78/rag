@@ -1,12 +1,3 @@
-    result = self[-self.duplicated(subset, keep=keep)]
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\pandas\core\frame.py", line 6957, in duplicated
-    raise KeyError(Index(diff))
-KeyError: Index(['context'], dtype='object')
-
-
-
-
 import os
 import re
 import json
@@ -189,9 +180,12 @@ IMPORTANT:
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
         continue
+
+# === Save Output ===
+# Save as JSON
 with open(os.path.join(output_dir, "kappa_lambda_51_results.json"), "w", encoding="utf-8") as f:
     json.dump(final_results, f, indent=2, ensure_ascii=False)
-# === Save Output ===
+
 df = pd.DataFrame(final_results)
 
 # Add context as structured JSON column
