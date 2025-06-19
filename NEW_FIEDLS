@@ -5,6 +5,8 @@ import pandas as pd
 import configparser
 import faiss
 import numpy as np
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
@@ -55,6 +57,23 @@ faiss.normalize_L2(embeddings)
 index = faiss.IndexFlatIP(embeddings.shape[1])
 index.add(embeddings)
 
+# Filter relevant chunks
+filtered_chunks = []
+def normalize_text(text):
+    return re.sub(r"\s+", " ", text.lower()).strip()
+
+for chunk in chunks:
+    norm_text = normalize_text(chunk.page_content)
+    source_title = chunk.metadata.get("source", "Unknown")
+    if source_title != "Unknown" and ("kappa" in norm_text or "lambda" in norm_text or "ratio" in norm_text):
+        filtered_chunks.append({"title": source_title, "content": chunk.page_content})
+
+# Helper to batchify
+def batchify(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+# Prepare LLM
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -65,27 +84,13 @@ llm = AzureChatOpenAI(
 )
 
 final_results = []
-TOP_K = 4
 
-for doc in documents:
-    query_embedding = embedding_model.embed_query("Free light chain levels")
-    query_embedding = np.array([query_embedding]).astype("float32")
-    faiss.normalize_L2(query_embedding)
-    D, I = index.search(query_embedding, TOP_K)
-
-    selected_chunks = [chunks[i] for i in I[0] if chunks[i].metadata["source"] == doc.metadata["source"]]
-    if not selected_chunks:
-        continue
-
+def run_llm_on_batch(i, batch):
     json_context = [
-        {
-            "note_id": j + 1,
-            "title": chunk.metadata["source"],
-            "content": chunk.page_content
-        }
-        for j, chunk in enumerate(selected_chunks)
+        {"note_id": j + 1, "title": item["title"], "content": item["content"]}
+        for j, item in enumerate(batch)
     ]
-
+    titles = [item["title"] for item in batch]
     context_json_str = json.dumps(json_context, indent=2)
 
     full_prompt = f"""
@@ -106,26 +111,46 @@ Context (as JSON array of clinical notes):
 {context_json_str}
 ---
 """
+    batch_results = []
     try:
         response = llm.invoke(full_prompt)
         if not response.content.strip().startswith("{"):
             raise ValueError("Empty or non-JSON response")
         data = json.loads(response.content)
-        data["source_document"] = doc.metadata["source"]
-        data["context"] = json.dumps({
-            "kappa_flc": data.get("kappa_light_chain_mg_per_dl", ""),
-            "lambda_flc": data.get("lambda_light_chain_mg_per_dl", ""),
-            "kappa_lambda_ratio": data.get("kappa_lambda_ratio", ""),
-            "date_of_lab": data.get("date_of_lab", ""),
-            "evidence_sentences": data.get("evidence_sentences", [])
-        })
-        final_results.append(data)
+        for title in titles:
+            entry = {
+                "source_document": title,
+                "kappa_light_chain_mg_per_dl": data.get("kappa_light_chain_mg_per_dl", ""),
+                "lambda_light_chain_mg_per_dl": data.get("lambda_light_chain_mg_per_dl", ""),
+                "kappa_lambda_ratio": data.get("kappa_lambda_ratio", ""),
+                "evidence_sentences": data.get("evidence_sentences", []),
+                "context": json.dumps({
+                    "kappa_flc": data.get("kappa_light_chain_mg_per_dl", ""),
+                    "lambda_flc": data.get("lambda_light_chain_mg_per_dl", ""),
+                    "kappa_lambda_ratio": data.get("kappa_lambda_ratio", ""),
+                    "date_of_lab": data.get("date_of_lab", ""),
+                    "evidence_sentences": data.get("evidence_sentences", [])
+                })
+            }
+            batch_results.append(entry)
     except Exception as e:
-        print(f"Error for document {doc.metadata['source']}: {e}")
+        print(f"Error in batch {i + 1}: {e}")
         with open("llm_error_logs.txt", "a", encoding="utf-8") as f:
-            f.write(f"\n\n---\nSOURCE: {doc.metadata['source']}\nPROMPT:\n{full_prompt}\nRESPONSE:\n{getattr(response, 'content', 'No response')}\n")
+            f.write(f"\n\n---\nBATCH {i + 1} TITLES: {titles}\nPROMPT:\n{full_prompt}\nRESPONSE:\n{getattr(response, 'content', 'No response')}\n")
+    return batch_results
 
-# Only proceed if valid data exists
+# Run LLM with threading
+batches = list(batchify(filtered_chunks, 10))
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(run_llm_on_batch, i, batch): batch for i, batch in enumerate(batches)}
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        try:
+            result = future.result()
+            final_results.extend(result)
+        except Exception as e:
+            print(f"Threaded batch failed: {e}")
+
+# Save to Excel
 if final_results:
     result_df = pd.DataFrame(final_results)
     cols = ["source_document", "kappa_light_chain_mg_per_dl", "lambda_light_chain_mg_per_dl", "kappa_lambda_ratio", "evidence_sentences", "context"]
