@@ -542,13 +542,25 @@ for row in final_results:
 
 # Create DataFrame
 df = pd.DataFrame(final_results)
+
+# Optional: Select only required columns
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
-df.drop_duplicates(inplace=True)
 
-# Save Excel
-output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
-os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "Final_Output.xlsx")
-df.to_excel(output_path, index=False)
+# ✅ Step 1: Drop completely empty rows (no values extracted at all)
+df = df[
+    (df["kappa_flc"].notna()) |
+    (df["lambda_flc"].notna()) |
+    (df["kappa_lambda_ratio"].notna()) |
+    (df["date_of_lab"].notna()) |
+    (df["evidence_sentences"].notna())
+]
 
-print(f"\n✅ Final Excel with context saved: {output_path}")
+# ✅ Step 2: Merge multiple rows with same source_document
+merged_df = df.groupby("source_document").agg({
+    "kappa_flc": lambda x: "; ".join(sorted(set(filter(None, x.astype(str))))),
+    "lambda_flc": lambda x: "; ".join(sorted(set(filter(None, x.astype(str))))),
+    "kappa_lambda_ratio": lambda x: "; ".join(sorted(set(filter(None, x.astype(str))))),
+    "date_of_lab": lambda x: "; ".join(sorted(set(filter(None, x.astype(str))))),
+    "evidence_sentences": lambda x: "\n".join(sorted(set(filter(None, x.astype(str))))),
+    "context": lambda x: "\n".join(sorted(set(filter(None, x.astype(str)))))
+}).reset_index()
