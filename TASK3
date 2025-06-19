@@ -1,3 +1,21 @@
+❌ Failed batch 55: 'str' object does not support item assignment
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\Task3\main.py", line 180, in <module>
+    df = df[
+         ^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Task3\.venv\Lib\site-packages\pandas\core\frame.py", line 4113, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Task3\.venv\Lib\site-packages\pandas\core\indexes\base.py", line 6212, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "C:\Users\HariharaM12\PycharmProjects\Task3\.venv\Lib\site-packages\pandas\core\indexes\base.py", line 6261, in _raise_if_missing
+    raise KeyError(f"None of [{key}] are in the [{axis_name}]")
+KeyError: "None of [Index(['source_document', 'talquetamab_initiation_date', 'talquetamab_dose',\n       'talquetamab_frequency', 'talquetamab_duration', 'talquetamab_response',\n       'talquetamab_toxicity', 'talquetamab_trial_participation',\n       'evidence_sentences'],\n      dtype='object')] are in the [columns]"
+
+Process finished with exit code 1
+
+
+
 import os
 import re
 import json
