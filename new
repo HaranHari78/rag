@@ -1,3 +1,12 @@
+
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 177, in <module>
+    "kappa_lambda_ratio": row["kappa_lambda_ratio"],
+                          ~~~^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'kappa_lambda_ratio'
+
+
+
 import os
 import re
 import json
