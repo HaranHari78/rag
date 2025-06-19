@@ -116,9 +116,14 @@ result_df = pd.DataFrame(final_results)
 cols = ["source_document", "kappa_light_chain_mg_per_dl", "lambda_light_chain_mg_per_dl", "kappa_lambda_ratio"]
 result_df = result_df[cols]
 
-# Remove exact duplicate rows
-result_df.drop_duplicates(inplace=True)
+# Remove duplicate rows based on all relevant value columns
+result_df.drop_duplicates(subset=cols, inplace=True)
+
+# Output path
+output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Rag1\\Task"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "extracted_results.xlsx")
 
 # Save to Excel
-result_df.to_excel("Extracted_FLC_Results.xlsx", index=False)
-print("✅ Extraction complete. Output saved to Extracted_FLC_Results.xlsx")
+result_df.to_excel(output_path, index=False)
+print(f"✅ Extraction complete. Output saved to {output_path}")
