@@ -1,0 +1,992 @@
+[
+  {
+    "kappa_flc": "0.08 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": ">0.57",
+    "date_of_lab": "2024-06-25",
+    "evidence_sentences": [
+      "Result Value Ref Range Kappa Free Light Chain 0.08 (L) 0.76 - 6.83 mg/dL Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg/dL Kappa/Lambda FLC Ratio >0.57 (L) 0.66 - 2.22"
+    ],
+    "source_document": "2024-06-25_00:00:00.000_Progress_Notes_91596"
+  },
+  {
+    "kappa_flc": "129.54 mg/dL",
+    "lambda_flc": "15 mg/dL",
+    "kappa_lambda_ratio": ">914.29",
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": [
+      "11/28/23: kappa free light chain (KFLC) 129.54mg /dL, lambda free light chain (LFLC) 15mg /dL, kappa/lambda ratio >914.29."
+    ],
+    "source_document": "2024-04-17_00:00:00.000_Progress_Notes_91591"
+  },
+  {
+    "kappa_flc": "242.66",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "1/16/24: KFLC 242.66, LFLC <0.15, kappa/lambda ratio >1733.29."
+    ],
+    "source_document": "2024-06-25_00:00:00.000_Progress_Notes_91596"
+  },
+  {
+    "kappa_flc": "203.94",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "1/24/24: KFLC 203.94, LFLC <0.15, ratio >1456.71."
+    ],
+    "source_document": "2024-02-08_00:00:00.000_Progress_Notes_91427"
+  },
+  {
+    "kappa_flc": "16.18",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "2/22/24: KFLC 16.18, LFLC <0.15, kappa/lambda ratio >115.57."
+    ],
+    "source_document": "2024-06-25_00:00:00.000_Progress_Notes_91596"
+  },
+  {
+    "kappa_flc": "203.94 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-02-08",
+    "evidence_sentences": [
+      "Kappa Free Light Chain 203.94 (H) 0.76 - 6.83 mg/dL Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg/dL Kappa/Lambda FLC Ratio >1456.71 (H) 0.66 - 2.22"
+    ],
+    "source_document": "2024-04-17_00:00:00.000_IMTX_Conference_Note_91586"
+  },
+  {
+    "kappa_flc": "56.21 mg/dL",
+    "lambda_flc": "<3.08 mg/dL",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "Latest Reference Range & Units 02/22/24 09:20 Kappa Free Light Chain 0.76 - 6.83 mg/dL 56.21 (H) Lambda Free Light Chain 0.68 - 4.58 mg/dL <3.08 (L) Kappa/Lambda FLC Ratio 0.66 - 2.22 >115.57 (H)"
+    ],
+    "source_document": "2024-03-05_00:00:00.000_IMTX_Conference_Note_91479"
+  },
+  {
+    "kappa_flc": "16.18",
+    "lambda_flc": "<0.15",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "On 02/22/24, KFLC were 16.18; LFLC <0.15; FLC ratio >115.57."
+    ],
+    "source_document": "2024-04-17_00:00:00.000_IMTX_Conference_Note_91586"
+  },
+  {
+    "kappa_flc": "<9.81 mg/dL",
+    "lambda_flc": "<1.91 mg/dL",
+    "kappa_lambda_ratio": "Unable to calculate",
+    "date_of_lab": "2024-04-08",
+    "evidence_sentences": [
+      "Latest Reference Range & Units 04/08/24 07:15 Kappa Free Light Chain 0.76 - 6.83 mg/dL <9.81 (L) Lambda Free Light Chain 0.68 - 4.58 mg/dL <1.91 (L) Kappa/Lambda FLC Ratio 0.66 - 2.22 Unable to calculate."
+    ],
+    "source_document": "2024-04-17_00:00:00.000_IMTX_Conference_Note_91586"
+  },
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-03-XX",
+    "evidence_sentences": [
+      "Diagnoses in 3/2019. M-spike of 6, calcium of 9.7, an IgG of 5610, kappa FLC 64.9, kappa/lambda ratio of 190, total protein 10.7, UPEP was positive by immunofixation, and bone marrow showed myeloma."
+    ],
+    "source_document": "2021-12-27_00:00:00.000_Progress_Notes_91111"
+  },
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "in 2019 was 6 g/dL with kappa free light chains of 65 mg/dL."
+    ],
+    "source_document": "2024-04-17_00:00:00.000_IMTX_Conference_Note_91586"
+  },
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "1733.29",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal free light chain too small to quantify, IgG 3393 (1/24/24)"
+    ],
+    "source_document": "2024-04-17_00:00:00.000_IMTX_Conference_Note_91586"
+  },
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-03-XX",
+    "evidence_sentences": [
+      "Diagnoses in 3/2019. M-spike of 6, calcium of 9.7, an IgG of 5610, kappa FLC 64.9, kappa/lambda ratio of 190, total protein 10.7, UPEP was positive by immunofixation, and bone marrow showed myeloma."
+    ],
+    "source_document": "2021-12-23_00:00:00.000_Progress_Notes_91107"
+  },
+  {
+    "kappa_flc": "20.78 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2021-06-XX",
+    "evidence_sentences": [
+      "In 6/2021, he had kappa FLC of 20.78, lambda FLC"
+    ],
+    "source_document": "2024-01-16_00:00:00.000_Progress_Notes_91302"
+  },
+  {
+    "kappa_flc": "1.24 mg/L",
+    "lambda_flc": "0.72 mg/L",
+    "kappa_lambda_ratio": "1.72",
+    "date_of_lab": "2022-01-10",
+    "evidence_sentences": [
+      "His kappa was 1.24, lambda 0.72, kappa lambda 1.72."
+    ],
+    "source_document": "2022-01-10_00:00:00.000_Progress_Notes_91135"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-01-22_00:00:00.000_Progress_Notes_91317"
+  },
+  {
+    "kappa_flc": "06 mg/dL",
+    "lambda_flc": "<1 mg/dL",
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-04-08",
+    "evidence_sentences": [
+      "Multiple myeloma labs 4/8/24: KFLC 06mg /dL, LFLC <1.$OXWRUEAVWUJWJXBJ_YNWGNFAOZHYQMVHQIONGEXBMWUXLKGMW$$NUUVOZDGUYQIHKVQ_QVZDGLOVFIEPPIRJJOACZYSAYTKZSWFU$ /dL."
+    ],
+    "source_document": "2021-12-23_00:00:00.000_Progress_Notes_91107"
+  },
+  {
+    "kappa_flc": "20.78 mg/L",
+    "lambda_flc": "0.24 mg/L",
+    "kappa_lambda_ratio": "86.58",
+    "date_of_lab": "2021-06-XX",
+    "evidence_sentences": [
+      "In 6/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."
+    ],
+    "source_document": "2021-12-27_00:00:00.000_Progress_Notes_91111"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-07-30_00:00:00.000_Progress_Notes_91599"
+  },
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-03-XX",
+    "evidence_sentences": [
+      "M spike at initial diagnosis in 2019 was 6 g/dL with kappa free light chains of 65 mg/dL."
+    ],
+    "source_document": "2024-02-06_00:00:00.000_Progress_Notes_91413"
+  },
+  {
+    "kappa_flc": "65 mg/dL",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "M spike at initial diagnosis in 2019 was 6 g/dL with kappa free light chains of 65 mg/dL."
+    ],
+    "source_document": "2024-02-08_00:00:00.000_Discharge_Summary_91430"
+  },
+  {
+    "kappa_flc": "1.24",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "1.72",
+    "date_of_lab": "2021-12-20",
+    "evidence_sentences": [
+      "SPEP on 12/20/2021 showed M-spike of 0.1. Free light chains: kappa free light chain was 1.24 and kappa/lambda ratio was 1.72."
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "129.5 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": [
+      "Myeloma labs 11/28/2023: KFLC 129.5 mg/dL, LFLC <0.15 mg/dL."
+    ],
+    "source_document": "2022-02-25_00:00:00.000_BMT_Conference_Note_91246"
+  },
+  {
+    "kappa_flc": "204",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC <"
+    ],
+    "source_document": "2023-12-01_00:00:00.000_Progress_Notes_91285"
+  },
+  {
+    "kappa_flc": "65",
+    "lambda_flc": "0.34",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa/Lambda 190"
+    ],
+    "source_document": "2024-04-17_00:00:00.000_Progress_Notes_91591"
+  },
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "an IgG of 5610,kappa FLC 64.9, kappa/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed myeloma."
+    ],
+    "source_document": "2022-01-10_00:00:00.000_Progress_Notes_91134"
+  },
+  {
+    "kappa_flc": "20.78 mg/L",
+    "lambda_flc": "0.24 mg/L",
+    "kappa_lambda_ratio": "86.58",
+    "date_of_lab": "2021-06-XX",
+    "evidence_sentences": [
+      "In 6/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "65 mg/dL",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "M spike at initial diagnosis in 2019 was 6 g/dL with kappa free light chains of 65 mg/dL."
+    ],
+    "source_document": "2023-12-01_00:00:00.000_Progress_Notes_91285"
+  },
+  {
+    "kappa_flc": "129.5 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": [
+      "Myeloma labs 11/28/2023: KFLC 129.5 mg/dL, LFLC <0.15 mg/dL."
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "242 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-02-03_00:00:00.000_Consults_91400"
+  },
+  {
+    "kappa_flc": "204 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-02-06_00:00:00.000_Progress_Notes_91413"
+  },
+  {
+    "kappa_flc": "<0.06 mg/dL",
+    "lambda_flc": "<1.61 mg/dL",
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-04-08",
+    "evidence_sentences": [
+      "Labs from 4/8/2024: Kappa <0.06 mg/dL, Lambda <1.61 mg/dL, SPEP with M-spike 0.3 g/dL, IgG kappa."
+    ],
+    "source_document": "2024-06-25_00:00:00.000_Progress_Notes_91596"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "> 115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "MM labs (2/22): KFLC  16.18, LFLC < 0.15, ratio > 115.57."
+    ],
+    "source_document": "2024-02-08_00:00:00.000_Progress_Notes_91427"
+  },
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-03-XX",
+    "evidence_sentences": [
+      "Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa/Lambda 190"
+    ],
+    "source_document": "2024-04-01_00:00:00.000_Progress_Notes_91568"
+  },
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-03-XX",
+    "evidence_sentences": [
+      "Vitamin D of 10, kappa was 64.9, lambda 0.34, and his bone marrow showed myeloma."
+    ],
+    "source_document": "2024-04-23_00:00:00.000_Progress_Notes_91592"
+  },
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal free light chain too small to quantify, IgG 3393 (1/24/24)"
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": null,
+    "evidence_sentences": [
+      "Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa/Lambda 190"
+    ],
+    "source_document": "2024-04-23_00:00:00.000_Progress_Notes_91592"
+  },
+  {
+    "kappa_flc": "1.24 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "1.72",
+    "date_of_lab": "2021-12-15",
+    "evidence_sentences": [
+      "Labs 12/15 show M-spike 0.1, KFLC 1.24, K/L ratio 1.72."
+    ],
+    "source_document": "2021-12-23_00:00:00.000_Progress_Notes_91107"
+  },
+  {
+    "kappa_flc": "4.48 mg/L",
+    "lambda_flc": "0.7 mg/L",
+    "kappa_lambda_ratio": "6.31",
+    "date_of_lab": "2021-09-01",
+    "evidence_sentences": [
+      "On 09/01/21 Serum kappa was down to 4.48 with a lambda 0.7, kappa lambda of 6.31."
+    ],
+    "source_document": "2021-11-13_00:00:00.000_Consults_91085"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "<0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-03-24_00:00:00.000_Progress_Notes_91557"
+  },
+  {
+    "kappa_flc": "24.67 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "137.06",
+    "date_of_lab": "2020-10-XX",
+    "evidence_sentences": [
+      "In 10/2020, kappa FLC was 24.67, kappa/lambda ratio was 137.06."
+    ],
+    "source_document": "2021-12-15_00:00:00.000_Progress_Notes_91091"
+  },
+  {
+    "kappa_flc": "30.75 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "161.84",
+    "date_of_lab": "2020-12-XX",
+    "evidence_sentences": [
+      "In 12/2020, kappa FLC was 30.75, kappa/lambda ratio 161.84."
+    ],
+    "source_document": "2024-01-26_00:00:00.000_Progress_Notes_91342"
+  },
+  {
+    "kappa_flc": "20.78 mg/L",
+    "lambda_flc": "0.24 mg/L",
+    "kappa_lambda_ratio": "86.58",
+    "date_of_lab": "2021-06-XX",
+    "evidence_sentences": [
+      "In 6/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."
+    ],
+    "source_document": "2024-02-03_00:00:00.000_Progress_Notes_91395"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "<0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2023-11-27_00:00:00.000_Progress_Notes_91273"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "<0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-03-19_00:00:00.000_Progress_Notes_91529"
+  },
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa/Lambda 190"
+    ],
+    "source_document": "2024-06-25_00:00:00.000_Progress_Notes_91596"
+  },
+  {
+    "kappa_flc": "1.45 mg/L",
+    "lambda_flc": "0.73 mg/L",
+    "kappa_lambda_ratio": "1.99",
+    "date_of_lab": "2021-12-01",
+    "evidence_sentences": [
+      "His most recent labs on 12/1/21 show an M-spike of 0.2, kappa FLC 1.45, lambda FLC 0.73, and kappa/lambda ratio of 1.99."
+    ],
+    "source_document": "2024-03-14_00:00:00.000_Progress_Notes_91512"
+  },
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "At that time, he had an M-spike of 6, calcium of 9.7, an IgG of 5610, kappa FLC 64.9, lambda FLC 0.34, kappa/lambda ratio of 190, total protein 10.7, albumin of 2.3, vitamin D of 10."
+    ],
+    "source_document": "2024-06-25_00:00:00.000_Progress_Notes_91596"
+  },
+  {
+    "kappa_flc": "4.48 mg/L",
+    "lambda_flc": "0.7 mg/L",
+    "kappa_lambda_ratio": "6.31",
+    "date_of_lab": "2021-09-01",
+    "evidence_sentences": [
+      "On 09/01/21 M-spike was 3.1, with Serum kappa down to 4.48 with a lambda 0.7, kappa/lambda ratio of 6.31."
+    ],
+    "source_document": "2022-02-22_00:00:00.000_Progress_Notes_91240"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-02-01_00:00:00.000_Progress_Notes_91383"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-02-04_00:00:00.000_Progress_Notes_91403"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2022-01-07_00:00:00.000_Progress_Notes_91121"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1."
+    ],
+    "source_document": "2022-02-22_00:00:00.000_Progress_Notes_91240"
+  },
+  {
+    "kappa_flc": "1.24 mg/L",
+    "lambda_flc": "0.72 mg/L",
+    "kappa_lambda_ratio": "1.72",
+    "date_of_lab": "2022-12-15",
+    "evidence_sentences": [
+      "12/15: SPEP IgG kappa M spike of 0.1, Kappa light chain 1.24, lambda light chain 0.72. Kappa/ lambda ratio 1.72, beta 2 microglobulin 1.3"
+    ],
+    "source_document": "2024-02-13_00:00:00.000_Progress_Notes_91443"
+  },
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2021-03-XX",
+    "evidence_sentences": [
+      "At diagnosis M-spike was 6, Hgb 8.4, calcium of 9.7, albumin 2.3, adjusted calcium level 11.1, creatinine 0.99. IgG of 5610, kappa FLC 64.9, lappa/lambda ratio of 190, total protein 10.7."
+    ],
+    "source_document": "2022-01-18_00:00:00.000_BMT_Conference_Note_91158"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2021-12-17_00:00:00.000_Progress_Notes_91098"
+  },
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal free light chain too small to quantify, IgG 3393 (1/24/24)"
+    ],
+    "source_document": "2021-12-27_00:00:00.000_Progress_Notes_91111"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "Pre-CAR T evaluation: MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG"
+    ],
+    "source_document": "2024-03-06_00:00:00.000_Progress_Notes_91482"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-03-13_00:00:00.000_Nursing_Note_91506"
+  },
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal free light chain too small to quantify, IgG 3393 (1/24/24)"
+    ],
+    "source_document": "2024-01-30_00:00:00.000_Progress_Notes_91369"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2022-01-21_00:00:00.000_Progress_Notes_91172"
+  },
+  {
+    "kappa_flc": "129.54 mg/dL",
+    "lambda_flc": "15 mg/dL",
+    "kappa_lambda_ratio": ">914.29",
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": [
+      "Multiple myeloma labs: 11/28/23: kappa free light chain (KFLC) 129.54mg /dL, lambda free light chain (LFLC) 15mg /dL, kappa/lambda ratio >914.29."
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "1.24",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "1.72",
+    "date_of_lab": "2021-12-15",
+    "evidence_sentences": [
+      "Labs 12/15 show M-spike 0.1, KFLC 1.24, K/L ratio 1.72."
+    ],
+    "source_document": "2024-03-22_00:00:00.000_Progress_Notes_91550"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-02-08_00:00:00.000_Progress_Notes_91427"
+  },
+  {
+    "kappa_flc": "65 mg/dL",
+    "lambda_flc": "0.34 mg/dL",
+    "kappa_lambda_ratio": "190.88",
+    "date_of_lab": "2019-03-24",
+    "evidence_sentences": [
+      "Myeloma markers on 3/24/2019 included an SPEP which showed an IgG kappa M spike at 6 g/dL, KFLC 65 mg/dL, LFLC 0.34 mg/dL, and K/L 190.88."
+    ],
+    "source_document": "2023-11-27_00:00:00.000_Progress_Notes_91273"
+  },
+  {
+    "kappa_flc": "<0.06 mg/dL",
+    "lambda_flc": "<1.61 mg/dL",
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-04-08",
+    "evidence_sentences": [
+      "Labs from 4/8/2024: Kappa <0.06 mg/dL, Lambda <1.61 mg/dL, SPEP with M-spike 0.3 g/dL, IgG kappa."
+    ],
+    "source_document": "2024-06-25_00:00:00.000_Progress_Notes_91596"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-03-11_00:00:00.000_Nursing_Note_91492"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1."
+    ],
+    "source_document": "2024-02-02_00:00:00.000_Progress_Notes_91387"
+  },
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal free light chain too small to quantify, IgG 3393 (1/24/24)"
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "<0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2023-11-27_00:00:00.000_Progress_Notes_91273"
+  },
+  {
+    "kappa_flc": "20.78 mg/L",
+    "lambda_flc": "0.24 mg/L",
+    "kappa_lambda_ratio": "86.58",
+    "date_of_lab": "2021-06-XX",
+    "evidence_sentences": [
+      "In 6/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."
+    ],
+    "source_document": "2022-02-22_00:00:00.000_Progress_Notes_91240"
+  },
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "M spike at initial diagnosis in 2019 was 6 g/dL with kappa free light chains of 65 mg/dL."
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2023-06-30_00:00:00.000_Progress_Notes_91265"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-01-29_00:00:00.000_Progress_Notes_91357"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2023-12-01_00:00:00.000_Progress_Notes_91285"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "repeat leukapheresis on 1/23  - MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-02-29_00:00:00.000_Progress_Notes_91467"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "> 115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "Pre-CAR T evaluation:  MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1  24h urine: CrCL 145, +Kappa BJP"
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "> 1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal free light chain too small to quantify, IgG 3393 (1/24/24)"
+    ],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": null,
+    "evidence_sentences": [
+      "S/p bridging isatuximab/carfilzomib/dex with no response >> Talequetamab C1 (1/24-2/16/24) with M spike 2.8-->1, KFLC 42.6-->16.18"
+    ],
+    "source_document": "2024-03-13_00:00:00.000_Progress_Notes_91509"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-04-23_00:00:00.000_Progress_Notes_91592"
+  },
+  {
+    "kappa_flc": "24.67 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "137.06",
+    "date_of_lab": "2020-10-XX",
+    "evidence_sentences": [
+      "In 10/2020 kappa was 24.67, kappa lambda 137.06."
+    ],
+    "source_document": "2024-03-18_00:00:00.000_Nursing_Note_91527"
+  },
+  {
+    "kappa_flc": "30.75 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "16184",
+    "date_of_lab": "2020-12-XX",
+    "evidence_sentences": [
+      "In 12/2020 kappa was 30.75, kappa lambda 16184."
+    ],
+    "source_document": "2024-01-18_00:00:00.000_Progress_Notes_91309"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-03-30_00:00:00.000_Progress_Notes_91565"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "> 115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57."
+    ],
+    "source_document": "2024-01-29_00:00:00.000_Progress_Notes_91357"
+  },
+  {
+    "kappa_flc": "42.6 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "Talequetamab C1 (1/24-2/16/24) with M spike 2.8-->1, KFLC 42.6-->16.18"
+    ],
+    "source_document": "2023-12-07_00:00:00.000_Progress_Notes_91298"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "Pre-CAR T evaluation: MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57."
+    ],
+    "source_document": "2024-02-04_00:00:00.000_Progress_Notes_91403"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "Pre-CAR T evaluation: MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57."
+    ],
+    "source_document": "2024-03-22_00:00:00.000_Progress_Notes_91550"
+  },
+  {
+    "kappa_flc": "20.78 mg/L",
+    "lambda_flc": "0.24 mg/L",
+    "kappa_lambda_ratio": "86.58",
+    "date_of_lab": "2021-06-XX",
+    "evidence_sentences": [
+      "In 6/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."
+    ],
+    "source_document": "2021-12-23_00:00:00.000_Progress_Notes_91107"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-01-16_00:00:00.000_Progress_Notes_91302"
+  },
+  {
+    "kappa_flc": null,
+    "lambda_flc": null,
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": [
+      "FLC ratio >1733.29 on 1/16/24."
+    ],
+    "source_document": "2024-04-08_00:00:00.000_Progress_Notes_91576"
+  },
+  {
+    "kappa_flc": "1.24 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "1.72",
+    "date_of_lab": "2022-12-15",
+    "evidence_sentences": [
+      "Labs 12/15 show M-spike 0.1, KFLC 1.24, K/L ratio 1.72."
+    ],
+    "source_document": "2022-02-05_00:00:00.000_Progress_Notes_91215"
+  },
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2023-01-16",
+    "evidence_sentences": [
+      "MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-01-24_00:00:00.000_H&P_91325"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "Pre-CAR T evaluation: MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1."
+    ],
+    "source_document": "2022-02-07_00:00:00.000_Progress_Notes_91219"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+    "source_document": "2024-04-09_00:00:00.000_Progress_Notes_91580"
+  },
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG"
+    ],
+    "source_document": "2021-12-23_00:00:00.000_Progress_Notes_91109"
+  },
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": [
+      "baseline labs showing an IgG kappa monoclonal protein of 6 g/dL, with kappa light chain of 65, lambda of 0.34 and ratio of 190."
+    ],
+    "source_document": "2024-04-17_00:00:00.000_Progress_Notes_91591"
+  },
+  {
+    "kappa_flc": "42.6 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-XX-XX",
+    "evidence_sentences": [
+      "S/p bridging isatuximab/carfilzomib/dex with no response >> Talequetamab C1 (1/24-2/16/24) with M spike 2.8-->1, KFLC 42.6-->16.18"
+    ],
+    "source_document": "2024-03-20_00:00:00.000_Progress_Notes_91537"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-XX-XX",
+    "evidence_sentences": [
+      "S/p bridging isatuximab/carfilzomib/dex with no response >> Talequetamab C1 (1/24-2/16/24) with M spike 2.8-->1, KFLC 42.6-->16.18"
+    ],
+    "source_document": "2024-02-05_00:00:00.000_Progress_Notes_91406"
+  }
+]
