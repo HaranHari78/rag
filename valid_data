@@ -469,22 +469,38 @@ for i, batch in enumerate(batches):
     titles = [item["title"] for item in batch]
 
     full_prompt = f"""
-You are a medical information extraction assistant. Your task is to extract lab results from clinical notes.
+You are a medical information extraction assistant. Your task is to extract lab results related to free light chains from the provided clinical notes.
 
-Extract the following values only if explicitly stated:
-- Kappa free light chains (mg/L)
-- Lambda free light chains (mg/L)
-- Kappa/Lambda ratio(if multiple values are found,select the one that includes a '>' or '<' symbols )
-- Lab test date associated with these values
-- Supporting evidence sentences
-- Extract only if the sentence includes clear numeric values (e.g., "kappa 129.5 mg/dL", "ratio >914.29").
-- If the date is incomplete (e.g., only month/year), format missing parts as "XX". E.g., "2021-06-XX".
-- Do not guess or infer values.
-- If the same evidence or sentence appears across multiple notes, extract it only once (skip duplicates).
+From each document, extract **all available** values for the following lab test components:
 
-⚠️ Do not guess or infer values. Only include notes where at least one of the values and the date are clearly stated.
+- Kappa free light chains (mg/dL only)
+- Lambda free light chains (mg/dL only)
+- Kappa/Lambda ratio (with optional comparison signs like `>` or `<`)
+- Associated lab test date (if available)
+- Evidence sentences (the line(s) containing the values)
 
-Respond in strict JSON format like below:
+📌 **Extraction Rules**:
+- Do not skip values even if they appear in different lines of the document.
+- If multiple values are present in a document (e.g., kappa in one line and lambda in another), combine them into one set for that document.
+- Prefer:
+  - Values with `mg/dL` units for kappa and lambda
+  - Ratios that contain `>` or `<`
+  - Dates clearly mentioned near the values
+
+📆 **Date Formatting Rules**:
+- Extract exact dates if available (format: `YYYY-MM-DD`)
+- If only partial date is available (e.g., "June 2021"), fill missing parts as `XX`:
+  - "June 2021" → `2021-06-XX`
+  - "2021" only → `2021-XX-XX`
+- Do not invent or guess dates.
+
+📑 **Evidence Sentence Rule**:
+- From the document, include the sentence(s) that clearly show all the extracted values.
+- Prefer the sentence that contains all three: kappa, lambda, and ratio.
+- If such a sentence is not found, return the best matching line(s) containing the available data.
+
+📤 **Output Format**:
+Respond in strict JSON format, one object per document, like below:
 
 [
   {{
