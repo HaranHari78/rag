@@ -1,16 +1,10 @@
 
 🧠 Processing batch 40/40...
-C:\Users\HariharaM12\PycharmProjects\Task2\main.py:219: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
-  dates = pd.to_datetime(date_str.split(";"), errors="coerce")
-C:\Users\HariharaM12\PycharmProjects\Task2\main.py:219: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
-  dates = pd.to_datetime(date_str.split(";"), errors="coerce")
-C:\Users\HariharaM12\PycharmProjects\Task2\main.py:219: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
-  dates = pd.to_datetime(date_str.split(";"), errors="coerce")
-C:\Users\HariharaM12\PycharmProjects\Task2\main.py:219: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
-  dates = pd.to_datetime(date_str.split(";"), errors="coerce")
-C:\Users\HariharaM12\PycharmProjects\Task2\main.py:219: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
-  dates = pd.to_datetime(date_str.split(";"), errors="coerce")
-
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 240, in <module>
+    merged_df["date_of_lab"] = merged_df["date_of_lab"].astype(str).apply(get_oldest_date)
+                                                                          ^^^^^^^^^^^^^^^
+NameError: name 'get_oldest_date' is not defined
 
 
 
