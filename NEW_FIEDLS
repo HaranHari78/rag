@@ -1,0 +1,124 @@
+import os
+import re
+import json
+import pandas as pd
+import configparser
+import faiss
+import numpy as np
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+
+# Load config
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+# Azure credentials
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Load clinical CSV
+csv_path = "MEDICAL_DATAS.csv"
+df = pd.read_csv(csv_path)
+
+# Create Documents
+documents = []
+for _, row in df.iterrows():
+    if pd.isna(row["text"]):
+        continue
+    documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
+
+# Split with smart overlap
+splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
+chunks = splitter.split_documents(documents)
+
+# Embed
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+texts = [chunk.page_content for chunk in chunks]
+metadatas = [chunk.metadata for chunk in chunks]
+embeddings = embedding_model.embed_documents(texts)
+embeddings = np.array(embeddings).astype("float32")
+faiss.normalize_L2(embeddings)
+
+index = faiss.IndexFlatIP(embeddings.shape[1])
+index.add(embeddings)
+
+# Prompt template
+query_template = {
+    "instruction": "Extract values for the following fields related to Free Light Chains. Respond in strict JSON format.",
+    "fields": [
+        "kappa_light_chain_mg_per_dl",
+        "lambda_light_chain_mg_per_dl",
+        "kappa_lambda_ratio"
+    ]
+}
+
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+final_results = []
+TOP_K = 4
+
+for doc in documents:
+    query_embedding = embedding_model.embed_query("Free light chain levels")
+    query_embedding = np.array([query_embedding]).astype("float32")
+    faiss.normalize_L2(query_embedding)
+    D, I = index.search(query_embedding, TOP_K)
+
+    context_chunks = [chunks[i].page_content for i in I[0] if chunks[i].metadata["source"] == doc.metadata["source"]]
+    if not context_chunks:
+        continue
+
+    context = "\n\n".join(context_chunks)
+    full_prompt = f"""
+You are a clinical assistant analyzing oncology lab results.
+Extract the following values ONLY if explicitly mentioned in the context. If not present, write null.
+Respond in strict JSON like:
+{{
+  \"kappa_light_chain_mg_per_dl\": \"0.09 mg/dL\",
+  \"lambda_light_chain_mg_per_dl\": \"0.15 mg/dL\",
+  \"kappa_lambda_ratio\": \"0.60\"
+}}
+
+---
+Context:
+{context}
+---
+"""
+    try:
+        response = llm.invoke(full_prompt)
+        data = json.loads(response.content)
+        data["source_document"] = doc.metadata["source"]
+        final_results.append(data)
+    except Exception as e:
+        print(f"Error for document {doc.metadata['source']}: {e}")
+
+# Convert and reorder columns
+result_df = pd.DataFrame(final_results)
+cols = ["source_document", "kappa_light_chain_mg_per_dl", "lambda_light_chain_mg_per_dl", "kappa_lambda_ratio"]
+result_df = result_df[cols]
+
+# Remove exact duplicate rows
+result_df.drop_duplicates(inplace=True)
+
+# Save to Excel
+result_df.to_excel("Extracted_FLC_Results.xlsx", index=False)
+print("✅ Extraction complete. Output saved to Extracted_FLC_Results.xlsx")
