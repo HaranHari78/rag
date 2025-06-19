@@ -1,3 +1,817 @@
+C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Task2\main.py 
+100%|██████████| 126/126 [00:18<00:00,  6.89it/s]
+
+🧾 Raw LLM output (Batch 1):
+```json
+[
+  {
+    "kappa_flc": "0.08 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": ">0.57",
+    "date_of_lab": "2024-06-25",
+    "evidence_sentences": [
+      "Result Value Ref Range    Kappa Free Light Chain 0.08 (L) 0.76 - 6.83 mg/dL    Lambda Free Light Chain <0.15 (L) 0.68 -...
+❌ Failed batch 1: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 2):
+```json
+[
+  {
+    "kappa_flc": "56.21 mg/dL",
+    "lambda_flc": "<3.08 mg/dL",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "Latest Reference Range & Units 02/22/24 09:20   Kappa Free Light Chain 0.76 - 6.83 mg/dL 56.21 (H)   Lambda Free Lig...
+❌ Failed batch 2: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 3):
+```json
+[
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-03-XX",
+    "evidence_sentences": [
+      "Diagnoses in 3/2019. M-spike of 6,calcium of 9.7, an IgG of 5610,kappa FLC 64.9, kappa/lambda ratio of 190, total protein 10.7, UPE...
+❌ Failed batch 3: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 4):
+```json
+[
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": ["in 2019 was 6 g/dL with kappa free light chains of 65 mg/L."],
+    "source_document": "2024-03-11_00:00:00.000_H&P_91495"
+  },
+  {
+    "kappa...
+❌ Failed batch 4: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 5):
+```json
+[
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-03-XX",
+    "evidence_sentences": [
+      "Diagnoses in 3/2019. M-spike of 6, calcium of 9.7, an IgG of 5610, kappa FLC 64.9, kappa/lambda ratio of 190, total protein 10.7, U...
+❌ Failed batch 5: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 6):
+```json
+[
+  {
+    "kappa_flc": "06 mg/dL",
+    "lambda_flc": "<1 mg/dL",
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-04-08",
+    "evidence_sentences": ["Multiple myeloma labs 4/8/24: KFLC 06mg /dL, LFLC <1.$OXWRUEAVWUJWJXBJ_YNWGNFAOZHYQMVHQIONGEXBMWUXLKGMW$$NUUVOZDGUYQIHKVQ_QVZDGLOVFIEP...
+❌ Failed batch 6: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 7):
+```json
+[
+  {
+    "kappa_flc": "20.78 mg/L",
+    "lambda_flc": "0.24 mg/L",
+    "kappa_lambda_ratio": "86.58",
+    "date_of_lab": "2021-12-27",
+    "evidence_sentences": ["FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."],
+    "source_document": "2021-12-27_00:00:00.000_Progress_Notes...
+❌ Failed batch 7: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 8):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": ["MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 8: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 9):
+```json
+[
+  {
+    "kappa_flc": "65 mg/dL",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": ["M spike at initial diagnosis in 2019 was 6 g/dL with kappa free light chains of 65 mg/dL."],
+    "source_document": "2024-03-11_00:00:00.000...
+❌ Failed batch 9: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 10):
+```json
+[
+  {
+    "kappa_flc": "65 mg/dL",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": ["M spike at initial diagnosis in 2019 was 6 g/dL with kappa free light chains of 65 mg/dL."],
+    "source_document": "2024-03-11_00:00:00.000...
+❌ Failed batch 10: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 11):
+```json
+[
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2022-01-10",
+    "evidence_sentences": ["an IgG of 5610,kappa FLC 64.9, kappa/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed my...
+❌ Failed batch 11: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 12):
+```json
+[
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": ["Diagnosed in 3/2019.M-spike of 6,calcium of 9.7, an IgG of 5610,kappa FLC 64.9, kappa/lambda ratio of 190, total protein 10.7, UPEP was po...
+❌ Failed batch 12: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 13):
+```json
+[
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "> 115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": ["MM labs (2/22): KFLC  16.18, LFLC < 0.15, ratio > 115.57."],
+    "source_document": "2024-04-01_00:00:00.000_Progress_Notes...
+❌ Failed batch 13: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 14):
+```json
+[
+  {
+    "kappa_flc": "64.9 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-03-XX",
+    "evidence_sentences": [
+      "At diagnosis, he had a calcium of 9.7, an IgG of 5610, kappa lambda ratio of 190, total protein 10.7, albumin of 2.3.",
+    ...
+❌ Failed batch 14: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 15):
+```json
+[
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": ["Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal fre...
+❌ Failed batch 15: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 16):
+```json
+[
+  {
+    "kappa_flc": "24.67",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "137.06",
+    "date_of_lab": "2020-10-XX",
+    "evidence_sentences": ["In 10/2020, kappa FLC was 24.67, kappa/lambda ratio was 137.06."],
+    "source_document": "2021-12-15_00:00:00.000_Progress_Notes_91091"
+  ...
+❌ Failed batch 16: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 17):
+```json
+[
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "XXXX-XX-XX",
+    "evidence_sentences": ["Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa/Lambda 190"],
+    "source_document": "2022-02-22_00:00:00.000_Pr...
+❌ Failed batch 17: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 18):
+```json
+[
+  {
+    "kappa_flc": "1.45 mg/L",
+    "lambda_flc": "0.73 mg/L",
+    "kappa_lambda_ratio": "1.99",
+    "date_of_lab": "2021-12-01",
+    "evidence_sentences": ["His most recent labs on 12/1/21 show an M-spike of 0.2, kappa FLC 1.45, lambda FLC 0.73, and kappa/lambda ratio of 1.99."],
+    "s...
+❌ Failed batch 18: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 19):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+...
+❌ Failed batch 19: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 20):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": ["MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 20: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 21):
+```json
+[
+  {
+    "kappa_flc": "1.24 mg/L",
+    "lambda_flc": "0.72 mg/L",
+    "kappa_lambda_ratio": "1.72",
+    "date_of_lab": "2022-12-15",
+    "evidence_sentences": ["12/15: SPEP IgG kappa M spike of 0.1, Kappa light chain 1.24, lambda light chain 0.72. Kappa/ lambda ratio 1.72, beta 2 microglobu...
+❌ Failed batch 21: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 22):
+```json
+[
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "> 1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": ["Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal fr...
+❌ Failed batch 22: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 23):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+ ...
+❌ Failed batch 23: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 24):
+```json
+[]
+```...
+❌ Failed batch 24: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 25):
+```json
+[
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": ["Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal fre...
+❌ Failed batch 25: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 26):
+```json
+[
+  {
+    "kappa_flc": "129.54 mg/dL",
+    "lambda_flc": "15 mg/dL",
+    "kappa_lambda_ratio": "914.29",
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": ["Multiple myeloma labs: 11/28/23: kappa free light chain (KFLC) 129.54mg /dL, lambda free light chain (LFLC) 15mg /dL, kappa/la...
+❌ Failed batch 26: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 27):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": ["MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 27: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 28):
+```json
+[
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": ["MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 28: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 29):
+```json
+[
+  {
+    "kappa_flc": "42.66 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "> 1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": ["Pre therapy 1/16/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal fr...
+❌ Failed batch 29: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 30):
+```json
+[
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": ["MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 30: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 31):
+```json
+[
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": ["M spike at initial diagnosis in 2019 was 6 g/dL with kappa free light chains of 65 mg/dL."],
+    "source_document": "2024-03-11_00:00:00.000_...
+❌ Failed batch 31: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 32):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": ["MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 32: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 33):
+```json
+[
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": ["repeat leukapheresis on 1/23  - MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free l...
+❌ Failed batch 33: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 34):
+```json
+[]
+```...
+❌ Failed batch 34: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 35):
+```json
+[]
+```...
+❌ Failed batch 35: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 36):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": [
+      "MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."
+    ],
+ ...
+❌ Failed batch 36: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 37):
+```json
+[
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2024-01-16",
+    "evidence_sentences": ["MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 37: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 38):
+```json
+[]
+```...
+❌ Failed batch 38: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 39):
+```json
+[
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "> 115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": ["MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57."],
+    "source_document": "2024-03-24_00:00:00.000_Progress_Notes_...
+❌ Failed batch 39: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 40):
+```json
+[
+  {
+    "kappa_flc": "42.6 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-XX-XX",
+    "evidence_sentences": ["KFLC 42.6-->16.18"],
+    "source_document": "2024-03-19_00:00:00.000_Progress_Notes_91529"
+  },
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lam...
+❌ Failed batch 40: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 41):
+```json
+[]
+```...
+❌ Failed batch 41: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 42):
+```json
+[]
+```...
+❌ Failed batch 42: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 43):
+```json
+[]
+```...
+❌ Failed batch 43: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 44):
+```json
+[]
+```...
+❌ Failed batch 44: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 45):
+```json
+[]
+```...
+❌ Failed batch 45: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 46):
+```json
+[]
+```...
+❌ Failed batch 46: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 47):
+```json
+[]
+```...
+❌ Failed batch 47: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 48):
+```json
+[]
+```...
+❌ Failed batch 48: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 49):
+```json
+[]
+```...
+❌ Failed batch 49: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 50):
+```json
+[]
+```...
+❌ Failed batch 50: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 51):
+```json
+[]
+```...
+❌ Failed batch 51: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 52):
+```json
+[
+  {
+    "kappa_flc": "16.18 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "> 115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": ["Pre-CAR T evaluation: MM labs (2/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57."],
+    "source_document": "2024-03-10_00:00:...
+❌ Failed batch 52: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 53):
+```json
+[]
+```...
+❌ Failed batch 53: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 54):
+```json
+[]
+```...
+❌ Failed batch 54: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 55):
+```json
+[
+  {
+    "kappa_flc": "20.78 mg/L",
+    "lambda_flc": "0.24 mg/L",
+    "kappa_lambda_ratio": "86.58",
+    "date_of_lab": "2021-06-XX",
+    "evidence_sentences": [
+      "In 6/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."
+    ],
+    "source_document": "20...
+❌ Failed batch 55: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 56):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": ["MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 56: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 57):
+```json
+[]
+```...
+❌ Failed batch 57: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 58):
+```json
+[]
+```...
+❌ Failed batch 58: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 59):
+```json
+[]
+```...
+❌ Failed batch 59: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 60):
+```json
+[
+  {
+    "kappa_flc": "1.24 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": "1.72",
+    "date_of_lab": "2022-12-15",
+    "evidence_sentences": ["Labs 12/15 show M-spike 0.1, KFLC 1.24, K/L ratio 1.72."],
+    "source_document": "2022-01-07_00:00:00.000_Progress_Notes_91124"
+  }
+]
+``...
+❌ Failed batch 60: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 61):
+```json
+[]
+```...
+❌ Failed batch 61: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 62):
+```json
+[]
+```...
+❌ Failed batch 62: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 63):
+```json
+[]
+```...
+❌ Failed batch 63: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 64):
+```json
+[]
+```...
+❌ Failed batch 64: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 65):
+```json
+[
+  {
+    "kappa_flc": "242 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": ">1733.29",
+    "date_of_lab": "2023-01-16",
+    "evidence_sentences": ["MM markers (1/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ."],
+    "source_...
+❌ Failed batch 65: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 66):
+Based on the provided context, there are no explicit mentions of the lab results for Kappa free light chains, Lambda free light chains, or Kappa/Lambda ratio. Therefore, no lab results can be extracted. Here is the structured JSON list:
+
+```json
+[]
+```...
+❌ Failed batch 66: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 67):
+```json
+[]
+```...
+❌ Failed batch 67: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 68):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": ["MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ."],
+    "source_d...
+❌ Failed batch 68: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 69):
+```json
+[]
+```...
+❌ Failed batch 69: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 70):
+```json
+[]
+```...
+❌ Failed batch 70: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 71):
+```json
+[]
+```...
+❌ Failed batch 71: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 72):
+```json
+[
+  {
+    "kappa_flc": "204 mg/L",
+    "lambda_flc": "< 0.15 mg/L",
+    "kappa_lambda_ratio": "1456.71",
+    "date_of_lab": "2024-01-24",
+    "evidence_sentences": ["MM markers (1/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG"],
+    "source_document": "2024-01-26_00:00:00.000_P...
+❌ Failed batch 72: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 73):
+```json
+[
+  {
+    "kappa_flc": "65 mg/L",
+    "lambda_flc": "0.34 mg/L",
+    "kappa_lambda_ratio": "190",
+    "date_of_lab": "2019-XX-XX",
+    "evidence_sentences": ["baseline labs showing an IgG kappa monoclonal protein of 6 g/dL, with kappa light chain of 65, lambda of 0.34 and ratio of 190."],
+  ...
+❌ Failed batch 73: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 74):
+```json
+[]
+```...
+❌ Failed batch 74: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 75):
+The provided clinical notes do not contain any explicit mentions of the lab results for Kappa free light chains, Lambda free light chains, or the Kappa/Lambda ratio. Therefore, no lab results can be extracted from the context. Here is the structured JSON list based on the given context:
+
+```json
+[]
+...
+❌ Failed batch 75: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 76):
+```json
+[]
+```...
+❌ Failed batch 76: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 77):
+```json
+[
+  {
+    "kappa_flc": "42.6 mg/L",
+    "lambda_flc": null,
+    "kappa_lambda_ratio": null,
+    "date_of_lab": "2024-XX-XX",
+    "evidence_sentences": ["Talequetamab C1 (1/24-2/16/24) with M spike 2.8-->1, KFLC 42.6-->16.18"],
+    "source_document": "2024-03-20_00:00:00.000_Progress_Notes_91...
+❌ Failed batch 77: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 78):
+```json
+[]
+```...
+❌ Failed batch 78: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 79):
+```json
+[]
+```...
+❌ Failed batch 79: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 80):
+```json
+[]
+```...
+❌ Failed batch 80: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 81):
+```json
+[]
+```...
+❌ Failed batch 81: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 82):
+```json
+[]
+```...
+❌ Failed batch 82: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 83):
+```json
+[]
+```...
+❌ Failed batch 83: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 84):
+```json
+[]
+```...
+❌ Failed batch 84: Expecting value: line 1 column 1 (char 0)
+
+🧾 Raw LLM output (Batch 85):
+```json
+[]
+```...
+❌ Failed batch 85: Expecting value: line 1 column 1 (char 0)
+⚠️ No data extracted.
+
+Process finished with exit code 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import os
 import re
 import json
