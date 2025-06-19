@@ -87,13 +87,18 @@ def extract_date(date_str):
     except:
         return None
 
-def evidence_score(evidence, ratio):
-    evidence = evidence.lower()
-    if ratio and ratio in evidence:
-        return 2
-    if "kappa" in evidence and "lambda" in evidence:
-        return 1
-    return 0
+def evidence_score(evidence: str, ratio: str):
+    score = 0
+    if "mg/dl" in evidence.lower():
+        score += 1
+    if "kappa" in evidence.lower() and "lambda" in evidence.lower():
+        score += 1
+    if ratio and str(ratio) in evidence:
+        score += 1
+    if ">" in evidence or "<" in evidence:
+        score += 1
+    return score
+
 
 # === Load CSV and chunk ===
 df = pd.read_csv(csv_path)
