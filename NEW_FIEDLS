@@ -1,3 +1,17 @@
+raceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 195, in <module>
+    lambda_vals = [e["lambda_flc"] for e in entries if "mg/dL" in e.get("lambda_flc", "")]
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 195, in <listcomp>
+    lambda_vals = [e["lambda_flc"] for e in entries if "mg/dL" in e.get("lambda_flc", "")]
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'NoneType' is not iterable
+
+Process finished with exit code
+
+
+
+
 import os
 import re
 import json
