@@ -24,7 +24,9 @@ GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
 # === File paths ===
 csv_path = "MEDICAL_DATAS.csv"
-output_path = "extracted_results.xlsx"
+output_dir = "output/fields"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "kappa_lambda_51_results_updated.xlsx")
 
 # === Helper functions ===
 def batchify(lst, n):
