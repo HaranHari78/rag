@@ -10,7 +10,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 
-# === Load config.ini ===
+# === Load config.ini ==
 config = configparser.ConfigParser()
 config.read("config.ini")
 
