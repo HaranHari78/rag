@@ -1,13 +1,6 @@
-
-
-
-
-
-
 import os
 import re
 import json
-import faiss
 import numpy as np
 import pandas as pd
 import configparser
@@ -15,6 +8,7 @@ from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 
 # === Load config.ini ===
@@ -67,6 +61,7 @@ documents = [
 
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
 chunks = splitter.split_documents(documents)
+chunk_batches = list(batchify(chunks, 20))
 
 # === Embedding model setup ===
 embedding_model = AzureOpenAIEmbeddings(
@@ -78,31 +73,32 @@ embedding_model = AzureOpenAIEmbeddings(
     chunk_size=1000
 )
 
-# === Embedding ===
-texts = [chunk.page_content for chunk in chunks]
-metadatas = [chunk.metadata for chunk in chunks]
-embeddings = embedding_model.embed_documents(texts)
-embeddings = np.array(embeddings).astype("float32")
-faiss.normalize_L2(embeddings)
+# === Build FAISS index using LangChain ===
+def build_faiss(batch):
+    return FAISS.from_documents(batch, embedding_model)
 
-# === FAISS IndexFlatIP (cosine sim) ===
-index = faiss.IndexFlatIP(embeddings.shape[1])
-index.add(embeddings)
+sub_indexes = []
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(build_faiss, batch): batch for batch in chunk_batches}
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        try:
+            sub_indexes.append(future.result())
+        except Exception as e:
+            print(f"Batch failed: {e}")
 
-# === Query Embedding ===
+main_index = sub_indexes[0]
+for sub_index in sub_indexes[1:]:
+    main_index.merge_from(sub_index)
+main_index.save_local("faiss_index")
+
+# === Similarity search ===
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
-query_embedding = embedding_model.embed_query(query)
-query_embedding = np.array([query_embedding]).astype("float32")
-faiss.normalize_L2(query_embedding)
-
-# === Search Top-K ===
-TOP_K = 1000
-D, I = index.search(query_embedding, TOP_K)
-top_chunks = [(chunks[i], D[0][rank]) for rank, i in enumerate(I[0])]
+vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
+results = vectorstore.similarity_search(query, k=1000)
 
 # === Filtered Chunks ===
 filtered_chunks = []
-for doc, score in top_chunks:
+for doc in results:
     norm = normalize_text(doc.page_content)
     if 'kappa' in norm or 'lambda' in norm or 'ratio' in norm:
         filtered_chunks.append((doc.metadata.get("source", "Unknown"), doc.page_content))
@@ -119,7 +115,7 @@ llm = AzureChatOpenAI(
 
 # === LLM Prompting in Batches ===
 final_results = []
-batches = list(batchify(filtered_chunks, 10))
+batches = list(batchify(filtered_chunks, 5))
 
 for i, batch in enumerate(batches):
     json_context = [
@@ -160,6 +156,11 @@ IMPORTANT:
 """
     try:
         response = llm.invoke(prompt)
+        if not response.content.strip():
+            print(f"⚠️ Empty response for batch {i + 1}")
+            continue
+
+        print(f"\n🧾 Raw LLM output (Batch {i+1}):\n{response.content[:300]}...")
         cleaned = parse_llm_json(response.content)
         extracted_items = json.loads(cleaned)
         for item, (source_title, _) in zip(extracted_items, batch):
@@ -167,6 +168,7 @@ IMPORTANT:
             final_results.append(item)
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
+        continue
 
 # === Save Output ===
 df = pd.DataFrame(final_results)
