@@ -183,10 +183,20 @@ IMPORTANT:
 
 # === Save Output ===
 df = pd.DataFrame(final_results)
+
+# Add context as structured JSON column
+for item in final_results:
+    item["context"] = json.dumps({
+        "kappa_flc": item.get("kappa_flc", ""),
+        "lambda_flc": item.get("lambda_flc", ""),
+        "kappa_lambda_ratio": item.get("kappa_lambda_ratio", ""),
+        "date_of_lab": item.get("date_of_lab", ""),
+        "evidence_sentences": item.get("evidence_sentences", [])
+    })df["source_document"].map(source_to_context)
 if not df.empty:
     df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x) if isinstance(x, list) else str(x))
-    df = df.drop_duplicates()
-    df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]]
+    df = df.drop_duplicates(subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"])
+    df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
     df.to_excel(output_path, index=False)
     print(f"✅ Extracted results saved to {output_path}")
 else:
