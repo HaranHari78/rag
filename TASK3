@@ -1,5 +1,5 @@
 ❌ Failed batch 55: 'str' object does not support item assignment
-Traceback (most recent call last):
+Traceback (most recent call last)
   File "C:\Users\HariharaM12\PycharmProjects\Task3\main.py", line 180, in <module>
     df = df[
          ^^^
