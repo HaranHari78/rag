@@ -521,7 +521,8 @@ for row in final_results:
 df = pd.DataFrame(final_results)
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]]
 # Normalize evidence text and drop duplicates
-df["evidence_key"] = df["evidence_sentences"].str.lower().str.replace(r'\s+', ' ', regex=True).str.strip()
+df["evidence_key"] = df["evidence_sentences"].apply(lambda x: "\n".join(sorted(x.lower().split("\n"))))
+df["evidence_key"] = df["evidence_key"].str.replace(r'\s+', ' ', regex=True).str.strip()
 df = df.drop_duplicates(subset=["evidence_key"])
 df.drop(columns=["evidence_key"], inplace=True)
 
