@@ -192,14 +192,30 @@ for row in final_results:
     })
 
 df = pd.DataFrame(final_results)
+
+# Optional: Keep only needed columns
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
 
-df.drop_duplicates(subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"], inplace=True)
+# ✅ Drop exact duplicates based on key fields
+df.drop_duplicates(
+    subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"],
+    inplace=True
+)
 
-# Export to Excel
+# ✅ Now group by source_document and merge multiple values
+merged_df = df.groupby("source_document").agg({
+    "kappa_flc": lambda x: "; ".join(sorted(set(x.dropna().astype(str)))),
+    "lambda_flc": lambda x: "; ".join(sorted(set(x.dropna().astype(str)))),
+    "kappa_lambda_ratio": lambda x: "; ".join(sorted(set(x.dropna().astype(str)))),
+    "date_of_lab": lambda x: "; ".join(sorted(set(x.dropna().astype(str)))),
+    "evidence_sentences": lambda x: "\n".join(sorted(set(x.dropna().astype(str)))),
+    "context": lambda x: "\n".join(sorted(set(x.dropna().astype(str))))
+}).reset_index()
+
+# Save to Excel
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
 os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "Chain_Final_Output.xlsx")
-df.to_excel(output_path, index=False)
+output_path = os.path.join(output_dir, "Chain_Final_Output_Merged.xlsx")
+merged_df.to_excel(output_path, index=False)
 
-print(f"\n✅ Final Excel file saved: {output_path}")
+print(f"\n✅ Merged Excel file saved: {output_path}")
