@@ -1,12 +1,3 @@
-Error for document 2024-02-08_00:00:00.000_Progress_Notes_91427: Empty or non-JSON response
-Error for document 2024-04-17_00:00:00.000_IMTX_Conference_Note_91586: Empty or non-JSON response
-Error for document 2024-04-17_00:00:00.000_Progress_Notes_91591: Empty or non-JSON response
-⚠️ No valid extraction results. Please check your data and LLM responses.
-
-
-
-
-
 import os
 import re
 import json
@@ -108,6 +99,7 @@ Respond in strict JSON like:
   \"kappa_lambda_ratio\": \"0.60\",
   \"evidence_sentences\": ["..."]
 }}
+Respond with ONLY the JSON object. Do not include any explanation or preamble.
 
 ---
 Context (as JSON array of clinical notes):
@@ -130,6 +122,8 @@ Context (as JSON array of clinical notes):
         final_results.append(data)
     except Exception as e:
         print(f"Error for document {doc.metadata['source']}: {e}")
+        with open("llm_error_logs.txt", "a", encoding="utf-8") as f:
+            f.write(f"\n\n---\nSOURCE: {doc.metadata['source']}\nPROMPT:\n{full_prompt}\nRESPONSE:\n{getattr(response, 'content', 'No response')}\n")
 
 # Only proceed if valid data exists
 if final_results:
