@@ -63,7 +63,7 @@ def normalize_text(text):
 csv_path = "MEDICAL_DATAS.csv"
 df = pd.read_csv(csv_path)
 
-# Prepare documents with correct title as metadata
+# Prepare documents
 documents = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
@@ -75,7 +75,7 @@ splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
 chunks = splitter.split_documents(documents)
 batches = list(batchify(chunks, 20))
 
-# Embedding model
+# Embeddings
 embedding_model = AzureOpenAIEmbeddings(
     deployment=EMBEDDING_DEPLOYMENT,
     model=EMBEDDING_MODEL,
@@ -85,13 +85,10 @@ embedding_model = AzureOpenAIEmbeddings(
     chunk_size=1000
 )
 
-# Build FAISS index
-def build_faiss(batch):
-    return FAISS.from_documents(batch, embedding_model)
-
+# Build FAISS
 sub_indexes = []
 with ThreadPoolExecutor(max_workers=4) as executor:
-    futures = {executor.submit(build_faiss, batch): batch for batch in batches}
+    futures = {executor.submit(FAISS.from_documents, batch, embedding_model): batch for batch in batches}
     for future in tqdm(as_completed(futures), total=len(futures)):
         try:
             sub_indexes.append(future.result())
@@ -103,12 +100,11 @@ for sub_index in sub_indexes[1:]:
     main_index.merge_from(sub_index)
 main_index.save_local("faiss_index")
 
-# Vector DB search
+# Query and filter
 vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter chunks with matching content and keep original titles
 filtered_chunks = []
 for doc in results:
     norm_text = normalize_text(doc.page_content)
@@ -116,7 +112,7 @@ for doc in results:
     if source_title != "Unknown" and ('kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text):
         filtered_chunks.append({"title": source_title, "content": doc.page_content})
 
-# Setup LLM
+# LLM setup
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -126,8 +122,7 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Run LLM on batches
-# Run LLM on batches
+# LLM inference
 final_results = []
 batches = list(batchify(filtered_chunks, 10))
 for i, batch in enumerate(batches):
@@ -165,7 +160,6 @@ Respond in strict JSON format like below:
 📄 Context (as JSON input):
 {json.dumps(json_context, indent=2)}
 """
-
     try:
         print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
         response = llm.invoke(full_prompt)
@@ -177,33 +171,23 @@ Respond in strict JSON format like below:
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
 
-
-# Post-process and save
+# Convert to DataFrame
 for row in final_results:
     if isinstance(row.get("evidence_sentences"), list):
         row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
     row["context"] = json.dumps({
-    "kappa_flc": row.get("kappa_flc", ""),
-    "lambda_flc": row.get("lambda_flc", ""),
-    "kappa_lambda_ratio": row.get("kappa_lambda_ratio", ""),
-    "date_of_lab": row.get("date_of_lab", ""),
-    "evidence_sentences": row.get("evidence_sentences", "")
-})
-
+        "kappa_flc": row.get("kappa_flc", ""),
+        "lambda_flc": row.get("lambda_flc", ""),
+        "kappa_lambda_ratio": row.get("kappa_lambda_ratio", ""),
+        "date_of_lab": row.get("date_of_lab", ""),
+        "evidence_sentences": row.get("evidence_sentences", "")
     })
 
 df = pd.DataFrame(final_results)
-
-# Optional: Keep only needed columns
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
+df.drop_duplicates(subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"], inplace=True)
 
-# ✅ Drop exact duplicates based on key fields
-df.drop_duplicates(
-    subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"],
-    inplace=True
-)
-
-# ✅ Now group by source_document and merge multiple values
+# === Group and Clean ===
 merged_df = df.groupby("source_document").agg({
     "kappa_flc": lambda x: "; ".join(sorted(set(x.dropna().astype(str)))),
     "lambda_flc": lambda x: "; ".join(sorted(set(x.dropna().astype(str)))),
@@ -213,8 +197,7 @@ merged_df = df.groupby("source_document").agg({
     "context": lambda x: "\n".join(sorted(set(x.dropna().astype(str))))
 }).reset_index()
 
-# === Post-process according to custom logic ===
-
+# === Custom Post-processing ===
 def filter_mgdl_values(value_str):
     values = value_str.split(";")
     mgdl_values = [v.strip() for v in values if "mg/dL" in v]
@@ -228,7 +211,6 @@ def extract_ratio(value_str):
     return values[0].strip() if values else ""
 
 def extract_lab_date_from_text(text):
-    """Extract date-like pattern from a string like '2/22/24' or '2024-03-01'"""
     matches = re.findall(r'\b(\d{1,2}/\d{1,2}/\d{2,4}|\d{4}-\d{2}-\d{2})\b', text)
     for date_str in matches:
         try:
@@ -236,6 +218,9 @@ def extract_lab_date_from_text(text):
         except:
             continue
     return ""
+
+def get_best_date_from_evidence(evidence):
+    return extract_lab_date_from_text(evidence)
 
 def filter_best_evidence(evidence):
     lines = evidence.split("\n")
@@ -245,17 +230,16 @@ def filter_best_evidence(evidence):
             return line.strip()
     return lines[0].strip() if lines else ""
 
-# Apply custom logic
+# Apply final filters
 merged_df["kappa_flc"] = merged_df["kappa_flc"].astype(str).apply(filter_mgdl_values)
 merged_df["lambda_flc"] = merged_df["lambda_flc"].astype(str).apply(filter_mgdl_values)
 merged_df["kappa_lambda_ratio"] = merged_df["kappa_lambda_ratio"].astype(str).apply(extract_ratio)
-merged_df["date_of_lab"] = merged_df["date_of_lab"].astype(str).apply(get_oldest_date)
 merged_df["evidence_sentences"] = merged_df["evidence_sentences"].astype(str).apply(filter_best_evidence)
+merged_df["date_of_lab"] = merged_df["evidence_sentences"].astype(str).apply(get_best_date_from_evidence)
 
-# Save to Excel
-output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
+# Save
+output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Task2"
 os.makedirs(output_dir, exist_ok=True)
 output_path = os.path.join(output_dir, "Chain_Final_Output_Cleaned_Logic.xlsx")
 merged_df.to_excel(output_path, index=False)
-
 print(f"\n✅ Final cleaned Excel file saved: {output_path}")
