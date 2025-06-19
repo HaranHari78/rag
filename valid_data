@@ -564,3 +564,10 @@ merged_df = df.groupby("source_document").agg({
     "evidence_sentences": lambda x: "\n".join(sorted(set(filter(None, x.astype(str))))),
     "context": lambda x: "\n".join(sorted(set(filter(None, x.astype(str)))))
 }).reset_index()
+
+output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "Final_Merged_Output.xlsx")
+merged_df.to_excel(output_path, index=False)
+print(f"\n✅ Merged final output saved to: {output_path}")
+
