@@ -189,27 +189,40 @@ except Exception as e:
     print(f"❌ Failed batch {i + 1}: {e}")
 
 # Post-process and save
+
+# Remove invalid entries (non-dicts)
+final_results = [row for row in final_results if isinstance(row, dict)]
+
+# Fill missing keys with None
+required_keys = [
+    "source_document", "talquetamab_initiation_date", "talquetamab_dose",
+    "talquetamab_frequency", "talquetamab_duration", "talquetamab_response",
+    "talquetamab_toxicity", "talquetamab_trial_participation", "evidence_sentences"
+]
+
 for row in final_results:
-    if isinstance(row.get("evidence_sentences"), list):
-        row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
+    for key in required_keys:
+        row.setdefault(key, None)  # Add missing fields as None
 
 # Create DataFrame
 df = pd.DataFrame(final_results)
-df = df[
-    [
-        "source_document", "talquetamab_initiation_date", "talquetamab_dose",
-        "talquetamab_frequency", "talquetamab_duration", "talquetamab_response",
-        "talquetamab_toxicity", "talquetamab_trial_participation", "evidence_sentences"
-    ]
-]
 
-# Deduplicate
-df["evidence_key"] = df["evidence_sentences"].str.lower().str.replace(r"\s+", " ", regex=True).str.strip()
+# Convert evidence_sentences from list to joined string
+if "evidence_sentences" in df.columns:
+    df["evidence_sentences"] = df["evidence_sentences"].apply(
+        lambda x: "\n".join(x) if isinstance(x, list) else x
+    )
+
+# Deduplicate based on normalized evidence
+df["evidence_key"] = df["evidence_sentences"].astype(str).str.lower().str.replace(r"\s+", " ", regex=True).str.strip()
 df = df.drop_duplicates(subset=["evidence_key"])
 df.drop(columns=["evidence_key"], inplace=True)
 
-# Export to Excel
-output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
+# Reorder columns
+df = df[required_keys]
+
+# Save to Excel
+output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task3"
 os.makedirs(output_dir, exist_ok=True)
 output_path = os.path.join(output_dir, "Talquetamab_Extraction_Output.xlsx")
 df.to_excel(output_path, index=False)
