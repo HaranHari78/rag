@@ -1,3 +1,12 @@
+Error for document 2024-02-08_00:00:00.000_Progress_Notes_91427: Empty or non-JSON response
+Error for document 2024-04-17_00:00:00.000_IMTX_Conference_Note_91586: Empty or non-JSON response
+Error for document 2024-04-17_00:00:00.000_Progress_Notes_91591: Empty or non-JSON response
+⚠️ No valid extraction results. Please check your data and LLM responses.
+
+
+
+
+
 import os
 import re
 import json
