@@ -14,7 +14,6 @@ from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-# Azure credentials
 AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
 AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
 AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
@@ -22,7 +21,7 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-# Util functions
+# Helpers
 def parse_llm_json(raw_text: str) -> str:
     pattern = r"```(?:json)?\s*(.*?)```"
     match = re.search(pattern, raw_text, flags=re.DOTALL)
@@ -42,11 +41,18 @@ def normalize_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
+def clean_numeric(val: str) -> str:
+    """Extract numeric part only (remove units and symbols)."""
+    if not isinstance(val, str):
+        return val
+    match = re.search(r"[\d.]+", val)
+    return match.group(0) if match else ""
+
 # Load dataset
 csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
-# Grouped chunks per document
+# Split into chunks per document
 splitter = RecursiveCharacterTextSplitter(chunk_size=3000, chunk_overlap=500)
 grouped_batches = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
@@ -86,12 +92,12 @@ for sub_index in sub_indexes[1:]:
     main_index.merge_from(sub_index)
 main_index.save_local("faiss_index")
 
-# Vector DB Search
+# Vector search
 vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter matching content
+# Filter chunks containing relevant terms
 filtered_chunks = []
 for doc in results:
     norm_text = normalize_text(doc.page_content)
@@ -99,7 +105,7 @@ for doc in results:
     if source_title != "Unknown" and ('kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text):
         filtered_chunks.append({"title": source_title, "content": doc.page_content})
 
-# Regroup filtered chunks per doc
+# Group filtered chunks
 grouped_filtered = {}
 for chunk in filtered_chunks:
     grouped_filtered.setdefault(chunk["title"], []).append(chunk["content"])
@@ -122,31 +128,20 @@ for i, (doc_title, chunks) in enumerate(grouped_filtered.items()):
     full_prompt = f"""
 You are a medical information extraction assistant. Your task is to extract lab results from clinical notes.
 
-Your goal is to extract the following values, **only from the given document context**, and **strictly ignore or skip the document** if:
-- You are unsure where the values come from.
-- The values appear to be duplicated from a different unrelated document.
-- The document contains no lab results.
+Your goal is to extract the following values, only from the given document context. Skip if:
+- Values are duplicated from a different document.
+- Context lacks clear lab results.
 
-Extract these fields only if they are clearly present in the current context:
-- ✅ **Kappa free light chains** (must have numeric value and unit, e.g., 1.35 mg/dL, <0.15 mg/dL)
-- ✅ **Lambda free light chains** (must have numeric value and unit)
-- ✅ **Kappa/Lambda ratio** (numeric ratio, may include < or > symbols)
-- ✅ **Lab test date** (clearly stated; if partial date like year/month, format as YYYY-MM-XX or YYYY-XX-XX)
-- ✅ **Supporting evidence sentences** (must include the above values in the same sentence or logically linked)
+Required fields (only if clearly present in this document):
+- Kappa free light chains (must include numeric + unit)
+- Lambda free light chains
+- Kappa/Lambda ratio
+- Lab test date (format partial date like 2024-06-XX)
+- Evidence sentence(s) including values
 
-⚠️ **Important Constraints:**
-- Do NOT hallucinate values or infer them from vague summaries.
-- Do NOT use values that are not clearly tied to this specific document context.
-- If the extracted values appear copied from another unrelated document, discard the entire output for this document.
-- Do NOT include diagnosis phrases like "monoclonal kappa detected" unless a real numeric value is stated.
-- Do NOT reuse values from one document in another.
-- If the values (kappa, lambda, or ratio) are not explicitly present in the context of THIS document, skip them.
-- This context may contain overlapping content between chunks. If a value appears multiple times due to repetition, only extract it once.
+Do not hallucinate or reuse from other documents. If repeated in overlapping chunks, extract only once.
 
-
-✅ Proceed only if the lab values are explicitly mentioned with units.
-
-Respond in strict JSON format like this:
+Respond in strict JSON format:
 [
   {{
     "kappa_flc": "...",
@@ -168,25 +163,27 @@ Respond in strict JSON format like this:
         batch_result = json.loads(cleaned)
 
         for item in batch_result:
+            item["kappa_flc"] = clean_numeric(item.get("kappa_flc", ""))
+            item["lambda_flc"] = clean_numeric(item.get("lambda_flc", ""))
+            item["kappa_lambda_ratio"] = clean_numeric(item.get("kappa_lambda_ratio", ""))
+
             item["source_document"] = doc_title
             item["context"] = json.dumps(item, indent=2)
-        final_results.extend(batch_result)
+            final_results.append(item)
+
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
-# Format & Save
+# Clean and save output
 for row in final_results:
     if isinstance(row.get("evidence_sentences"), list):
         row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
 
 df = pd.DataFrame(final_results)
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
-df.drop_duplicates(
-    subset=[ "kappa_flc", "lambda_flc", "kappa_lambda_ratio"],
-    inplace=True
-)
+df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], inplace=True)
 
-# Save Excel & JSON
+# Save files
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\task_2"
 os.makedirs(output_dir, exist_ok=True)
 
