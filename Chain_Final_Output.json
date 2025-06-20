@@ -1,0 +1,857 @@
+[
+  {
+    "source_document":"2024-06-25_00:00:00.000_Progress_Notes_91596",
+    "kappa_flc":"0.08",
+    "lambda_flc":"<0.15",
+    "kappa_lambda_ratio":">0.57",
+    "date_of_lab":"2024-06-XX",
+    "evidence_sentences":"Result Value Ref Range    Kappa Free Light Chain 0.08 (L) 0.76 - 6.83 mg\/dL    Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg\/dL    Kappa\/Lambda FLC Ratio >0.57 (L) 0.66 - 2.22",
+    "context":"{\n  \"kappa_flc\": \"0.08\",\n  \"lambda_flc\": \"<0.15\",\n  \"kappa_lambda_ratio\": \">0.57\",\n  \"date_of_lab\": \"2024-06-XX\",\n  \"evidence_sentences\": [\n    \"Result Value Ref Range    Kappa Free Light Chain 0.08 (L) 0.76 - 6.83 mg\/dL    Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg\/dL    Kappa\/Lambda FLC Ratio >0.57 (L) 0.66 - 2.22\"\n  ],\n  \"source_document\": \"2024-06-25_00:00:00.000_Progress_Notes_91596\"\n}"
+  },
+  {
+    "source_document":"2024-06-25_00:00:00.000_Progress_Notes_91596",
+    "kappa_flc":"0.08",
+    "lambda_flc":"<0.15",
+    "kappa_lambda_ratio":">0.57",
+    "date_of_lab":"2024-06-XX",
+    "evidence_sentences":"Free Light Chains   Result Value Ref Range    Kappa Free Light Chain 0.08 (L) 0.76 - 6.83 mg\/dL    Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg\/dL    Kappa\/Lambda FLC Ratio >0.57 (L) 0.66 - 2.22",
+    "context":"{\n  \"kappa_flc\": \"0.08\",\n  \"lambda_flc\": \"<0.15\",\n  \"kappa_lambda_ratio\": \">0.57\",\n  \"date_of_lab\": \"2024-06-XX\",\n  \"evidence_sentences\": [\n    \"Free Light Chains   Result Value Ref Range    Kappa Free Light Chain 0.08 (L) 0.76 - 6.83 mg\/dL    Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg\/dL    Kappa\/Lambda FLC Ratio >0.57 (L) 0.66 - 2.22\"\n  ],\n  \"source_document\": \"2024-06-25_00:00:00.000_Progress_Notes_91596\"\n}"
+  },
+  {
+    "source_document":"2024-06-25_00:00:00.000_Progress_Notes_91596",
+    "kappa_flc":"<0.06",
+    "lambda_flc":"<1.61",
+    "kappa_lambda_ratio":null,
+    "date_of_lab":"2024-04-08",
+    "evidence_sentences":"Labs from 4\/8\/2024: Kappa <0.06 mg\/dL, Lambda <1.61 mg\/dL, SPEP with M-spike 0.3 g\/dL, IgG kappa",
+    "context":"{\n  \"kappa_flc\": \"<0.06\",\n  \"lambda_flc\": \"<1.61\",\n  \"kappa_lambda_ratio\": null,\n  \"date_of_lab\": \"2024-04-08\",\n  \"evidence_sentences\": [\n    \"Labs from 4\/8\/2024: Kappa <0.06 mg\/dL, Lambda <1.61 mg\/dL, SPEP with M-spike 0.3 g\/dL, IgG kappa\"\n  ],\n  \"source_document\": \"2024-06-25_00:00:00.000_Progress_Notes_91596\"\n}"
+  },
+  {
+    "source_document":"2024-06-25_00:00:00.000_Progress_Notes_91596",
+    "kappa_flc":"65",
+    "lambda_flc":"0.34",
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-XX-XX",
+    "evidence_sentences":"Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa\/Lambda 190",
+    "context":"{\n  \"kappa_flc\": \"65\",\n  \"lambda_flc\": \"0.34\",\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-XX-XX\",\n  \"evidence_sentences\": [\n    \"Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa\/Lambda 190\"\n  ],\n  \"source_document\": \"2024-06-25_00:00:00.000_Progress_Notes_91596\"\n}"
+  },
+  {
+    "source_document":"2024-04-17_00:00:00.000_Progress_Notes_91591",
+    "kappa_flc":"129.54",
+    "lambda_flc":"15",
+    "kappa_lambda_ratio":">914.29",
+    "date_of_lab":"2023-11-28",
+    "evidence_sentences":"11\/28\/23: kappa free light chain (KFLC) 129.54mg \/dL, lambda free light chain (LFLC) 15mg \/dL, kappa\/lambda ratio >914.29.",
+    "context":"{\n  \"kappa_flc\": \"129.54\",\n  \"lambda_flc\": \"15\",\n  \"kappa_lambda_ratio\": \">914.29\",\n  \"date_of_lab\": \"2023-11-28\",\n  \"evidence_sentences\": [\n    \"11\/28\/23: kappa free light chain (KFLC) 129.54mg \/dL, lambda free light chain (LFLC) 15mg \/dL, kappa\/lambda ratio >914.29.\"\n  ],\n  \"source_document\": \"2024-04-17_00:00:00.000_Progress_Notes_91591\"\n}"
+  },
+  {
+    "source_document":"2024-04-17_00:00:00.000_Progress_Notes_91591",
+    "kappa_flc":"242.66",
+    "lambda_flc":"<0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"1\/16\/24: KFLC 242.66, LFLC <0.15, kappa\/lambda ratio >1733.29.",
+    "context":"{\n  \"kappa_flc\": \"242.66\",\n  \"lambda_flc\": \"<0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"1\/16\/24: KFLC 242.66, LFLC <0.15, kappa\/lambda ratio >1733.29.\"\n  ],\n  \"source_document\": \"2024-04-17_00:00:00.000_Progress_Notes_91591\"\n}"
+  },
+  {
+    "source_document":"2024-04-17_00:00:00.000_Progress_Notes_91591",
+    "kappa_flc":"203.94",
+    "lambda_flc":"<0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"1\/24\/24: KFLC 203.94, LFLC <0.15, ratio >1456.71.",
+    "context":"{\n  \"kappa_flc\": \"203.94\",\n  \"lambda_flc\": \"<0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"1\/24\/24: KFLC 203.94, LFLC <0.15, ratio >1456.71.\"\n  ],\n  \"source_document\": \"2024-04-17_00:00:00.000_Progress_Notes_91591\"\n}"
+  },
+  {
+    "source_document":"2024-04-17_00:00:00.000_Progress_Notes_91591",
+    "kappa_flc":"16.18",
+    "lambda_flc":"<0.15",
+    "kappa_lambda_ratio":">115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"2\/22\/24: KFLC 16.18, LFLC <0.15, kappa\/lambda ratio >115.57.",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"<0.15\",\n  \"kappa_lambda_ratio\": \">115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"2\/22\/24: KFLC 16.18, LFLC <0.15, kappa\/lambda ratio >115.57.\"\n  ],\n  \"source_document\": \"2024-04-17_00:00:00.000_Progress_Notes_91591\"\n}"
+  },
+  {
+    "source_document":"2024-04-17_00:00:00.000_Progress_Notes_91591",
+    "kappa_flc":"06",
+    "lambda_flc":"<1",
+    "kappa_lambda_ratio":null,
+    "date_of_lab":"2024-04-08",
+    "evidence_sentences":"Multiple myeloma labs 4\/8\/24: KFLC 06mg \/dL, LFLC <1.",
+    "context":"{\n  \"kappa_flc\": \"06\",\n  \"lambda_flc\": \"<1\",\n  \"kappa_lambda_ratio\": null,\n  \"date_of_lab\": \"2024-04-08\",\n  \"evidence_sentences\": [\n    \"Multiple myeloma labs 4\/8\/24: KFLC 06mg \/dL, LFLC <1.\"\n  ],\n  \"source_document\": \"2024-04-17_00:00:00.000_Progress_Notes_91591\"\n}"
+  },
+  {
+    "source_document":"2024-02-08_00:00:00.000_Progress_Notes_91427",
+    "kappa_flc":"203.94",
+    "lambda_flc":"<0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-02-08",
+    "evidence_sentences":"Kappa Free Light Chain 203.94 (H) 0.76 - 6.83 mg\/dL\nLambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg\/dL\nKappa\/Lambda FLC Ratio >1456.71 (H) 0.66 - 2.22",
+    "context":"{\n  \"kappa_flc\": \"203.94\",\n  \"lambda_flc\": \"<0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-02-08\",\n  \"evidence_sentences\": [\n    \"Kappa Free Light Chain 203.94 (H) 0.76 - 6.83 mg\/dL\",\n    \"Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg\/dL\",\n    \"Kappa\/Lambda FLC Ratio >1456.71 (H) 0.66 - 2.22\"\n  ],\n  \"source_document\": \"2024-02-08_00:00:00.000_Progress_Notes_91427\"\n}"
+  },
+  {
+    "source_document":"2024-02-08_00:00:00.000_Progress_Notes_91427",
+    "kappa_flc":"204",
+    "lambda_flc":"<0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"<0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71\"\n  ],\n  \"source_document\": \"2024-02-08_00:00:00.000_Progress_Notes_91427\"\n}"
+  },
+  {
+    "source_document":"2024-04-17_00:00:00.000_IMTX_Conference_Note_91586",
+    "kappa_flc":"56.21",
+    "lambda_flc":"<3.08",
+    "kappa_lambda_ratio":">115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"Latest Reference Range & Units 02\/22\/24 09:20   Kappa Free Light Chain 0.76 - 6.83 mg\/dL 56.21 (H)   Lambda Free Light Chain 0.68 - 4.58 mg\/dL <3.08 (L)   Kappa\/Lambda FLC Ratio 0.66 - 2.22  >115.57 (H)",
+    "context":"{\n  \"kappa_flc\": \"56.21\",\n  \"lambda_flc\": \"<3.08\",\n  \"kappa_lambda_ratio\": \">115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"Latest Reference Range & Units 02\/22\/24 09:20   Kappa Free Light Chain 0.76 - 6.83 mg\/dL 56.21 (H)   Lambda Free Light Chain 0.68 - 4.58 mg\/dL <3.08 (L)   Kappa\/Lambda FLC Ratio 0.66 - 2.22  >115.57 (H)\"\n  ],\n  \"source_document\": \"2024-04-17_00:00:00.000_IMTX_Conference_Note_91586\"\n}"
+  },
+  {
+    "source_document":"2024-04-17_00:00:00.000_IMTX_Conference_Note_91586",
+    "kappa_flc":"<9.81",
+    "lambda_flc":"<1.91",
+    "kappa_lambda_ratio":"Unable to calculate.",
+    "date_of_lab":"2024-04-08",
+    "evidence_sentences":"Latest Reference Range & Units 04\/08\/24 07:15   Kappa Free Light Chain 0.76 - 6.83 mg\/dL <9.81 (L)   Lambda Free Light Chain 0.68 - 4.58 mg\/dL <1.91 (L)   Kappa\/Lambda FLC Ratio 0.66 - 2.22  Unable to calculate.",
+    "context":"{\n  \"kappa_flc\": \"<9.81\",\n  \"lambda_flc\": \"<1.91\",\n  \"kappa_lambda_ratio\": \"Unable to calculate.\",\n  \"date_of_lab\": \"2024-04-08\",\n  \"evidence_sentences\": [\n    \"Latest Reference Range & Units 04\/08\/24 07:15   Kappa Free Light Chain 0.76 - 6.83 mg\/dL <9.81 (L)   Lambda Free Light Chain 0.68 - 4.58 mg\/dL <1.91 (L)   Kappa\/Lambda FLC Ratio 0.66 - 2.22  Unable to calculate.\"\n  ],\n  \"source_document\": \"2024-04-17_00:00:00.000_IMTX_Conference_Note_91586\"\n}"
+  },
+  {
+    "source_document":"2024-03-05_00:00:00.000_IMTX_Conference_Note_91479",
+    "kappa_flc":"16.18",
+    "lambda_flc":"<0.15",
+    "kappa_lambda_ratio":">115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"On 02\/22\/24, KFLC were 16.18; LFLC <0.15; FLC ratio >115.57.",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"<0.15\",\n  \"kappa_lambda_ratio\": \">115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"On 02\/22\/24, KFLC were 16.18; LFLC <0.15; FLC ratio >115.57.\"\n  ],\n  \"source_document\": \"2024-03-05_00:00:00.000_IMTX_Conference_Note_91479\"\n}"
+  },
+  {
+    "source_document":"2021-12-27_00:00:00.000_Progress_Notes_91111",
+    "kappa_flc":"64.9",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-03-XX",
+    "evidence_sentences":"Diagnoses in 3\/2019. M-spike of 6,calcium of 9.7, an IgG of 5610,kappa FLC 64.9, kappa\/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed myeloma.",
+    "context":"{\n  \"kappa_flc\": \"64.9\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-03-XX\",\n  \"evidence_sentences\": [\n    \"Diagnoses in 3\/2019. M-spike of 6,calcium of 9.7, an IgG of 5610,kappa FLC 64.9, kappa\/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed myeloma.\"\n  ],\n  \"source_document\": \"2021-12-27_00:00:00.000_Progress_Notes_91111\"\n}"
+  },
+  {
+    "source_document":"2021-12-27_00:00:00.000_Progress_Notes_91111",
+    "kappa_flc":"20.78",
+    "lambda_flc":"0.24",
+    "kappa_lambda_ratio":"86.58",
+    "date_of_lab":"2021-06-XX",
+    "evidence_sentences":"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.",
+    "context":"{\n  \"kappa_flc\": \"20.78\",\n  \"lambda_flc\": \"0.24\",\n  \"kappa_lambda_ratio\": \"86.58\",\n  \"date_of_lab\": \"2021-06-XX\",\n  \"evidence_sentences\": [\n    \"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.\"\n  ],\n  \"source_document\": \"2021-12-27_00:00:00.000_Progress_Notes_91111\"\n}"
+  },
+  {
+    "source_document":"2021-12-27_00:00:00.000_Progress_Notes_91111",
+    "kappa_flc":"1.24",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"1.72",
+    "date_of_lab":"2021-12-15",
+    "evidence_sentences":"Labs 12\/15 show M-spike 0.1, KFLC 1.24, K\/L ratio 1.72.",
+    "context":"{\n  \"kappa_flc\": \"1.24\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"1.72\",\n  \"date_of_lab\": \"2021-12-15\",\n  \"evidence_sentences\": [\n    \"Labs 12\/15 show M-spike 0.1, KFLC 1.24, K\/L ratio 1.72.\"\n  ],\n  \"source_document\": \"2021-12-27_00:00:00.000_Progress_Notes_91111\"\n}"
+  },
+  {
+    "source_document":"2024-02-22_00:00:00.000_Progress_Notes_91459",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-22_00:00:00.000_Progress_Notes_91459\"\n}"
+  },
+  {
+    "source_document":"2024-03-11_00:00:00.000_H&P_91495",
+    "kappa_flc":"65",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"2019-XX-XX",
+    "evidence_sentences":"in 2019 was 6 g\/dL with kappa free light chains of 65 mg\/dL.",
+    "context":"{\n  \"kappa_flc\": \"65\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"2019-XX-XX\",\n  \"evidence_sentences\": [\n    \"in 2019 was 6 g\/dL with kappa free light chains of 65 mg\/dL.\"\n  ],\n  \"source_document\": \"2024-03-11_00:00:00.000_H&P_91495\"\n}"
+  },
+  {
+    "source_document":"2024-03-11_00:00:00.000_H&P_91495",
+    "kappa_flc":"42.66",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"> 1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"Pre therapy 1\/16\/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal free light chain too small to quantify, IgG 3393 (1\/24\/24)",
+    "context":"{\n  \"kappa_flc\": \"42.66\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"> 1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"Pre therapy 1\/16\/2024: Kappa free light chains to 42.66, ratio > 1733.29, 2 and spikes on SPEP = 2.8 IgG kappa, kappa monoclonal free light chain too small to quantify, IgG 3393 (1\/24\/24)\"\n  ],\n  \"source_document\": \"2024-03-11_00:00:00.000_H&P_91495\"\n}"
+  },
+  {
+    "source_document":"2024-02-06_00:00:00.000_Progress_Notes_91413",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-06_00:00:00.000_Progress_Notes_91413\"\n}"
+  },
+  {
+    "source_document":"2024-02-04_00:00:00.000_Progress_Notes_91403",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-04_00:00:00.000_Progress_Notes_91403\"\n}"
+  },
+  {
+    "source_document":"2023-11-27_00:00:00.000_Progress_Notes_91273",
+    "kappa_flc":"65 mg\/dL",
+    "lambda_flc":"0.34 mg\/dL",
+    "kappa_lambda_ratio":"190.88",
+    "date_of_lab":"2019-03-24",
+    "evidence_sentences":"Myeloma markers on 3\/24\/2019 included an SPEP which showed an IgG kappa M spike at 6 g\/dL, KFLC 65 mg\/dL, LFLC 0.34 mg\/dL, and K\/L 190.88.",
+    "context":"{\n  \"kappa_flc\": \"65 mg\/dL\",\n  \"lambda_flc\": \"0.34 mg\/dL\",\n  \"kappa_lambda_ratio\": \"190.88\",\n  \"date_of_lab\": \"2019-03-24\",\n  \"evidence_sentences\": [\n    \"Myeloma markers on 3\/24\/2019 included an SPEP which showed an IgG kappa M spike at 6 g\/dL, KFLC 65 mg\/dL, LFLC 0.34 mg\/dL, and K\/L 190.88.\"\n  ],\n  \"source_document\": \"2023-11-27_00:00:00.000_Progress_Notes_91273\"\n}"
+  },
+  {
+    "source_document":"2023-11-27_00:00:00.000_Progress_Notes_91273",
+    "kappa_flc":"1.34 mg\/dL",
+    "lambda_flc":"0.92 mg\/dL",
+    "kappa_lambda_ratio":"1.46",
+    "date_of_lab":"2019-10-08",
+    "evidence_sentences":"Myeloma markers on 10\/8\/2019 had all improved: M spike 0.3 g\/dL, KFLC 1.34 mg\/dL, LFLC 0.92 mg\/dL, K\/L 1.46.",
+    "context":"{\n  \"kappa_flc\": \"1.34 mg\/dL\",\n  \"lambda_flc\": \"0.92 mg\/dL\",\n  \"kappa_lambda_ratio\": \"1.46\",\n  \"date_of_lab\": \"2019-10-08\",\n  \"evidence_sentences\": [\n    \"Myeloma markers on 10\/8\/2019 had all improved: M spike 0.3 g\/dL, KFLC 1.34 mg\/dL, LFLC 0.92 mg\/dL, K\/L 1.46.\"\n  ],\n  \"source_document\": \"2023-11-27_00:00:00.000_Progress_Notes_91273\"\n}"
+  },
+  {
+    "source_document":"2021-12-23_00:00:00.000_Progress_Notes_91107",
+    "kappa_flc":"64.9",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":null,
+    "date_of_lab":"2019-03-XX",
+    "evidence_sentences":"Diagnoses in 3\/2019. M-spike of 6, calcium of 9.7, an IgG of 5610, kappa FLC 64.9, kappa\/lambda",
+    "context":"{\n  \"kappa_flc\": \"64.9\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": null,\n  \"date_of_lab\": \"2019-03-XX\",\n  \"evidence_sentences\": [\n    \"Diagnoses in 3\/2019. M-spike of 6, calcium of 9.7, an IgG of 5610, kappa FLC 64.9, kappa\/lambda\"\n  ],\n  \"source_document\": \"2021-12-23_00:00:00.000_Progress_Notes_91107\"\n}"
+  },
+  {
+    "source_document":"2021-12-23_00:00:00.000_Progress_Notes_91107",
+    "kappa_flc":"20.78",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":null,
+    "date_of_lab":"2021-06-XX",
+    "evidence_sentences":"In 6\/2021, he had kappa FLC of 20.78, lambda FLC",
+    "context":"{\n  \"kappa_flc\": \"20.78\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": null,\n  \"date_of_lab\": \"2021-06-XX\",\n  \"evidence_sentences\": [\n    \"In 6\/2021, he had kappa FLC of 20.78, lambda FLC\"\n  ],\n  \"source_document\": \"2021-12-23_00:00:00.000_Progress_Notes_91107\"\n}"
+  },
+  {
+    "source_document":"2021-12-23_00:00:00.000_Progress_Notes_91107",
+    "kappa_flc":"1.24",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"1.72",
+    "date_of_lab":"2021-12-15",
+    "evidence_sentences":"Labs 12\/15 show M-spike 0.1, KFLC 1.24, K\/L ratio 1.72.",
+    "context":"{\n  \"kappa_flc\": \"1.24\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"1.72\",\n  \"date_of_lab\": \"2021-12-15\",\n  \"evidence_sentences\": [\n    \"Labs 12\/15 show M-spike 0.1, KFLC 1.24, K\/L ratio 1.72.\"\n  ],\n  \"source_document\": \"2021-12-23_00:00:00.000_Progress_Notes_91107\"\n}"
+  },
+  {
+    "source_document":"2021-12-23_00:00:00.000_Progress_Notes_91107",
+    "kappa_flc":"20.78",
+    "lambda_flc":"0.24",
+    "kappa_lambda_ratio":"86.58",
+    "date_of_lab":"2021-06-XX",
+    "evidence_sentences":"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.",
+    "context":"{\n  \"kappa_flc\": \"20.78\",\n  \"lambda_flc\": \"0.24\",\n  \"kappa_lambda_ratio\": \"86.58\",\n  \"date_of_lab\": \"2021-06-XX\",\n  \"evidence_sentences\": [\n    \"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.\"\n  ],\n  \"source_document\": \"2021-12-23_00:00:00.000_Progress_Notes_91107\"\n}"
+  },
+  {
+    "source_document":"2022-01-10_00:00:00.000_Progress_Notes_91135",
+    "kappa_flc":"1.24",
+    "lambda_flc":"0.72",
+    "kappa_lambda_ratio":"1.72",
+    "date_of_lab":"2022-01-10",
+    "evidence_sentences":"His kappa was 1.24, lambda 0.72, kappa lambda 1.72.",
+    "context":"{\n  \"kappa_flc\": \"1.24\",\n  \"lambda_flc\": \"0.72\",\n  \"kappa_lambda_ratio\": \"1.72\",\n  \"date_of_lab\": \"2022-01-10\",\n  \"evidence_sentences\": [\n    \"His kappa was 1.24, lambda 0.72, kappa lambda 1.72.\"\n  ],\n  \"source_document\": \"2022-01-10_00:00:00.000_Progress_Notes_91135\"\n}"
+  },
+  {
+    "source_document":"2024-01-22_00:00:00.000_Progress_Notes_91317",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-22_00:00:00.000_Progress_Notes_91317\"\n}"
+  },
+  {
+    "source_document":"2024-02-29_00:00:00.000_Progress_Notes_91467",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-29_00:00:00.000_Progress_Notes_91467\"\n}"
+  },
+  {
+    "source_document":"2024-02-29_00:00:00.000_Progress_Notes_91467",
+    "kappa_flc":"16.18",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":"> 115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"Pre-CAR T evaluation:  MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \"> 115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"Pre-CAR T evaluation:  MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1\"\n  ],\n  \"source_document\": \"2024-02-29_00:00:00.000_Progress_Notes_91467\"\n}"
+  },
+  {
+    "source_document":"2022-02-22_00:00:00.000_Progress_Notes_91240",
+    "kappa_flc":"65",
+    "lambda_flc":"0.34",
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-03-XX",
+    "evidence_sentences":"Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa\/Lambda 190\nFossa initially presented in March 2019 with back pain and chest pain for 10 days. A CT scan was obtained showing lytic bone lesions and a subsequent biopsy of the left 3rd rib lesion showed a plasmacytoma **Note De-Identified via Obfuscation** and baseline labs showing an IgG kappa monoclonal protein of 6 g\/dL, with kappa light chain of 65, lambda of 0.34 and ratio of 190.",
+    "context":"{\n  \"kappa_flc\": \"65\",\n  \"lambda_flc\": \"0.34\",\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-03-XX\",\n  \"evidence_sentences\": [\n    \"Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa\/Lambda 190\",\n    \"Fossa initially presented in March 2019 with back pain and chest pain for 10 days. A CT scan was obtained showing lytic bone lesions and a subsequent biopsy of the left 3rd rib lesion showed a plasmacytoma **Note De-Identified via Obfuscation** and baseline labs showing an IgG kappa monoclonal protein of 6 g\/dL, with kappa light chain of 65, lambda of 0.34 and ratio of 190.\"\n  ],\n  \"source_document\": \"2022-02-22_00:00:00.000_Progress_Notes_91240\"\n}"
+  },
+  {
+    "source_document":"2022-01-07_00:00:00.000_Progress_Notes_91124",
+    "kappa_flc":"64.9",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-03-XX",
+    "evidence_sentences":"Diagnoses in 3\/2019.M-spike of 6,calcium of 9.7, an IgG of 5610,kappa FLC 64.9, kappa\/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed myeloma.",
+    "context":"{\n  \"kappa_flc\": \"64.9\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-03-XX\",\n  \"evidence_sentences\": [\n    \"Diagnoses in 3\/2019.M-spike of 6,calcium of 9.7, an IgG of 5610,kappa FLC 64.9, kappa\/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed myeloma.\"\n  ],\n  \"source_document\": \"2022-01-07_00:00:00.000_Progress_Notes_91124\"\n}"
+  },
+  {
+    "source_document":"2022-01-07_00:00:00.000_Progress_Notes_91124",
+    "kappa_flc":"1.24",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"1.72",
+    "date_of_lab":"2021-12-15",
+    "evidence_sentences":"Labs 12\/15 show M-spike 0.1, KFLC 1.24, K\/L ratio 1.72.",
+    "context":"{\n  \"kappa_flc\": \"1.24\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"1.72\",\n  \"date_of_lab\": \"2021-12-15\",\n  \"evidence_sentences\": [\n    \"Labs 12\/15 show M-spike 0.1, KFLC 1.24, K\/L ratio 1.72.\"\n  ],\n  \"source_document\": \"2022-01-07_00:00:00.000_Progress_Notes_91124\"\n}"
+  },
+  {
+    "source_document":"2022-01-07_00:00:00.000_Progress_Notes_91124",
+    "kappa_flc":"20.78",
+    "lambda_flc":"0.24",
+    "kappa_lambda_ratio":"86.58",
+    "date_of_lab":"2021-06-XX",
+    "evidence_sentences":"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.",
+    "context":"{\n  \"kappa_flc\": \"20.78\",\n  \"lambda_flc\": \"0.24\",\n  \"kappa_lambda_ratio\": \"86.58\",\n  \"date_of_lab\": \"2021-06-XX\",\n  \"evidence_sentences\": [\n    \"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.\"\n  ],\n  \"source_document\": \"2022-01-07_00:00:00.000_Progress_Notes_91124\"\n}"
+  },
+  {
+    "source_document":"2024-02-10_00:00:00.000_Progress_Notes_91437",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-10_00:00:00.000_Progress_Notes_91437\"\n}"
+  },
+  {
+    "source_document":"2022-02-15_00:00:00.000_Progress_Notes_91233",
+    "kappa_flc":"",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"",
+    "evidence_sentences":"",
+    "context":"{\n  \"kappa_flc\": \"\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"\",\n  \"evidence_sentences\": [],\n  \"source_document\": \"2022-02-15_00:00:00.000_Progress_Notes_91233\"\n}"
+  },
+  {
+    "source_document":"2024-02-02_00:00:00.000_Progress_Notes_91387",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-02_00:00:00.000_Progress_Notes_91387\"\n}"
+  },
+  {
+    "source_document":"2024-01-30_00:00:00.000_Progress_Notes_91369",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\nMM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\",\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-30_00:00:00.000_Progress_Notes_91369\"\n}"
+  },
+  {
+    "source_document":"2024-01-31_00:00:00.000_Progress_Notes_91377",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-31_00:00:00.000_Progress_Notes_91377\"\n}"
+  },
+  {
+    "source_document":"2024-02-08_00:00:00.000_Discharge_Summary_91430",
+    "kappa_flc":"",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"",
+    "evidence_sentences":"",
+    "context":"{\n  \"kappa_flc\": \"\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"\",\n  \"evidence_sentences\": [],\n  \"source_document\": \"2024-02-08_00:00:00.000_Discharge_Summary_91430\"\n}"
+  },
+  {
+    "source_document":"2022-02-25_00:00:00.000_BMT_Conference_Note_91246",
+    "kappa_flc":"1.24",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"1.72",
+    "date_of_lab":"2021-12-20",
+    "evidence_sentences":"Free light chains: kappa free light chain was 1.24 and kappa\/lambda ratio was 1.72.",
+    "context":"{\n  \"kappa_flc\": \"1.24\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"1.72\",\n  \"date_of_lab\": \"2021-12-20\",\n  \"evidence_sentences\": [\n    \"Free light chains: kappa free light chain was 1.24 and kappa\/lambda ratio was 1.72.\"\n  ],\n  \"source_document\": \"2022-02-25_00:00:00.000_BMT_Conference_Note_91246\"\n}"
+  },
+  {
+    "source_document":"2022-02-25_00:00:00.000_BMT_Conference_Note_91246",
+    "kappa_flc":null,
+    "lambda_flc":null,
+    "kappa_lambda_ratio":null,
+    "date_of_lab":null,
+    "evidence_sentences":"",
+    "context":"{\n  \"kappa_flc\": null,\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": null,\n  \"date_of_lab\": null,\n  \"evidence_sentences\": [],\n  \"source_document\": \"2022-02-25_00:00:00.000_BMT_Conference_Note_91246\"\n}"
+  },
+  {
+    "source_document":"2023-12-01_00:00:00.000_Progress_Notes_91285",
+    "kappa_flc":"129.5 mg\/dL",
+    "lambda_flc":"<0.15 mg\/dL",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"2023-11-28",
+    "evidence_sentences":"Myeloma labs 11\/28\/2023: KFLC 129.5 mg\/dL, LFLC <0.15 mg\/dL.",
+    "context":"{\n  \"kappa_flc\": \"129.5 mg\/dL\",\n  \"lambda_flc\": \"<0.15 mg\/dL\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"2023-11-28\",\n  \"evidence_sentences\": [\n    \"Myeloma labs 11\/28\/2023: KFLC 129.5 mg\/dL, LFLC <0.15 mg\/dL.\"\n  ],\n  \"source_document\": \"2023-12-01_00:00:00.000_Progress_Notes_91285\"\n}"
+  },
+  {
+    "source_document":"2024-02-01_00:00:00.000_Progress_Notes_91383",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-01_00:00:00.000_Progress_Notes_91383\"\n}"
+  },
+  {
+    "source_document":"2024-01-24_00:00:00.000_Progress_Notes_91323",
+    "kappa_flc":"",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-22",
+    "evidence_sentences":"Labs 1\/22-23\/2024: Scr 0.52, LFTs wnl, Plt 42, ANC 0.46 (trend) on 1\/23\/24 M1: 2.8, M2: TSTQ, FLC ratio >1733.29",
+    "context":"{\n  \"kappa_flc\": \"\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-22\",\n  \"evidence_sentences\": [\n    \"Labs 1\/22-23\/2024: Scr 0.52, LFTs wnl, Plt 42, ANC 0.46 (trend) on 1\/23\/24 M1: 2.8, M2: TSTQ, FLC ratio >1733.29\"\n  ],\n  \"source_document\": \"2024-01-24_00:00:00.000_Progress_Notes_91323\"\n}"
+  },
+  {
+    "source_document":"2024-01-24_00:00:00.000_Progress_Notes_91323",
+    "kappa_flc":"",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"Labs 1\/22-23\/2024: Scr 0.52, LFTs wnl, Plt 42, ANC 0.46 (trend) on 1\/23\/24 M1: 2.8, M2: TSTQ, FLC ratio >1733.29 on 1\/16\/24.",
+    "context":"{\n  \"kappa_flc\": \"\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"Labs 1\/22-23\/2024: Scr 0.52, LFTs wnl, Plt 42, ANC 0.46 (trend) on 1\/23\/24 M1: 2.8, M2: TSTQ, FLC ratio >1733.29 on 1\/16\/24.\"\n  ],\n  \"source_document\": \"2024-01-24_00:00:00.000_Progress_Notes_91323\"\n}"
+  },
+  {
+    "source_document":"2023-06-30_00:00:00.000_Progress_Notes_91265",
+    "kappa_flc":"65",
+    "lambda_flc":"0.34",
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"XXXX-XX-XX",
+    "evidence_sentences":"Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa\/Lambda 190",
+    "context":"{\n  \"kappa_flc\": \"65\",\n  \"lambda_flc\": \"0.34\",\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"XXXX-XX-XX\",\n  \"evidence_sentences\": [\n    \"Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa\/Lambda 190\"\n  ],\n  \"source_document\": \"2023-06-30_00:00:00.000_Progress_Notes_91265\"\n}"
+  },
+  {
+    "source_document":"2022-01-10_00:00:00.000_Progress_Notes_91134",
+    "kappa_flc":"64.9",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-03-XX",
+    "evidence_sentences":"an IgG of 5610,kappa FLC 64.9, kappa\/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed myeloma.",
+    "context":"{\n  \"kappa_flc\": \"64.9\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-03-XX\",\n  \"evidence_sentences\": [\n    \"an IgG of 5610,kappa FLC 64.9, kappa\/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed myeloma.\"\n  ],\n  \"source_document\": \"2022-01-10_00:00:00.000_Progress_Notes_91134\"\n}"
+  },
+  {
+    "source_document":"2022-01-10_00:00:00.000_Progress_Notes_91134",
+    "kappa_flc":"20.78",
+    "lambda_flc":"0.24",
+    "kappa_lambda_ratio":"86.58",
+    "date_of_lab":"2021-06-XX",
+    "evidence_sentences":"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.",
+    "context":"{\n  \"kappa_flc\": \"20.78\",\n  \"lambda_flc\": \"0.24\",\n  \"kappa_lambda_ratio\": \"86.58\",\n  \"date_of_lab\": \"2021-06-XX\",\n  \"evidence_sentences\": [\n    \"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.\"\n  ],\n  \"source_document\": \"2022-01-10_00:00:00.000_Progress_Notes_91134\"\n}"
+  },
+  {
+    "source_document":"2024-02-07_00:00:00.000_Progress_Notes_91425",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-07_00:00:00.000_Progress_Notes_91425\"\n}"
+  },
+  {
+    "source_document":"2024-04-01_00:00:00.000_Progress_Notes_91568",
+    "kappa_flc":"16.18",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":"> 115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"MM labs (2\/22): KFLC  16.18, LFLC < 0.15, ratio > 115.57.",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \"> 115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"MM labs (2\/22): KFLC  16.18, LFLC < 0.15, ratio > 115.57.\"\n  ],\n  \"source_document\": \"2024-04-01_00:00:00.000_Progress_Notes_91568\"\n}"
+  },
+  {
+    "source_document":"2024-04-01_00:00:00.000_Progress_Notes_91568",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29.\"\n  ],\n  \"source_document\": \"2024-04-01_00:00:00.000_Progress_Notes_91568\"\n}"
+  },
+  {
+    "source_document":"2024-04-23_00:00:00.000_Progress_Notes_91592",
+    "kappa_flc":"65",
+    "lambda_flc":"0.34",
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-10-08",
+    "evidence_sentences":"Bone marrow biopsy (10\/8\/2019): Normocellular marrow with trilineage hematopoiesis and involvement by plasma cell neoplasm approximately 5%.\nBaseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa\/Lambda 190",
+    "context":"{\n  \"kappa_flc\": \"65\",\n  \"lambda_flc\": \"0.34\",\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-10-08\",\n  \"evidence_sentences\": [\n    \"Bone marrow biopsy (10\/8\/2019): Normocellular marrow with trilineage hematopoiesis and involvement by plasma cell neoplasm approximately 5%.\",\n    \"Baseline free light chains (per notes): Kappa 65, Lambda 0.34, Kappa\/Lambda 190\"\n  ],\n  \"source_document\": \"2024-04-23_00:00:00.000_Progress_Notes_91592\"\n}"
+  },
+  {
+    "source_document":"2022-01-18_00:00:00.000_BMT_Conference_Note_91158",
+    "kappa_flc":"1.24",
+    "lambda_flc":"0.72",
+    "kappa_lambda_ratio":"1.72",
+    "date_of_lab":"2021-12-15",
+    "evidence_sentences":"12\/15: SPEP  IgG kappa M spike of 0.1, Kappa light chain  1.24, lambda light chain  0.72. Kappa\/ lambda ratio 1.72, beta 2 microglobulin 1.3",
+    "context":"{\n  \"kappa_flc\": \"1.24\",\n  \"lambda_flc\": \"0.72\",\n  \"kappa_lambda_ratio\": \"1.72\",\n  \"date_of_lab\": \"2021-12-15\",\n  \"evidence_sentences\": [\n    \"12\/15: SPEP  IgG kappa M spike of 0.1, Kappa light chain  1.24, lambda light chain  0.72. Kappa\/ lambda ratio 1.72, beta 2 microglobulin 1.3\"\n  ],\n  \"source_document\": \"2022-01-18_00:00:00.000_BMT_Conference_Note_91158\"\n}"
+  },
+  {
+    "source_document":"2021-11-13_00:00:00.000_Consults_91085",
+    "kappa_flc":"64.9",
+    "lambda_flc":"0.34",
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-03-XX",
+    "evidence_sentences":"At diagnosis, he had a calcium of 9.7, an IgG of 5610, kappa lambda ratio of 190, total protein 10.7, albumin of 2.3.\nVitamin D of 10, kappa was 64.9, lambda 0.34, and his bone marrow showed myeloma.",
+    "context":"{\n  \"kappa_flc\": \"64.9\",\n  \"lambda_flc\": \"0.34\",\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-03-XX\",\n  \"evidence_sentences\": [\n    \"At diagnosis, he had a calcium of 9.7, an IgG of 5610, kappa lambda ratio of 190, total protein 10.7, albumin of 2.3.\",\n    \"Vitamin D of 10, kappa was 64.9, lambda 0.34, and his bone marrow showed myeloma.\"\n  ],\n  \"source_document\": \"2021-11-13_00:00:00.000_Consults_91085\"\n}"
+  },
+  {
+    "source_document":"2021-11-13_00:00:00.000_Consults_91085",
+    "kappa_flc":"4.48",
+    "lambda_flc":"0.7",
+    "kappa_lambda_ratio":"6.31",
+    "date_of_lab":"2021-09-01",
+    "evidence_sentences":"On 09\/01\/21 Serum kappa was down to 4.48 with a lambda 0.7, kappa lambda of 6.31.",
+    "context":"{\n  \"kappa_flc\": \"4.48\",\n  \"lambda_flc\": \"0.7\",\n  \"kappa_lambda_ratio\": \"6.31\",\n  \"date_of_lab\": \"2021-09-01\",\n  \"evidence_sentences\": [\n    \"On 09\/01\/21 Serum kappa was down to 4.48 with a lambda 0.7, kappa lambda of 6.31.\"\n  ],\n  \"source_document\": \"2021-11-13_00:00:00.000_Consults_91085\"\n}"
+  },
+  {
+    "source_document":"2021-11-13_00:00:00.000_Consults_91085",
+    "kappa_flc":"20.78",
+    "lambda_flc":"0.24",
+    "kappa_lambda_ratio":"86.58",
+    "date_of_lab":"2021-06-XX",
+    "evidence_sentences":"Of note, on 06\/21 his kappa had been 20.78 per dL, lambda 0.24 and a kappa lambda of 86.58.",
+    "context":"{\n  \"kappa_flc\": \"20.78\",\n  \"lambda_flc\": \"0.24\",\n  \"kappa_lambda_ratio\": \"86.58\",\n  \"date_of_lab\": \"2021-06-XX\",\n  \"evidence_sentences\": [\n    \"Of note, on 06\/21 his kappa had been 20.78 per dL, lambda 0.24 and a kappa lambda of 86.58.\"\n  ],\n  \"source_document\": \"2021-11-13_00:00:00.000_Consults_91085\"\n}"
+  },
+  {
+    "source_document":"2021-11-13_00:00:00.000_Consults_91085",
+    "kappa_flc":"24.67",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"137.06",
+    "date_of_lab":"2020-10-XX",
+    "evidence_sentences":"In 10\/2020 kappa was 24.67, kappa lambda 137.06.",
+    "context":"{\n  \"kappa_flc\": \"24.67\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"137.06\",\n  \"date_of_lab\": \"2020-10-XX\",\n  \"evidence_sentences\": [\n    \"In 10\/2020 kappa was 24.67, kappa lambda 137.06.\"\n  ],\n  \"source_document\": \"2021-11-13_00:00:00.000_Consults_91085\"\n}"
+  },
+  {
+    "source_document":"2021-11-13_00:00:00.000_Consults_91085",
+    "kappa_flc":"30.75",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"16184",
+    "date_of_lab":"2020-12-XX",
+    "evidence_sentences":"In 12\/2020 kappa was 30.75, kappa lambda 16184.",
+    "context":"{\n  \"kappa_flc\": \"30.75\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"16184\",\n  \"date_of_lab\": \"2020-12-XX\",\n  \"evidence_sentences\": [\n    \"In 12\/2020 kappa was 30.75, kappa lambda 16184.\"\n  ],\n  \"source_document\": \"2021-11-13_00:00:00.000_Consults_91085\"\n}"
+  },
+  {
+    "source_document":"2024-02-03_00:00:00.000_Progress_Notes_91395",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-03_00:00:00.000_Progress_Notes_91395\"\n}"
+  },
+  {
+    "source_document":"2024-03-24_00:00:00.000_Progress_Notes_91557",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-03-24_00:00:00.000_Progress_Notes_91557\"\n}"
+  },
+  {
+    "source_document":"2024-03-24_00:00:00.000_Progress_Notes_91557",
+    "kappa_flc":"16.18",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":"> 115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"Pre-CAR T evaluation: MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \"> 115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"Pre-CAR T evaluation: MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1\"\n  ],\n  \"source_document\": \"2024-03-24_00:00:00.000_Progress_Notes_91557\"\n}"
+  },
+  {
+    "source_document":"2021-12-15_00:00:00.000_Progress_Notes_91091",
+    "kappa_flc":"24.67",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"137.06",
+    "date_of_lab":"2020-10-XX",
+    "evidence_sentences":"In 10\/2020, kappa FLC was 24.67, kappa\/lambda ratio was 137.06.",
+    "context":"{\n  \"kappa_flc\": \"24.67\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"137.06\",\n  \"date_of_lab\": \"2020-10-XX\",\n  \"evidence_sentences\": [\n    \"In 10\/2020, kappa FLC was 24.67, kappa\/lambda ratio was 137.06.\"\n  ],\n  \"source_document\": \"2021-12-15_00:00:00.000_Progress_Notes_91091\"\n}"
+  },
+  {
+    "source_document":"2021-12-15_00:00:00.000_Progress_Notes_91091",
+    "kappa_flc":"30.75",
+    "lambda_flc":null,
+    "kappa_lambda_ratio":"161.84",
+    "date_of_lab":"2020-12-XX",
+    "evidence_sentences":"In 12\/2020, kappa FLC was 30.75, kappa\/lambda ratio 161.84.",
+    "context":"{\n  \"kappa_flc\": \"30.75\",\n  \"lambda_flc\": null,\n  \"kappa_lambda_ratio\": \"161.84\",\n  \"date_of_lab\": \"2020-12-XX\",\n  \"evidence_sentences\": [\n    \"In 12\/2020, kappa FLC was 30.75, kappa\/lambda ratio 161.84.\"\n  ],\n  \"source_document\": \"2021-12-15_00:00:00.000_Progress_Notes_91091\"\n}"
+  },
+  {
+    "source_document":"2021-12-15_00:00:00.000_Progress_Notes_91091",
+    "kappa_flc":"20.78",
+    "lambda_flc":"0.24",
+    "kappa_lambda_ratio":"86.58",
+    "date_of_lab":"2021-06-XX",
+    "evidence_sentences":"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.",
+    "context":"{\n  \"kappa_flc\": \"20.78\",\n  \"lambda_flc\": \"0.24\",\n  \"kappa_lambda_ratio\": \"86.58\",\n  \"date_of_lab\": \"2021-06-XX\",\n  \"evidence_sentences\": [\n    \"In 6\/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa\/lambda ratio of 86.58.\"\n  ],\n  \"source_document\": \"2021-12-15_00:00:00.000_Progress_Notes_91091\"\n}"
+  },
+  {
+    "source_document":"2021-12-15_00:00:00.000_Progress_Notes_91091",
+    "kappa_flc":"1.45",
+    "lambda_flc":"0.73",
+    "kappa_lambda_ratio":"1.99",
+    "date_of_lab":"2021-12-01",
+    "evidence_sentences":"His most recent labs on 12\/1\/21 show an M-spike of 0.2, kappa FLC 1.45, lambda FLC 0.73, and kappa\/lambda ratio of 1.99.",
+    "context":"{\n  \"kappa_flc\": \"1.45\",\n  \"lambda_flc\": \"0.73\",\n  \"kappa_lambda_ratio\": \"1.99\",\n  \"date_of_lab\": \"2021-12-01\",\n  \"evidence_sentences\": [\n    \"His most recent labs on 12\/1\/21 show an M-spike of 0.2, kappa FLC 1.45, lambda FLC 0.73, and kappa\/lambda ratio of 1.99.\"\n  ],\n  \"source_document\": \"2021-12-15_00:00:00.000_Progress_Notes_91091\"\n}"
+  },
+  {
+    "source_document":"2021-12-15_00:00:00.000_Progress_Notes_91091",
+    "kappa_flc":"4.48",
+    "lambda_flc":"0.7",
+    "kappa_lambda_ratio":"6.31",
+    "date_of_lab":"2021-09-01",
+    "evidence_sentences":"On 09\/01\/21 M-spike was 3.1, with Serum kappa down to 4.48 with a lambda 0.7, kappa\/lambda ratio of 6.31.",
+    "context":"{\n  \"kappa_flc\": \"4.48\",\n  \"lambda_flc\": \"0.7\",\n  \"kappa_lambda_ratio\": \"6.31\",\n  \"date_of_lab\": \"2021-09-01\",\n  \"evidence_sentences\": [\n    \"On 09\/01\/21 M-spike was 3.1, with Serum kappa down to 4.48 with a lambda 0.7, kappa\/lambda ratio of 6.31.\"\n  ],\n  \"source_document\": \"2021-12-15_00:00:00.000_Progress_Notes_91091\"\n}"
+  },
+  {
+    "source_document":"2021-12-15_00:00:00.000_Progress_Notes_91091",
+    "kappa_flc":"64.9",
+    "lambda_flc":"0.34",
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-03-XX",
+    "evidence_sentences":"At that time, he had an M-spike of 6, calcium of 9.7, an IgG of 5610, kappa FLC 64.9, lambda FLC 0.34, kappa\/lambda ratio of 190, total protein 10.7, albumin of 2.3, vitamin D of 10.",
+    "context":"{\n  \"kappa_flc\": \"64.9\",\n  \"lambda_flc\": \"0.34\",\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-03-XX\",\n  \"evidence_sentences\": [\n    \"At that time, he had an M-spike of 6, calcium of 9.7, an IgG of 5610, kappa FLC 64.9, lambda FLC 0.34, kappa\/lambda ratio of 190, total protein 10.7, albumin of 2.3, vitamin D of 10.\"\n  ],\n  \"source_document\": \"2021-12-15_00:00:00.000_Progress_Notes_91091\"\n}"
+  },
+  {
+    "source_document":"2024-01-26_00:00:00.000_Progress_Notes_91342",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-26_00:00:00.000_Progress_Notes_91342\"\n}"
+  },
+  {
+    "source_document":"2024-03-19_00:00:00.000_Progress_Notes_91529",
+    "kappa_flc":"42.6",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"Talequetamab C1 (1\/24-2\/16\/24) with M spike 2.8-->1, KFLC 42.6-->16.18",
+    "context":"{\n  \"kappa_flc\": \"42.6\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"Talequetamab C1 (1\/24-2\/16\/24) with M spike 2.8-->1, KFLC 42.6-->16.18\"\n  ],\n  \"source_document\": \"2024-03-19_00:00:00.000_Progress_Notes_91529\"\n}"
+  },
+  {
+    "source_document":"2024-03-19_00:00:00.000_Progress_Notes_91529",
+    "kappa_flc":"16.18",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"2024-02-16",
+    "evidence_sentences":"Talequetamab C1 (1\/24-2\/16\/24) with M spike 2.8-->1, KFLC 42.6-->16.18",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"2024-02-16\",\n  \"evidence_sentences\": [\n    \"Talequetamab C1 (1\/24-2\/16\/24) with M spike 2.8-->1, KFLC 42.6-->16.18\"\n  ],\n  \"source_document\": \"2024-03-19_00:00:00.000_Progress_Notes_91529\"\n}"
+  },
+  {
+    "source_document":"2024-03-14_00:00:00.000_Progress_Notes_91512",
+    "kappa_flc":"42.6-->16.18",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"S\/p bridging isatuximab\/carfilzomib\/dex with no response >> Talequetamab C1 (1\/24-2\/16\/24) with M spike 2.8-->1, KFLC 42.6-->16.18",
+    "context":"{\n  \"kappa_flc\": \"42.6-->16.18\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"S\/p bridging isatuximab\/carfilzomib\/dex with no response >> Talequetamab C1 (1\/24-2\/16\/24) with M spike 2.8-->1, KFLC 42.6-->16.18\"\n  ],\n  \"source_document\": \"2024-03-14_00:00:00.000_Progress_Notes_91512\"\n}"
+  },
+  {
+    "source_document":"2024-01-25_00:00:00.000_Progress_Notes_91330",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-25_00:00:00.000_Progress_Notes_91330\"\n}"
+  },
+  {
+    "source_document":"2024-03-10_00:00:00.000_Progress_Notes_91489",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-03-10_00:00:00.000_Progress_Notes_91489\"\n}"
+  },
+  {
+    "source_document":"2024-03-10_00:00:00.000_Progress_Notes_91489",
+    "kappa_flc":"16.18",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":"> 115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"Pre-CAR T evaluation: MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \"> 115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"Pre-CAR T evaluation: MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1\"\n  ],\n  \"source_document\": \"2024-03-10_00:00:00.000_Progress_Notes_91489\"\n}"
+  },
+  {
+    "source_document":"2024-01-24_00:00:00.000_H&P_91325",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-24_00:00:00.000_H&P_91325\"\n}"
+  },
+  {
+    "source_document":"2024-04-08_00:00:00.000_Progress_Notes_91577",
+    "kappa_flc":"16.18",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":"> 115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"Pre-CAR T evaluation:  MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57.",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \"> 115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"Pre-CAR T evaluation:  MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57.\"\n  ],\n  \"source_document\": \"2024-04-08_00:00:00.000_Progress_Notes_91577\"\n}"
+  },
+  {
+    "source_document":"2024-04-08_00:00:00.000_Progress_Notes_91577",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29.\"\n  ],\n  \"source_document\": \"2024-04-08_00:00:00.000_Progress_Notes_91577\"\n}"
+  },
+  {
+    "source_document":"2024-02-13_00:00:00.000_Progress_Notes_91443",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-02-13_00:00:00.000_Progress_Notes_91443\"\n}"
+  },
+  {
+    "source_document":"2021-12-17_00:00:00.000_Progress_Notes_91098",
+    "kappa_flc":"64.9",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"190",
+    "date_of_lab":"2019-03-XX",
+    "evidence_sentences":"At diagnosis M-spike was 6, Hgb 8.4, calcium of 9.7, albumin 2.3, adjusted calcium level 11.1, creatinine 0.99.\nIgG of 5610, kappa FLC 64.9, lappa\/lambda ratio of 190, total protein 10.7.",
+    "context":"{\n  \"kappa_flc\": \"64.9\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"190\",\n  \"date_of_lab\": \"2019-03-XX\",\n  \"evidence_sentences\": [\n    \"At diagnosis M-spike was 6, Hgb 8.4, calcium of 9.7, albumin 2.3, adjusted calcium level 11.1, creatinine 0.99.\",\n    \"IgG of 5610, kappa FLC 64.9, lappa\/lambda ratio of 190, total protein 10.7.\"\n  ],\n  \"source_document\": \"2021-12-17_00:00:00.000_Progress_Notes_91098\"\n}"
+  },
+  {
+    "source_document":"2024-03-06_00:00:00.000_Progress_Notes_91482",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-03-06_00:00:00.000_Progress_Notes_91482\"\n}"
+  },
+  {
+    "source_document":"2024-03-06_00:00:00.000_Progress_Notes_91482",
+    "kappa_flc":"16.18",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":"> 115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"Pre-CAR T evaluation:  MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \"> 115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"Pre-CAR T evaluation:  MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1\"\n  ],\n  \"source_document\": \"2024-03-06_00:00:00.000_Progress_Notes_91482\"\n}"
+  },
+  {
+    "source_document":"2024-03-20_00:00:00.000_Progress_Notes_91537",
+    "kappa_flc":"16.18",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"2024-XX-XX",
+    "evidence_sentences":"S\/p bridging isatuximab\/carfilzomib\/dex with no response >> Talequetamab C1 (1\/24-2\/16\/24) with M spike 2.8-->1, KFLC 42.6-->16.18",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"2024-XX-XX\",\n  \"evidence_sentences\": [\n    \"S\/p bridging isatuximab\/carfilzomib\/dex with no response >> Talequetamab C1 (1\/24-2\/16\/24) with M spike 2.8-->1, KFLC 42.6-->16.18\"\n  ],\n  \"source_document\": \"2024-03-20_00:00:00.000_Progress_Notes_91537\"\n}"
+  },
+  {
+    "source_document":"2024-03-25_00:00:00.000_Progress_Notes_91561",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-03-25_00:00:00.000_Progress_Notes_91561\"\n}"
+  },
+  {
+    "source_document":"2024-03-25_00:00:00.000_Progress_Notes_91561",
+    "kappa_flc":"16.18",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":"> 115.57",
+    "date_of_lab":"2024-02-22",
+    "evidence_sentences":"Pre-CAR T evaluation: MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1.",
+    "context":"{\n  \"kappa_flc\": \"16.18\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \"> 115.57\",\n  \"date_of_lab\": \"2024-02-22\",\n  \"evidence_sentences\": [\n    \"Pre-CAR T evaluation: MM labs (2\/22): KFLC 16.18, LFLC < 0.15, ratio > 115.57. IgG Kappa M spike 0.1.\"\n  ],\n  \"source_document\": \"2024-03-25_00:00:00.000_Progress_Notes_91561\"\n}"
+  },
+  {
+    "source_document":"2024-01-29_00:00:00.000_Progress_Notes_91357",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-29_00:00:00.000_Progress_Notes_91357\"\n}"
+  },
+  {
+    "source_document":"2024-01-27_00:00:00.000_Consults_91344",
+    "kappa_flc":"242",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1733.29",
+    "date_of_lab":"2024-01-16",
+    "evidence_sentences":"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"242\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1733.29\",\n  \"date_of_lab\": \"2024-01-16\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/16): KFLC 242, LFLC < 0.15, ratio >1733.29, M spike 2.8 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-27_00:00:00.000_Consults_91344\"\n}"
+  },
+  {
+    "source_document":"2024-01-27_00:00:00.000_Progress_Notes_91343",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-27_00:00:00.000_Progress_Notes_91343\"\n}"
+  },
+  {
+    "source_document":"2024-03-14_00:00:00.000_Progress_Notes_91510",
+    "kappa_flc":"",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"",
+    "evidence_sentences":"",
+    "context":"{\n  \"kappa_flc\": \"\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"\",\n  \"evidence_sentences\": [],\n  \"source_document\": \"2024-03-14_00:00:00.000_Progress_Notes_91510\"\n}"
+  },
+  {
+    "source_document":"2024-02-12_00:00:00.000_Progress_Notes_91440",
+    "kappa_flc":"",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"",
+    "evidence_sentences":"",
+    "context":"{\n  \"kappa_flc\": \"\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"\",\n  \"evidence_sentences\": [],\n  \"source_document\": \"2024-02-12_00:00:00.000_Progress_Notes_91440\"\n}"
+  },
+  {
+    "source_document":"2024-01-28_00:00:00.000_Progress_Notes_91350",
+    "kappa_flc":"204",
+    "lambda_flc":"< 0.15",
+    "kappa_lambda_ratio":">1456.71",
+    "date_of_lab":"2024-01-24",
+    "evidence_sentences":"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.",
+    "context":"{\n  \"kappa_flc\": \"204\",\n  \"lambda_flc\": \"< 0.15\",\n  \"kappa_lambda_ratio\": \">1456.71\",\n  \"date_of_lab\": \"2024-01-24\",\n  \"evidence_sentences\": [\n    \"MM markers (1\/24): KFLC 204, LFLC < 0.15, ratio >1456.71, M spike 2.6 IgG kappa, Kappa free light chain TSTQ.\"\n  ],\n  \"source_document\": \"2024-01-28_00:00:00.000_Progress_Notes_91350\"\n}"
+  },
+  {
+    "source_document":"2024-01-18_00:00:00.000_Progress_Notes_91310",
+    "kappa_flc":"",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"",
+    "evidence_sentences":"",
+    "context":"{\n  \"kappa_flc\": \"\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"\",\n  \"evidence_sentences\": [],\n  \"source_document\": \"2024-01-18_00:00:00.000_Progress_Notes_91310\"\n}"
+  },
+  {
+    "source_document":"2023-11-21_00:00:00.000_Progress_Notes_91270",
+    "kappa_flc":"",
+    "lambda_flc":"",
+    "kappa_lambda_ratio":"",
+    "date_of_lab":"",
+    "evidence_sentences":"",
+    "context":"{\n  \"kappa_flc\": \"\",\n  \"lambda_flc\": \"\",\n  \"kappa_lambda_ratio\": \"\",\n  \"date_of_lab\": \"\",\n  \"evidence_sentences\": [],\n  \"source_document\": \"2023-11-21_00:00:00.000_Progress_Notes_91270\"\n}"
+  }
+]
