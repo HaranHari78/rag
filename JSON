@@ -47,7 +47,7 @@ csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv
 df = pd.read_csv(csv_path)
 
 # Grouped chunks per document
-splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+splitter = RecursiveCharacterTextSplitter(chunk_size=3000, chunk_overlap=0)
 grouped_batches = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
@@ -135,18 +135,17 @@ Extract these fields only if they are clearly present in the current context:
 - ✅ **Supporting evidence sentences** (must include the above values in the same sentence or logically linked)
 
 ⚠️ **Important Constraints:**
-- ❌ Do NOT hallucinate values or infer them from vague summaries.
-- ❌ Do NOT use values that are not clearly tied to this specific document context.
-- ❌ If the extracted values appear copied from another unrelated document, discard the entire output for this document.
-- ❌ Do NOT include diagnosis phrases like "monoclonal kappa detected" unless a real numeric value is stated.❗ Do NOT guess or infer values.
-❗ Do NOT reuse values from one document in another.
-❗ If the values (kappa, lambda, or ratio) are not explicitly present in the context of THIS document, skip them.
-❗ Values like "1.24", "1.72", "10.15", "115.57" are common hallucinations. Do NOT include them unless clearly shown in this document.
+-  Do NOT hallucinate values or infer them from vague summaries.
+-  Do NOT use values that are not clearly tied to this specific document context.
+-  If the extracted values appear copied from another unrelated document, discard the entire output for this document.
+-  Do NOT include diagnosis phrases like "monoclonal kappa detected" unless a real numeric value is stated.
+- Do NOT reuse values from one document in another.
+- If the values (kappa, lambda, or ratio) are not explicitly present in the context of THIS document, skip them.
+
 
 ✅ Proceed only if the lab values are explicitly mentioned with units.
 
-Respond in strict JSON format like below:
-
+Respond in strict JSON format like this:
 [
   {{
     "kappa_flc": "...",
@@ -157,11 +156,9 @@ Respond in strict JSON format like below:
   }}
 ]
 
----
-📄 Context:
-{json.dumps(context, indent=2)}
+--- Context:
+{json.dumps(json_context, indent=2)}
 """
-
 
     try:
         print(f"🧠 Running batch {i+1}/{len(grouped_filtered)}...")
@@ -192,14 +189,15 @@ df.drop_duplicates(
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
 os.makedirs(output_dir, exist_ok=True)
 
-excel_path = os.path.join(output_dir, "Final_Output.xlsx")
-json_path = os.path.join(output_dir, "Final_Output.json")
+excel_path = os.path.join(output_dir, "Output.xlsx")
+json_path = os.path.join(output_dir, "Output.json")
 
 df.to_excel(excel_path, index=False)
 df.to_json(json_path, orient="records", indent=2)
 
 print(f"\n✅ Excel saved: {excel_path}")
 print(f"✅ JSON saved: {json_path}")
+
 
 
 
