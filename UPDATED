@@ -136,6 +136,9 @@ Your goal is to extract ONLY numeric values for the following fields. Do NOT inc
 - ✅ Kappa/Lambda ratio
 - ✅ Lab test date (YYYY-MM-DD or partial as YYYY-XX-XX)
 - ✅ Evidence sentences (verbatim sentences that contain the extracted values)
+IMPORTANT:
+- If the date is incomplete (e.g., only month and year), fill the missing parts with "XX".
+- DO NOT guess or infer dates.
 
 Respond in strict JSON format like:
 [
