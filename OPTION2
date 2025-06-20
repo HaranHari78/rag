@@ -129,3 +129,53 @@ Return your output strictly in the following JSON format:
   ]
 }}
 """
+
+
+
+FIELD_PROMPT::
+
+
+def build_kappa_lambda_field_prompt(text: str, doc_title: str) -> str:
+    return f"""
+You are a medical AI assistant trained to extract structured lab values related to Free Light Chain assays from clinical note sentences.
+
+📄 Document Title: {doc_title}
+
+🔍 Your job:
+From the input text, extract the following fields **only if the value and unit are explicitly present**:
+
+1. `kappa_flc`: numerical value (e.g., 0.08) + unit (e.g., mg/dL or mg/L)
+2. `lambda_flc`: numerical value + unit (mg/dL or mg/L)
+3. `kappa_lambda_ratio`: the reported ratio, optionally with symbols like > or < (e.g., ">0.57")
+
+🗓️ For each field, also extract:
+- `date`: exact date associated with the test (if present in the sentence)
+    🔹 If the date is partial (e.g., only year or year+month), fill missing parts with "XX".
+    🔹 Example: "2022-05" → "2022-05-XX", "2022" → "2022-XX-XX"
+    🔹 ❗ Do not guess or infer the date — extract it only if explicitly mentioned.
+- `evidence`: the **verbatim sentence** from which the value was extracted
+
+📌 Additional Instructions:
+- Use only values with **mg/dL or mg/L** units — ignore unitless or ambiguous mentions.
+- If multiple values are found:
+    🔹 Prefer the one that contains all three fields together.
+    🔹 Otherwise, use the **most informative sentence** per field.
+- ❗Avoid duplication — each field should appear only once in the output.
+
+🧾 Input Text:
+\"\"\"{text}\"\"\"
+
+📤 Return your response in the following strict JSON format:
+{{
+  "document_title": "{doc_title}",
+  "kappa_flc": {{
+    "value": "", "date": "", "evidence": ""
+  }},
+  "lambda_flc": {{
+    "value": "", "date": "", "evidence": ""
+  }},
+  "kappa_lambda_ratio": {{
+    "value": "", "date": "", "evidence": ""
+  }}
+}}
+"""
