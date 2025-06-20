@@ -258,16 +258,26 @@ def normalize_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-def get_value_with_unit(field_value, context_text, field_name):
+def get_value_with_unit_loose(field_value, context_text, field_name):
     if not field_value or not context_text:
         return field_value
-    pattern = None
-    if field_name in ["kappa_flc", "lambda_flc"]:
-        pattern = re.compile(rf"([<>]?\s*{re.escape(field_value)}\s*(mg/dl|mg/l))", re.IGNORECASE)
-    elif field_name == "kappa_lambda_ratio":
-        pattern = re.compile(rf"([<>]?\s*{re.escape(field_value)})\\b")
-    match = pattern.search(context_text)
-    return match.group(1).replace(" ", "") if match else field_value
+
+    try:
+        number_pattern = r"[<>]?[\s]*[\d]+(?:\.\d+)?"
+        if field_name in ["kappa_flc", "lambda_flc"]:
+            unit_pattern = rf"({number_pattern}[\s]*(mg/dl|mg/l))"
+        else:
+            unit_pattern = rf"({number_pattern})"
+
+        matches = re.findall(unit_pattern, context_text, re.IGNORECASE)
+        for match in matches:
+            full_match = match[0] if isinstance(match, tuple) else match
+            cleaned = re.sub(r'[<>\s]', '', full_match)
+            if cleaned.startswith(field_value.replace('.', '')) or field_value in cleaned:
+                return full_match.replace(" ", "")
+    except:
+        return field_value
+    return field_value
 
 def flatten_context(context_json):
     obj = json.loads(context_json)
@@ -400,9 +410,9 @@ if final_results:
     # Restore symbols and units from context
     for i, row in df.iterrows():
         context_text = flatten_context(row["context"])
-        df.at[i, "kappa_flc"] = get_value_with_unit(str(row["kappa_flc"]), context_text, "kappa_flc")
-        df.at[i, "lambda_flc"] = get_value_with_unit(str(row["lambda_flc"]), context_text, "lambda_flc")
-        df.at[i, "kappa_lambda_ratio"] = get_value_with_unit(str(row["kappa_lambda_ratio"]), context_text, "kappa_lambda_ratio")
+        df.at[i, "kappa_flc"] = get_value_with_unit_loose(str(row["kappa_flc"]), context_text, "kappa_flc")
+        df.at[i, "lambda_flc"] = get_value_with_unit_loose(str(row["lambda_flc"]), context_text, "lambda_flc")
+        df.at[i, "kappa_lambda_ratio"] = get_value_with_unit_loose(str(row["kappa_lambda_ratio"]), context_text, "kappa_lambda_ratio")
 
     df = df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"])
     column_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
@@ -419,4 +429,3 @@ if final_results:
     print(f"📝 Contexts saved to: {context_output_path}")
 else:
     print("⚠️ No data extracted.")
-
