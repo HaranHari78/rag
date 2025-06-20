@@ -139,8 +139,11 @@ Extract these fields only if they are clearly present in the current context:
 -  Do NOT use values that are not clearly tied to this specific document context.
 -  If the extracted values appear copied from another unrelated document, discard the entire output for this document.
 -  Do NOT include diagnosis phrases like "monoclonal kappa detected" unless a real numeric value is stated.
-- Do NOT reuse values from one document in another.
-- If the values (kappa, lambda, or ratio) are not explicitly present in the context of THIS document, skip them.
+-  Do NOT reuse values from one document in another.
+-  If the values (kappa, lambda, or ratio) are not explicitly present in the context of THIS document, skip them.
+-  This context may contain overlapping content between chunks. If a value appears multiple times due to repetition, only extract it once.
+-  Do NOT repeat or infer values just because they show up repeatedly.
+-  Only include values that clearly appear in the evidence section for this document and are not duplicated due to chunk overlap.
 
 
 ✅ Proceed only if the lab values are explicitly mentioned with units.
