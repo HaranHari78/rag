@@ -90,3 +90,42 @@ df_final.drop_duplicates(
 # Save to Excel
 df_final.to_excel(output_excel, index=False)
 print(f"📊 Excel saved → {output_excel}")
+
+
+
+SEN_PROMPT::
+
+
+
+def build_kappa_lambda_sentence_prompt(text: str) -> str:
+    return f"""
+You are a medical AI assistant.
+
+Extract only those **verbatim sentences** from the clinical note that mention any of the following:
+
+1. Kappa Free Light Chains — values with proper unit (mg/dL or mg/L)
+2. Lambda Free Light Chains — values with proper unit (mg/dL or mg/L)
+3. Kappa/Lambda Ratio — numerical ratio values, optionally with signs like ">", "<"
+
+🧪 For each extracted sentence:
+- The sentence **must** include at least one of the above values clearly.
+- Do not extract repeated or paraphrased duplicates — **only one instance** per field per document.
+- Prefer sentences that include **all three fields** (kappa, lambda, ratio) together, if available.
+
+📅 Date Extraction Rules:
+- If the sentence includes a date (e.g., test date), retain it.
+- If the date is partial (like "2022-05"), fill the missing part with `"XX"`, e.g.,:
+  🔹 "2022-05" → `"2022-05-XX"`  
+  🔹 "2022" → `"2022-XX-XX"`
+- ❗Never guess or infer missing dates.
+
+📄 Input Clinical Note:
+\"\"\"{text}\"\"\"
+
+Return your output strictly in the following JSON format:
+{{
+  "kappa_lambda_lab_sentences": [
+    "..."
+  ]
+}}
+"""
