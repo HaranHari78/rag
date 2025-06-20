@@ -158,21 +158,25 @@ IMPORTANT:
 --- CONTEXT END ---
 """
     try:
-        print(f"\n🧠 Batch {i + 1}/{len(batches)}")
-        response = llm.invoke(prompt)
-        cleaned = parse_llm_json(response.content)
-        extracted_items = json.loads(cleaned)
-        for item, (source_title, _) in zip(extracted_items, batch):
-            item["source_document"] = source_title
-            item["context"] = json.dumps({
-                "kappa_flc": item.get("kappa_flc", ""),
-                "lambda_flc": item.get("lambda_flc", ""),
-                "kappa_lambda_ratio": item.get("kappa_lambda_ratio", ""),
-                "date_of_lab": item.get("date_of_lab", ""),
-                "evidence_sentences": item.get("evidence_sentences", [])
-            })
-            final_results.append(item)
-# Save cleaned Excel
+    print(f"\n🧠 Batch {i + 1}/{len(batches)}")
+    response = llm.invoke(prompt)
+    cleaned = parse_llm_json(response.content)
+    extracted_items = json.loads(cleaned)
+
+    for item, (source_title, _) in zip(extracted_items, batch):
+        item["source_document"] = source_title
+        item["context"] = json.dumps({
+            "kappa_flc": item.get("kappa_flc", ""),
+            "lambda_flc": item.get("lambda_flc", ""),
+            "kappa_lambda_ratio": item.get("kappa_lambda_ratio", ""),
+            "date_of_lab": item.get("date_of_lab", ""),
+            "evidence_sentences": item.get("evidence_sentences", [])
+        })
+        final_results.append(item)
+
+except Exception as e:
+    print(f"❌ Failed batch {i + 1}: {e}")
+
 if final_results:
     df = pd.DataFrame(final_results)
 
