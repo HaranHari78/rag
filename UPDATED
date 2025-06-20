@@ -158,52 +158,40 @@ IMPORTANT:
 --- CONTEXT END ---
 """
     try:
-    print(f"\n🧠 Batch {i + 1}/{len(batches)}")
-    response = llm.invoke(prompt)
-    cleaned = parse_llm_json(response.content)
-    extracted_items = json.loads(cleaned)
+        print(f"\n🧠 Batch {i + 1}/{len(batches)}")
+        response = llm.invoke(prompt)
+        cleaned = parse_llm_json(response.content)
+        extracted_items = json.loads(cleaned)
 
-    for item, (source_title, _) in zip(extracted_items, batch):
-        item["source_document"] = source_title
-        item["context"] = json.dumps({
-            "kappa_flc": item.get("kappa_flc", ""),
-            "lambda_flc": item.get("lambda_flc", ""),
-            "kappa_lambda_ratio": item.get("kappa_lambda_ratio", ""),
-            "date_of_lab": item.get("date_of_lab", ""),
-            "evidence_sentences": item.get("evidence_sentences", [])
-        })
-        final_results.append(item)
+        for item, (source_title, _) in zip(extracted_items, batch):
+            item["source_document"] = source_title
+            item["context"] = json.dumps({
+                "kappa_flc": item.get("kappa_flc", ""),
+                "lambda_flc": item.get("lambda_flc", ""),
+                "kappa_lambda_ratio": item.get("kappa_lambda_ratio", ""),
+                "date_of_lab": item.get("date_of_lab", ""),
+                "evidence_sentences": item.get("evidence_sentences", [])
+            })
+            final_results.append(item)
 
-except Exception as e:
-    print(f"❌ Failed batch {i + 1}: {e}")
+    except Exception as e:
+        print(f"❌ Failed batch {i + 1}: {e}")
 
-
+# Save cleaned file
 if final_results:
     df = pd.DataFrame(final_results)
-
-    # Join evidence
-    df["evidence_sentences"] = df["evidence_sentences"].apply(
-        lambda x: "\n".join(x) if isinstance(x, list) else str(x)
-    )
-
-    # Extract only numeric part
+    df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x) if isinstance(x, list) else str(x))
     for col in ["kappa_flc", "lambda_flc", "kappa_lambda_ratio"]:
         df[col] = df[col].apply(extract_numeric)
-
-    # Drop duplicates by value
     df = df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"])
-
-    # Reorder
-    column_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]
+    column_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
     df = df[column_order]
-
-    # Save
     df.to_excel(output_path, index=False)
     print(f"\n✅ Saved at: {output_path}")
 else:
     print("⚠️ No data extracted.")
-# ----------------- 🔍 Postprocess for symbolic & mg/dL values -----------------
 
+# ----------------- 🔍 Postprocess for symbolic & mg/dL values -----------------
 if not df.empty:
     def extract_symbol_ratio(evidence):
         if not isinstance(evidence, str):
@@ -227,8 +215,6 @@ if not df.empty:
     df["kappa_flc_with_unit"] = df["evidence_sentences"].apply(extract_kappa_mgdl)
     df["lambda_flc_with_unit"] = df["evidence_sentences"].apply(extract_lambda_mgdl)
 
-    # Save updated version with symbolic and unit values
     updated_output_path = os.path.join(output_dir, "updated_extracted_result.xlsx")
     df.to_excel(updated_output_path, index=False)
     print(f"✅ Updated file with symbolic and mg/dL values saved at: {updated_output_path}")
-
