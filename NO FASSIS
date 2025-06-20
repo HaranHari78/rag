@@ -221,18 +221,23 @@ if "evidence_sentences" in df.columns and not df.empty:
         df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x))
 
 cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
-df = df[cols]
-df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], inplace=True)
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
 
-# Save
-output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
-os.makedirs(output_dir, exist_ok=True)
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], inplace=True)
 
-excel_path = os.path.join(output_dir, "Output1.xlsx")
-json_path = os.path.join(output_dir, "Output1.json")
+    # Save
+    output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
+    os.makedirs(output_dir, exist_ok=True)
 
-df.to_excel(excel_path, index=False)
-df.to_json(json_path, orient="records", indent=2)
+    excel_path = os.path.join(output_dir, "Output1.xlsx")
+    json_path = os.path.join(output_dir, "Output1.json")
 
-print(f"\n✅ Excel saved: {excel_path}")
-print(f"✅ JSON saved: {json_path}")
+    df.to_excel(excel_path, index=False)
+    df.to_json(json_path, orient="records", indent=2)
+
+    print(f"\\n✅ Excel saved: {excel_path}")
+    print(f"✅ JSON saved: {json_path}")
+else:
+    print(\"⚠️ No results to save. The final DataFrame is empty or missing expected columns.\")
