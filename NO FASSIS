@@ -1,3 +1,21 @@
+
+🔢 Filtered Chunks Count: 0
+🗂️ Grouped Documents Count: 0
+⚠️ No results to save. The final DataFrame is empty or missing expected columns.
+100%|██████████| 517/517 [00:00<00:00, 676.46it/s]
+100%|██████████| 517/517 [00:33<00:00, 15.52it/s]
+⚠️ No results to save. The final DataFrame is empty or missing expected columns.
+100%|██████████| 517/517 [00:00<00:00, 653.10it/s]
+100%|██████████| 517/517 [00:28<00:00, 17.92it/s]
+⚠️ No results to save. The final DataFrame is empty or missing expected columns.
+
+
+
+
+
+
+
+
 import os
 import re
 import json
