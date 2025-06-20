@@ -1,0 +1,143 @@
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+
+# Load config
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Prepare splitter
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+
+# Load dataset
+df = pd.read_csv("MEDICAL_DATAS.csv")
+
+# Prepare grouped document-wise chunks
+grouped_batches = []
+titles = []
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    if pd.isna(row["text"]):
+        continue
+    source = row["title"]
+    chunks = splitter.split_text(row["text"])
+    doc_chunks = [Document(page_content=chunk, metadata={"source": source}) for chunk in chunks]
+    if doc_chunks:
+        grouped_batches.append(doc_chunks)
+        titles.append(source)
+
+# Embedding model
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000,
+)
+
+# LLM setup
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0,
+)
+
+# Helper to clean LLM output
+def parse_llm_json(raw_text: str) -> list:
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    try:
+        return json.loads(raw_text)
+    except:
+        fixed = raw_text.replace("'", '"')
+        return json.loads(fixed)
+
+# Final result list
+final_results = []
+
+# Per-doc vector search + LLM extraction
+for doc_chunks, title in tqdm(zip(grouped_batches, titles), total=len(titles)):
+    try:
+        vs = FAISS.from_documents(doc_chunks, embedding_model)
+        query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
+        results = vs.similarity_search(query, k=10)
+
+        context = [doc.page_content for doc in results]
+        full_prompt = f"""
+You are a medical information extraction assistant. Your task is to extract lab results from clinical notes.
+
+Extract the following values only if explicitly stated:
+- Kappa free light chains (mg/L)
+- Lambda free light chains (mg/L)
+- Kappa/Lambda ratio (with optional < or >)
+- Lab test date associated with these values. If date is incomplete, fill with 'XX'. Do not guess.
+- Supporting evidence sentences
+
+⚠️ Include values only if clearly mentioned. Do not hallucinate or infer.
+
+Respond in strict JSON format like:
+
+[
+  {{
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences": ["...", "..."]
+  }}
+]
+
+---
+📄 Context:
+{json.dumps(context, indent=2)}
+"""
+        response = llm.invoke(full_prompt)
+        extracted = parse_llm_json(response.content)
+
+        for item in extracted:
+            item["source_document"] = title
+            item["context"] = json.dumps(context)
+            if isinstance(item.get("evidence_sentences"), list):
+                item["evidence_sentences"] = "\n".join(item["evidence_sentences"])
+            final_results.append(item)
+    except Exception as e:
+        print(f"❌ Error in document: {title} → {e}")
+
+# Output
+df = pd.DataFrame(final_results)
+df = df[
+    ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+]
+df.drop_duplicates(
+    subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"],
+    inplace=True,
+)
+
+output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
+os.makedirs(output_dir, exist_ok=True)
+excel_path = os.path.join(output_dir, "Chain_Isolated_Per_Doc.xlsx")
+json_path = os.path.join(output_dir, "Chain_Isolated_Per_Doc.json")
+
+df.to_excel(excel_path, index=False)
+df.to_json(json_path, orient="records", indent=2)
+
+print(f"✅ Saved Excel: {excel_path}")
+print(f"✅ Saved JSON : {json_path}")
