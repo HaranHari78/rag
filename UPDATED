@@ -1,90 +1,3 @@
-Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\main.py", line 160, in <module>
-    response = llm.invoke(full_prompt)
-               ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 372, in invoke
-    self.generate_prompt(
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 957, in generate_prompt
-    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 776, in generate
-    self._generate_with_cache(
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1022, in _generate_with_cache
-    result = self._generate(
-             ^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\langchain_openai\chat_models\base.py", line 1071, in _generate
-    response = self.client.create(**payload)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\openai\_utils\_utils.py", line 287, in wrapper
-    return func(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 925, in create
-    return self._post(
-           ^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\openai\_base_client.py", line 1249, in post
-    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\openai\_base_client.py", line 972, in request
-    response = self._client.send(
-               ^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
-    response = self._send_handling_auth(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
-    response = self._send_handling_redirects(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
-    response = self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
-    response = transport.handle_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
-    resp = self._pool.handle_request(req)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
-    raise exc from None
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
-    response = connection.handle_request(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 103, in handle_request
-    return self._connection.handle_request(request)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 136, in handle_request
-    raise exc
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 106, in handle_request
-    ) = self._receive_response_headers(**kwargs)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 177, in _receive_response_headers
-    event = self._receive_event(timeout=timeout)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 217, in _receive_event
-    data = self._network_stream.read(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 128, in read
-    return self._sock.recv(max_bytes)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Program Files\Python311\Lib\ssl.py", line 1295, in recv
-    return self.read(buflen)
-           ^^^^^^^^^^^^^^^^^
-  File "C:\Program Files\Python311\Lib\ssl.py", line 1168, in read
-    return self._sslobj.read(len)
-           ^^^^^^^^^^^^^^^^^^^^^^
-KeyboardInterrupt
-
-Process finished with exit code -1073741510 (0xC000013A: interrupted by Ctrl+C)
-
-
-
-
-
-
-
-
-
-
-
-
 import os
 import re
 import json
@@ -97,7 +10,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 
-# Load config.ini
+# Load config
 config = configparser.ConfigParser()
 config.read("config.ini")
 
@@ -109,9 +22,19 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
+# Paths
+csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+output_dir = r"C:\Users\HariharaM12\PycharmProjects\Rag1\Task"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "extracted_results.xlsx")
+
 # Helpers
+def batchify(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
 def parse_llm_json(raw_text: str) -> str:
-    pattern = r"```(?:json)?\\s*(.*?)```"
+    pattern = r"```(?:json)?\s*(.*?)```"
     match = re.search(pattern, raw_text, flags=re.DOTALL)
     raw_text = match.group(1).strip() if match else raw_text.strip()
     if raw_text.startswith("json"):
@@ -129,30 +52,25 @@ def normalize_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-def numeric_only(value: str) -> bool:
-    return bool(re.match(r"^[<>]?\d+(\.\d+)?$", value.strip()))
+def extract_numeric(value):
+    if not isinstance(value, str):
+        return value
+    match = re.search(r"[\d.]+", value.replace(',', ''))
+    return match.group(0) if match else ""
 
-def clean_numeric(val: str) -> str:
-    match = re.findall(r"[<>]?\d+\.?\d*", val)
-    return match[0] if match else ""
-
-# Load dataset
-csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+# Load and prepare documents
 df = pd.read_csv(csv_path)
+documents = [
+    Document(page_content=row["text"], metadata={"source": row["title"]})
+    for _, row in df.iterrows() if pd.notna(row["text"])
+]
 
-# Grouped chunks per document
-splitter = RecursiveCharacterTextSplitter(chunk_size=3000, chunk_overlap=500)
-grouped_batches = []
-for _, row in tqdm(df.iterrows(), total=len(df)):
-    if pd.isna(row["text"]):
-        continue
-    source = row["title"]
-    chunks = splitter.split_text(row["text"])
-    doc_chunks = [Document(page_content=chunk, metadata={"source": source}) for chunk in chunks]
-    if doc_chunks:
-        grouped_batches.append(doc_chunks)
+# Split into chunks
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
+chunks = splitter.split_documents(documents)
+chunk_batches = list(batchify(chunks, 20))
 
-# Embedding model
+# Setup embedding
 embedding_model = AzureOpenAIEmbeddings(
     deployment=EMBEDDING_DEPLOYMENT,
     model=EMBEDDING_MODEL,
@@ -162,13 +80,13 @@ embedding_model = AzureOpenAIEmbeddings(
     chunk_size=1000
 )
 
-# Build FAISS index
+# Build FAISS index in parallel
 def build_faiss(batch):
     return FAISS.from_documents(batch, embedding_model)
 
 sub_indexes = []
 with ThreadPoolExecutor(max_workers=4) as executor:
-    futures = {executor.submit(build_faiss, batch): batch for batch in grouped_batches}
+    futures = {executor.submit(build_faiss, batch): batch for batch in chunk_batches}
     for future in tqdm(as_completed(futures), total=len(futures)):
         try:
             sub_indexes.append(future.result())
@@ -180,25 +98,19 @@ for sub_index in sub_indexes[1:]:
     main_index.merge_from(sub_index)
 main_index.save_local("faiss_index")
 
-# Vector DB Search
+# Query FAISS
 vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
-query = "Extract numeric values for kappa, lambda, and ratio only. No units."
+query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter matching content
+# Filter relevant chunks
 filtered_chunks = []
 for doc in results:
-    norm_text = normalize_text(doc.page_content)
-    source_title = doc.metadata.get("source", "Unknown")
-    if source_title != "Unknown" and ('kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text):
-        filtered_chunks.append({"title": source_title, "content": doc.page_content})
+    norm = normalize_text(doc.page_content)
+    if 'kappa' in norm or 'lambda' in norm or 'ratio' in norm:
+        filtered_chunks.append((doc.metadata.get("source", "Unknown"), doc.page_content))
 
-# Regroup filtered chunks per doc
-grouped_filtered = {}
-for chunk in filtered_chunks:
-    grouped_filtered.setdefault(chunk["title"], []).append(chunk["content"])
-
-# Setup LLM
+# LLM setup
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -208,82 +120,80 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Run LLM
+# Prepare prompt batches
 final_results = []
-for i, (doc_title, chunks) in enumerate(grouped_filtered.items()):
-    json_context = [{"note_id": j + 1, "title": doc_title, "content": chunk} for j, chunk in enumerate(chunks)]
+batches = list(batchify(filtered_chunks, 10))
+for i, batch in enumerate(batches):
+    context = "\n\n".join(f"Note {i + 1} from {source}::\n{doc}" for i, (source, doc) in enumerate(batch))
+    prompt = f"""
+You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
 
-    full_prompt = f"""
-You are a medical information extraction assistant. Your task is to extract lab results from clinical notes.
+From the context below, extract the following values **only if they are explicitly mentioned**:
+- Kappa free light chains (mg/L)
+- Lambda free light chains (mg/L)
+- Kappa/Lambda ratio
+- Lab test date (YYYY-MM-DD format)
+- Supporting evidence sentence
+- The document title the sentence came from (you will be given that)
 
-Your goal is to extract ONLY numeric values for the following fields. Do NOT include units (like mg/dL or mg/L). Do NOT include text terms like "normal" or "elevated". Only numeric forms allowed (e.g., 1.2, <0.3, >4.5).
-
-- ✅ Kappa free light chains
-- ✅ Lambda free light chains
-- ✅ Kappa/Lambda ratio
-- ✅ Lab test date (YYYY-MM-DD or partial as YYYY-XX-XX)
-- ✅ Evidence sentences (verbatim sentences that contain the extracted values)
 IMPORTANT:
 - If the date is incomplete (e.g., only month and year), fill the missing parts with "XX".
 - DO NOT guess or infer dates.
+- Return structured JSON list. One object per lab result.
+- Include "evidence_sentences" and "source_document".
 
-Respond in strict JSON format like:
 [
   {{
-    "kappa_flc": "...",
-    "lambda_flc": "...",
-    "kappa_lambda_ratio": "...",
-    "date_of_lab": "...",
-    "evidence_sentences": ["...", "..."]
+    "kappa_flc": "<value with unit>",
+    "lambda_flc": "<value with unit>",
+    "kappa_lambda_ratio": "<numeric ratio>",
+    "date_of_lab": "<YYYY-MM-DD or with XX>",
+    "evidence_sentences": ["<sentence>"],
+    "source_document": "<document title>"
   }}
 ]
 
---- Context:
-{json.dumps(json_context, indent=2)}
+--- CONTEXT START ---
+{context}
+--- CONTEXT END ---
 """
-
     try:
-        print(f"🧠 Running batch {i+1}/{len(grouped_filtered)}...")
-        response = llm.invoke(full_prompt)
+        print(f"\n🧠 Batch {i + 1}/{len(batches)}")
+        response = llm.invoke(prompt)
         cleaned = parse_llm_json(response.content)
-        batch_result = json.loads(cleaned)
+        extracted_items = json.loads(cleaned)
+        for item, (source_title, _) in zip(extracted_items, batch):
+            item["source_document"] = source_title
+            item["context"] = json.dumps({
+                "kappa_flc": item.get("kappa_flc", ""),
+                "lambda_flc": item.get("lambda_flc", ""),
+                "kappa_lambda_ratio": item.get("kappa_lambda_ratio", ""),
+                "date_of_lab": item.get("date_of_lab", ""),
+                "evidence_sentences": item.get("evidence_sentences", [])
+            })
+            final_results.append(item)
+# Save cleaned Excel
+if final_results:
+    df = pd.DataFrame(final_results)
 
-        for item in batch_result:
-            item["source_document"] = doc_title
-            item["kappa_flc"] = clean_numeric(item.get("kappa_flc", ""))
-            item["lambda_flc"] = clean_numeric(item.get("lambda_flc", ""))
-            item["kappa_lambda_ratio"] = clean_numeric(item.get("kappa_lambda_ratio", ""))
-            item["context"] = json.dumps(item, indent=2)
-        final_results.extend(batch_result)
-    except Exception as e:
-        print(f"❌ Failed batch {i+1}: {e}")
+    # Join evidence
+    df["evidence_sentences"] = df["evidence_sentences"].apply(
+        lambda x: "\n".join(x) if isinstance(x, list) else str(x)
+    )
 
-# Post-filtering for numeric-only
-numeric_filtered = []
-for row in final_results:
-    kappa = row.get("kappa_flc", "")
-    lambd = row.get("lambda_flc", "")
-    ratio = row.get("kappa_lambda_ratio", "")
-    if all(map(numeric_only, [kappa, lambd, ratio])):
-        numeric_filtered.append(row)
+    # Extract only numeric part
+    for col in ["kappa_flc", "lambda_flc", "kappa_lambda_ratio"]:
+        df[col] = df[col].apply(extract_numeric)
 
-# Format & Save
-for row in numeric_filtered:
-    if isinstance(row.get("evidence_sentences"), list):
-        row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
+    # Drop duplicates by value
+    df = df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"])
 
-df = pd.DataFrame(numeric_filtered)
-df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
-df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], inplace=True)
+    # Reorder
+    column_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"]
+    df = df[column_order]
 
-output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\Task2"
-os.makedirs(output_dir, exist_ok=True)
-
-excel_path = os.path.join(output_dir, "Output2.xlsx")
-json_path = os.path.join(output_dir, "Output2.json")
-
-df.to_excel(excel_path, index=False)
-df.to_json(json_path, orient="records", indent=2)
-
-print(f"\n✅ Excel saved: {excel_path}")
-print(f"✅ JSON saved: {json_path}")
+    # Save
+    df.to_excel(output_path, index=False)
+    print(f"\n✅ Saved at: {output_path}")
+else:
+    print("⚠️ No data extracted.")
