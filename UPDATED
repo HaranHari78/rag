@@ -177,6 +177,7 @@ IMPORTANT:
 except Exception as e:
     print(f"❌ Failed batch {i + 1}: {e}")
 
+
 if final_results:
     df = pd.DataFrame(final_results)
 
