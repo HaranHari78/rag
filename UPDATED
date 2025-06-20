@@ -261,14 +261,12 @@ def normalize_text(text):
 def get_value_with_unit_loose(field_value, context_text, field_name):
     if not field_value or not context_text:
         return field_value
-
     try:
-        number_pattern = r"[<>]?[\s]*[\d]+(?:\.\d+)?"
+        number_pattern = r"[<>]?\s*[\d]+(?:\.\d+)?"
         if field_name in ["kappa_flc", "lambda_flc"]:
-            unit_pattern = rf"({number_pattern}[\s]*(mg/dl|mg/l))"
+            unit_pattern = rf"({number_pattern}\s*(mg/dl|mg/l))"
         else:
             unit_pattern = rf"({number_pattern})"
-
         matches = re.findall(unit_pattern, context_text, re.IGNORECASE)
         for match in matches:
             full_match = match[0] if isinstance(match, tuple) else match
@@ -282,6 +280,9 @@ def get_value_with_unit_loose(field_value, context_text, field_name):
 def flatten_context(context_json):
     obj = json.loads(context_json)
     return " ".join(str(v) if not isinstance(v, list) else " ".join(v) for v in obj.values())
+
+def is_valid_numeric(s):
+    return bool(re.search(r"[<>]?\s*\d+(\.\d+)?", s))
 
 # Load and prepare documents
 df = pd.read_csv(csv_path)
@@ -402,26 +403,33 @@ IMPORTANT:
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
 
-# Save cleaned file
+# Save enriched result
 if final_results:
     df = pd.DataFrame(final_results)
     df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x) if isinstance(x, list) else str(x))
 
-    # Restore symbols and units from context
     for i, row in df.iterrows():
         context_text = flatten_context(row["context"])
-        df.at[i, "kappa_flc"] = get_value_with_unit_loose(str(row["kappa_flc"]), context_text, "kappa_flc")
-        df.at[i, "lambda_flc"] = get_value_with_unit_loose(str(row["lambda_flc"]), context_text, "lambda_flc")
-        df.at[i, "kappa_lambda_ratio"] = get_value_with_unit_loose(str(row["kappa_lambda_ratio"]), context_text, "kappa_lambda_ratio")
+        kappa = get_value_with_unit_loose(str(row["kappa_flc"]), context_text, "kappa_flc")
+        lambda_ = get_value_with_unit_loose(str(row["lambda_flc"]), context_text, "lambda_flc")
+        ratio = get_value_with_unit_loose(str(row["kappa_lambda_ratio"]), context_text, "kappa_lambda_ratio")
+        df.at[i, "kappa_flc"] = kappa if is_valid_numeric(kappa) else ""
+        df.at[i, "lambda_flc"] = lambda_ if is_valid_numeric(lambda_) else ""
+        df.at[i, "kappa_lambda_ratio"] = ratio if is_valid_numeric(ratio) else ""
+    # Normalize lab values before deduplication
+    for col in ["kappa_flc", "lambda_flc", "kappa_lambda_ratio"]:
+        df[col] = df[col].astype(str).str.lower().str.replace(r'\s+', '', regex=True)
 
+    # Drop duplicate lab value sets
     df = df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"])
+
     column_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
     df = df[column_order]
 
     df.to_excel(output_path, index=False)
     print(f"\n✅ Saved at: {output_path}")
 
-    # Also save context to .jsonl
+    # Save context JSONL
     context_output_path = os.path.join(output_dir, "extracted_contexts.jsonl")
     with open(context_output_path, "w", encoding="utf-8") as f:
         for ctx in df["context"]:
@@ -429,5 +437,6 @@ if final_results:
     print(f"📝 Contexts saved to: {context_output_path}")
 else:
     print("⚠️ No data extracted.")
+
 
 
