@@ -201,3 +201,33 @@ if final_results:
     print(f"\n✅ Saved at: {output_path}")
 else:
     print("⚠️ No data extracted.")
+# ----------------- 🔍 Postprocess for symbolic & mg/dL values -----------------
+
+if not df.empty:
+    def extract_symbol_ratio(evidence):
+        if not isinstance(evidence, str):
+            return ""
+        match = re.search(r'([<>]\s*\d+\.?\d*)', evidence)
+        return match.group(1).replace(" ", "") if match else ""
+
+    def extract_kappa_mgdl(evidence):
+        if not isinstance(evidence, str):
+            return ""
+        match = re.search(r'kappa[^:\n]*?(\d+\.?\d*)\s*mg/dl', evidence, re.IGNORECASE)
+        return f"{match.group(1)} mg/dL" if match else ""
+
+    def extract_lambda_mgdl(evidence):
+        if not isinstance(evidence, str):
+            return ""
+        match = re.search(r'lambda[^:\n]*?([<>]?\d+\.?\d*)\s*mg/dl', evidence, re.IGNORECASE)
+        return f"{match.group(1)} mg/dL" if match else ""
+
+    df["kappa_lambda_ratio_with_symbol"] = df["evidence_sentences"].apply(extract_symbol_ratio)
+    df["kappa_flc_with_unit"] = df["evidence_sentences"].apply(extract_kappa_mgdl)
+    df["lambda_flc_with_unit"] = df["evidence_sentences"].apply(extract_lambda_mgdl)
+
+    # Save updated version with symbolic and unit values
+    updated_output_path = os.path.join(output_dir, "updated_extracted_result.xlsx")
+    df.to_excel(updated_output_path, index=False)
+    print(f"✅ Updated file with symbolic and mg/dL values saved at: {updated_output_path}")
+
