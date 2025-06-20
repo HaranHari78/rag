@@ -178,7 +178,10 @@ for row in final_results:
 # Create DataFrame
 df = pd.DataFrame(final_results)
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
-df.drop_duplicates(inplace=True)
+df.drop_duplicates(
+    subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"],
+    inplace=True
+)
 
 # Save Excel
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
