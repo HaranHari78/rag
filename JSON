@@ -122,18 +122,28 @@ for i, (doc_title, chunks) in enumerate(grouped_filtered.items()):
     full_prompt = f"""
 You are a medical information extraction assistant. Your task is to extract lab results from clinical notes.
 
-Extract the following values **only if clearly mentioned with proper format**:
-- Kappa free light chains (must include a numerical value and unit like mg/dL or mg/L. e.g., 1.35 mg/dL, <0.15 mg/dL)
-- Lambda free light chains (must include a numerical value and unit like mg/dL or mg/L. e.g., 0.24 mg/dL, <0.10 mg/dL)
-- Kappa/Lambda ratio (should be a numerical ratio, may include < or > signs. e.g., >1.2, 0.56)
-- Lab test date (extract only if clearly stated; if only partial date is available like year/month, format it as YYYY-MM-XX or YYYY-XX-XX)
-- Supporting evidence sentences (must include values above; do not include diagnosis summaries or vague statements)
+Your goal is to extract the following values, **only from the given document context**, and **strictly ignore or skip the document** if:
+- You are unsure where the values come from.
+- The values appear to be duplicated from a different unrelated document.
+- The document contains no lab results.
 
-❌ Do NOT extract sentences like "a monoclonal kappa free light chain is identified" as lab values.
-❌ Do NOT hallucinate values.
-✅ Extract only if numerical values are clearly present with relevant units.
+Extract these fields only if they are clearly present in the current context:
+- ✅ **Kappa free light chains** (must have numeric value and unit, e.g., 1.35 mg/dL, <0.15 mg/dL)
+- ✅ **Lambda free light chains** (must have numeric value and unit)
+- ✅ **Kappa/Lambda ratio** (numeric ratio, may include < or > symbols)
+- ✅ **Lab test date** (clearly stated; if partial date like year/month, format as YYYY-MM-XX or YYYY-XX-XX)
+- ✅ **Supporting evidence sentences** (must include the above values in the same sentence or logically linked)
 
-Respond in strict JSON format like this:
+⚠️ **Important Constraints:**
+- ❌ Do NOT hallucinate values or infer them from vague summaries.
+- ❌ Do NOT use values that are not clearly tied to this specific document context.
+- ❌ If the extracted values appear copied from another unrelated document, discard the entire output for this document.
+- ❌ Do NOT include diagnosis phrases like "monoclonal kappa detected" unless a real numeric value is stated.
+
+✅ Proceed only if the lab values are explicitly mentioned with units.
+
+Respond in strict JSON format like below:
+
 [
   {{
     "kappa_flc": "...",
@@ -144,9 +154,11 @@ Respond in strict JSON format like this:
   }}
 ]
 
---- Context:
-{json.dumps(json_context, indent=2)}
+---
+📄 Context:
+{json.dumps(context, indent=2)}
 """
+
 
     try:
         print(f"🧠 Running batch {i+1}/{len(grouped_filtered)}...")
