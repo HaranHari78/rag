@@ -122,14 +122,16 @@ for i, (doc_title, chunks) in enumerate(grouped_filtered.items()):
     full_prompt = f"""
 You are a medical information extraction assistant. Your task is to extract lab results from clinical notes.
 
-Extract the following values only if explicitly stated:
-- Kappa free light chains (mg/L)
-- Lambda free light chains (mg/L)
-- Kappa/Lambda ratio (include < or > if mentioned)
-- Lab test date (use 'YYYY-MM-DD', fill missing parts with 'XX', e.g., 2021-06-XX)
-- Evidence sentences
+Extract the following values **only if clearly mentioned with proper format**:
+- Kappa free light chains (must include a numerical value and unit like mg/dL or mg/L. e.g., 1.35 mg/dL, <0.15 mg/dL)
+- Lambda free light chains (must include a numerical value and unit like mg/dL or mg/L. e.g., 0.24 mg/dL, <0.10 mg/dL)
+- Kappa/Lambda ratio (should be a numerical ratio, may include < or > signs. e.g., >1.2, 0.56)
+- Lab test date (extract only if clearly stated; if only partial date is available like year/month, format it as YYYY-MM-XX or YYYY-XX-XX)
+- Supporting evidence sentences (must include values above; do not include diagnosis summaries or vague statements)
 
-⚠️ Do not guess or infer values. Only extract if mentioned clearly.
+❌ Do NOT extract sentences like "a monoclonal kappa free light chain is identified" as lab values.
+❌ Do NOT hallucinate values.
+✅ Extract only if numerical values are clearly present with relevant units.
 
 Respond in strict JSON format like this:
 [
