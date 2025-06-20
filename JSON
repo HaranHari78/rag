@@ -138,7 +138,10 @@ Extract these fields only if they are clearly present in the current context:
 - ❌ Do NOT hallucinate values or infer them from vague summaries.
 - ❌ Do NOT use values that are not clearly tied to this specific document context.
 - ❌ If the extracted values appear copied from another unrelated document, discard the entire output for this document.
-- ❌ Do NOT include diagnosis phrases like "monoclonal kappa detected" unless a real numeric value is stated.
+- ❌ Do NOT include diagnosis phrases like "monoclonal kappa detected" unless a real numeric value is stated.❗ Do NOT guess or infer values.
+❗ Do NOT reuse values from one document in another.
+❗ If the values (kappa, lambda, or ratio) are not explicitly present in the context of THIS document, skip them.
+❗ Values like "1.24", "1.72", "10.15", "115.57" are common hallucinations. Do NOT include them unless clearly shown in this document.
 
 ✅ Proceed only if the lab values are explicitly mentioned with units.
 
