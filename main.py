@@ -182,7 +182,7 @@ for row in final_results:
 df = pd.DataFrame(final_results)
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
 df.drop_duplicates(
-    subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"],
+    subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"],
     inplace=True
 )
 
@@ -190,7 +190,7 @@ df.drop_duplicates(
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
 os.makedirs(output_dir, exist_ok=True)
 
-excel_path = os.path.join(output_dir, "Output1.xlsx")
+excel_path = os.path.join(output_dir, "Output2.xlsx")
 json_path = os.path.join(output_dir, "Output2.json")
 
 df.to_excel(excel_path, index=False)
