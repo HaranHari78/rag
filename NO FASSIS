@@ -9,6 +9,7 @@ from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+import hashlib
 
 # Load config.ini
 config = configparser.ConfigParser()
@@ -112,13 +113,16 @@ vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter chunks
+# Filter chunks with strict source match
 filtered_chunks = []
 for doc in results:
-    norm_text = normalize_text(doc.page_content)
     source_title = doc.metadata.get("source", "Unknown")
-    if source_title != "Unknown" and ('kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text):
-        filtered_chunks.append({"title": source_title, "content": doc.page_content})
+    content = doc.page_content
+    norm_text = normalize_text(content)
+
+    if ('kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text):
+        if source_title in content:
+            filtered_chunks.append({"title": source_title, "content": content})
 
 # Regroup
 grouped_filtered = {}
@@ -137,6 +141,8 @@ llm = AzureChatOpenAI(
 
 # Run LLM
 final_results = []
+used_hashes = set()
+
 for i, (doc_title, chunks) in enumerate(grouped_filtered.items()):
     json_context = [{"note_id": j + 1, "title": doc_title, "content": chunk} for j, chunk in enumerate(chunks)]
 
@@ -176,7 +182,12 @@ Respond in JSON:
             item["kappa_lambda_ratio"] = clean_numeric(item.get("kappa_lambda_ratio", ""))
             item["source_document"] = doc_title
             item["context"] = json.dumps(item, indent=2)
-            final_results.append(item)
+
+            evidence_key = item["kappa_flc"] + item["lambda_flc"] + item["kappa_lambda_ratio"] + ''.join(item.get("evidence_sentences", []))
+            evidence_hash = hashlib.md5(evidence_key.encode()).hexdigest()
+            if evidence_hash not in used_hashes:
+                final_results.append(item)
+                used_hashes.add(evidence_hash)
 
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
