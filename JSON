@@ -189,6 +189,8 @@ os.makedirs(output_dir, exist_ok=True)
 output_path = os.path.join(output_dir, "Chain_Final_Output_With_Context.xlsx")
 df.to_excel(output_path, index=False)
 
-print(f"\n✅ Final Excel with context saved: {output_path}")
+output_json_path = os.path.join(output_dir, "Chain_Final_Output_With_Context.json")
+df.to_json(output_json_path, orient="records", indent=2)
 
-TRY TO ADD SUBSET DROP DUPLICATIONS FOR ALL THE COL 
+print(f"\n✅ Final Excel saved: {output_excel_path}")
+print(f"✅ Final JSON saved: {output_json_path}")
