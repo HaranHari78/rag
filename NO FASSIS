@@ -1,3 +1,12 @@
+File "C:\Users\HariharaM12\PycharmProjects\task_2\main.py", line 198, in <module>
+    if isinstance(df.get("evidence_sentences").values[0], list):
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'values'
+
+
+
+
+
 import os
 import re
 import json
