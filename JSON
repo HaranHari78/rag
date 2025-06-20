@@ -236,11 +236,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 
-# Load config.ini
+# Load config
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-# Azure credentials
 AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
 AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
 AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
@@ -248,45 +247,24 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-# Utilities
-def batchify(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-def parse_llm_json(raw_text: str) -> str:
-    pattern = r"```(?:json)?\s*(.*?)```"
-    match = re.search(pattern, raw_text, flags=re.DOTALL)
-    raw_text = match.group(1).strip() if match else raw_text.strip()
-    if raw_text.startswith("json"):
-        raw_text = raw_text[len("json"):].strip()
-    try:
-        parsed = json.loads(raw_text)
-    except json.JSONDecodeError:
-        fixed = raw_text.replace("'", '"')
-        parsed = json.loads(fixed)
-    return json.dumps(parsed)
-
-def normalize_text(text):
-    text = text.lower()
-    text = re.sub(r'[^a-z0-9]', ' ', text)
-    text = re.sub(r'\s+', ' ', text).strip()
-    return text
+# Splitter (no overlap)
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 
 # Load dataset
-csv_path = "MEDICAL_DATAS.csv"
-df = pd.read_csv(csv_path)
+df = pd.read_csv("MEDICAL_DATAS.csv")
 
-# Prepare documents
-documents = []
+# Group document-wise chunks
+grouped_batches = []
+titles = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
         continue
-    documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
-
-# Chunking
-splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=250)
-chunks = splitter.split_documents(documents)
-batches = list(batchify(chunks, 20))
+    source = row["title"]
+    chunks = splitter.split_text(row["text"])
+    doc_chunks = [Document(page_content=chunk, metadata={"source": source}) for chunk in chunks]
+    if doc_chunks:
+        grouped_batches.append(doc_chunks)
+        titles.append(source)
 
 # Embedding model
 embedding_model = AzureOpenAIEmbeddings(
@@ -295,128 +273,127 @@ embedding_model = AzureOpenAIEmbeddings(
     openai_api_key=AZURE_OPENAI_API_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
     openai_api_version=AZURE_OPENAI_API_VERSION,
-    chunk_size=1000
+    chunk_size=1000,
 )
 
-# Build FAISS index
-def build_faiss(batch):
-    return FAISS.from_documents(batch, embedding_model)
-
-sub_indexes = []
-with ThreadPoolExecutor(max_workers=4) as executor:
-    futures = {executor.submit(build_faiss, batch): batch for batch in batches}
-    for future in tqdm(as_completed(futures), total=len(futures)):
-        try:
-            sub_indexes.append(future.result())
-        except Exception as e:
-            print(f"Batch failed: {e}")
-
-main_index = sub_indexes[0]
-for sub_index in sub_indexes[1:]:
-    main_index.merge_from(sub_index)
-main_index.save_local("faiss_index")
-
-# Search
-vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
-query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
-results = vectorstore.similarity_search(query, k=1000)
-
-# Filter matched content
-filtered_chunks = []
-for doc in results:
-    norm_text = normalize_text(doc.page_content)
-    source_title = doc.metadata.get("source", "Unknown")
-    if source_title != "Unknown" and ('kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text):
-        filtered_chunks.append({"title": source_title, "content": doc.page_content})
-
-# Setup LLM
+# LLM
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
     openai_api_key=AZURE_OPENAI_API_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
     openai_api_version=AZURE_OPENAI_API_VERSION,
-    temperature=0
+    temperature=0,
 )
 
-# Run LLM on JSON-formatted context
-final_results = []
-batches = list(batchify(filtered_chunks, 10))
-for i, batch in enumerate(batches):
-    json_context = [
-        {"note_id": j + 1, "title": item["title"], "content": item["content"]}
-        for j, item in enumerate(batch)
-    ]
-    titles = [item["title"] for item in batch]
+# Helper: Parse JSON from model output
+def parse_llm_json(raw_text: str) -> list:
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    try:
+        return json.loads(raw_text)
+    except:
+        fixed = raw_text.replace("'", '"')
+        return json.loads(fixed)
 
-    full_prompt = f"""
+# Helper: Ensure value is in evidence
+def value_in_evidence(value: str, evidence: str) -> bool:
+    if not value or not evidence:
+        return False
+    return value in evidence
+
+# Prompt template
+def get_prompt(context: list) -> str:
+    return f"""
 You are a medical information extraction assistant. Your task is to extract lab results from clinical notes.
 
 Extract the following values only if explicitly stated:
 - Kappa free light chains (mg/L)
 - Lambda free light chains (mg/L)
-- Kappa/Lambda ratio
-- Lab test date associated with these values
+- Kappa/Lambda ratio (with optional < or >)
+- Lab test date associated with these values. If date is incomplete, fill with 'XX'. Do not guess.
 - Supporting evidence sentences
 
-⚠️ Do not guess or infer values. Only include notes where at least one of the values and the date are clearly stated.
+❗ Do NOT reuse values from one document in another.
+❗ If the values (kappa, lambda, or ratio) are not explicitly present in the context of THIS document, skip them.
+❗ Values like "1.24", "1.72", "10.15", "115.57" are common hallucinations. Do NOT include them unless clearly shown in this document.
 
-Respond in strict JSON format like below:
-
+Respond in strict JSON format like:
 [
   {{
-    "kappa_flc": "<value with unit>",
-    "lambda_flc": "<value with unit>",
-    "kappa_lambda_ratio": "<numeric ratio>",
-    "date_of_lab": "<YYYY-MM-DD>",
-    "evidence_sentences": ["<sentence 1>", "<sentence 2>", ...]
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences": ["...", "..."]
   }}
 ]
 
 ---
-📄 Context (as JSON input):
-{json.dumps(json_context, indent=2)}
-"""
+📄 Context:
+{json.dumps(context, indent=2)}
+""".strip()
 
+# Final results
+final_results = []
+
+# Threaded document processing
+def process_doc(doc_chunks, title):
     try:
-        print(f"\n🧠 Processing batch {i + 1}/{len(batches)}...")
+        faiss_index = FAISS.from_documents(doc_chunks, embedding_model)
+        query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
+        results = faiss_index.similarity_search(query, k=10)
+        context = [doc.page_content for doc in results]
+
+        full_prompt = get_prompt(context)
         response = llm.invoke(full_prompt)
-        cleaned = parse_llm_json(response.content)
-        batch_result = json.loads(cleaned)
-        for item, title in zip(batch_result, titles):
+        parsed = parse_llm_json(response.content)
+
+        filtered = []
+        for item in parsed:
             item["source_document"] = title
-            item["context"] = json.dumps({
-                "kappa_flc": item.get("kappa_flc", ""),
-                "lambda_flc": item.get("lambda_flc", ""),
-                "kappa_lambda_ratio": item.get("kappa_lambda_ratio", ""),
-                "date_of_lab": item.get("date_of_lab", ""),
-                "evidence_sentences": item.get("evidence_sentences", [])
-            })
-        final_results.extend(batch_result)
+            item["context"] = json.dumps(context)
+            if isinstance(item.get("evidence_sentences"), list):
+                item["evidence_sentences"] = "\n".join(item["evidence_sentences"])
+            ev = item["evidence_sentences"]
+            keep = True
+            for key in ["kappa_flc", "lambda_flc", "kappa_lambda_ratio"]:
+                val = str(item.get(key, "")).strip()
+                if val and not value_in_evidence(val, ev):
+                    keep = False
+                    break
+            if keep:
+                filtered.append(item)
+        return filtered
     except Exception as e:
-        print(f"❌ Failed batch {i + 1}: {e}")
+        print(f"❌ Error processing {title}: {e}")
+        return []
 
-# Post-process
-for row in final_results:
-    if isinstance(row.get("evidence_sentences"), list):
-        row["evidence_sentences"] = "\n".join(row["evidence_sentences"])
+# Run in parallel
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(process_doc, doc_chunks, title): title for doc_chunks, title in zip(grouped_batches, titles)}
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        final_results.extend(future.result())
 
-# Create DataFrame
+# Final dataframe
 df = pd.DataFrame(final_results)
 df = df[["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]]
 df.drop_duplicates(
     subset=["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences"],
-    inplace=True
+    inplace=True,
 )
 
-# Save Excel
+# Save output
 output_dir = r"C:\Users\HariharaM12\PycharmProjects\Task2"
 os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "Chain_Final_Output_With_Context.xlsx")
-df.to_excel(output_path, index=False)
+excel_path = os.path.join(output_dir, "Chain_Cleaned_Isolated.xlsx")
+json_path = os.path.join(output_dir, "Chain_Cleaned_Isolated.json")
 
-output_json_path = os.path.join(output_dir, "Chain_Final_Output_With_Context.json")
-df.to_json(output_json_path, orient="records", indent=2)
+df.to_excel(excel_path, index=False)
+df.to_json(json_path, orient="records", indent=2)
 
-print(f"\n✅ Final Excel saved: {output_excel_path}")
-print(f"✅ Final JSON saved: {output_json_path}")
+print(f"✅ Saved Excel: {excel_path}")
+print(f"✅ Saved JSON : {json_path}")
+
+
