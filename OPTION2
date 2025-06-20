@@ -19,11 +19,17 @@ model = config['gpt_models']['model_gpt4o']
 def clean_response(resp: str) -> str:
     return re.sub(r'```(?:json)?\n?|\n?```', '', resp).strip()
 
+# --- BATCH RANGE ---
+start_index = 0
+end_index = 100  # Process only files in this range
+
 # --- FINAL RESULTS ---
 results = []
 
 all_files = sorted([f for f in os.listdir(input_dir) if f.endswith(".json")])
-for filename in all_files:
+batch_files = all_files[start_index:end_index]
+
+for filename in batch_files:
     path = os.path.join(input_dir, filename)
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -72,52 +78,15 @@ for entry in results:
 
 df_final = pd.DataFrame(flattened)
 
-# Drop duplicates based on values and evidence
+# Drop duplicates based on value and evidence fields
 df_final.drop_duplicates(
-    subset=["kappa_value", "lambda_value", "ratio_value", "kappa_evidence", "lambda_evidence", "ratio_evidence"],
+    subset=[
+        "kappa_value", "lambda_value", "ratio_value",
+        "kappa_evidence", "lambda_evidence", "ratio_evidence"
+    ],
     inplace=True
 )
 
 # Save to Excel
 df_final.to_excel(output_excel, index=False)
 print(f"📊 Excel saved → {output_excel}")
-
-
-
-# kappa_prompt.py
-
-def build_kappa_lambda_prompt(text: str, doc_title: str) -> str:
-    return f"""
-You are a medical AI assistant. Extract the following from clinical notes:
-
-🧪 Fields to extract:
-1. `kappa_flc`: numerical value + unit (prefer mg/dL or mg/L)
-2. `lambda_flc`: numerical value + unit (prefer mg/dL or mg/L)
-3. `kappa_lambda_ratio`: the reported ratio (may include > or <)
-
-For each field, also extract:
-- `date`: exact date if present. 
-    🔹 If the date is partial (e.g., only year or year+month), fill missing parts with "XX".
-    🔹 Example: "2022-05" → "2022-05-XX", "2022" → "2022-XX-XX"
-    🔹 ❗ DO NOT infer or guess dates.
-
-- `evidence`: exact sentence or phrase from the note (verbatim)
-
-📄 Document Title: {doc_title}
-
-💡 Rules:
-- Use only values with proper units like "mg/dL", "mg/L"
-- If multiple values found, prefer the one that has all 3: kappa, lambda, and ratio
-- Use the sentence containing all 3 as the evidence if possible
-
-🧾 Text:
-\"\"\"{text}\"\"\"
-
-Return your response as JSON:
-{{
-  "document_title": "{doc_title}",
-  "kappa_flc": {{"value": "", "date": "", "evidence": ""}},
-  "lambda_flc": {{"value": "", "date": "", "evidence": ""}},
-  "kappa_lambda_ratio": {{"value": "", "date": "", "evidence": ""}}
-}}
-"""
