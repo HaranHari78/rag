@@ -122,17 +122,17 @@ def clean_numeric(value):
 
 # Run extraction
 final_results = []
-for i, batch in enumerate(batchify(filtered_chunks, 10)):
+batches = list(batchify(filtered_chunks, 10))
+
+for i, batch in enumerate(tqdm(batches, desc="🔍 Extracting", unit="batch")):
     context = "\n\n".join(f"Note {j + 1} ({title}):\n{body}" for j, (title, body) in enumerate(batch))
     try:
-        print(f"\n🔍 Processing batch {i + 1}...")
         output = chain.invoke({"context": context})
         raw_content = output.content.strip()
         cleaned_json = parse_llm_json(raw_content)
         parsed = json.loads(cleaned_json)
 
         if not parsed or not isinstance(parsed, list):
-            print(f"⚠️ Empty or invalid JSON in batch {i + 1}")
             continue
 
         for item in parsed:
@@ -156,7 +156,7 @@ if final_results:
         df_final.drop_duplicates(subset=key_columns, keep="first", inplace=True)
     columns_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
     df_final = df_final[[col for col in columns_order if col in df_final.columns]]
-    df_final.to_excel("Extract_Kappa_Lambda_Ratio", index=False)
-    print("✅ Extraction complete. Saved to Extract_Kappa_Lambda.xlsx")
+    df_final.to_excel("Extract_Kappa_Lambda_Ratio.xlsx", index=False)
+    print("✅ Extraction complete. Saved to Extract_Kappa_Lambda_Ratio.xlsx")
 else:
     print("❌ No results extracted.")
