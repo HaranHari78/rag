@@ -1,3 +1,24 @@
+C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\task_2\main.py 
+100%|██████████| 517/517 [00:00<00:00, 660.06it/s]
+100%|██████████| 517/517 [00:39<00:00, 12.98it/s]
+
+🔢 Filtered Chunks Count: 0
+🗂️ Grouped Documents Count: 0
+⚠️ No results to save. The final DataFrame is empty or missing expected columns.
+100%|██████████| 517/517 [00:00<00:00, 688.26it/s]
+100%|██████████| 517/517 [00:33<00:00, 15.29it/s]
+⚠️ No results to save. The final DataFrame is empty or missing expected columns.
+100%|██████████| 517/517 [00:00<00:00, 688.05it/s]
+100%|██████████| 517/517 [00:50<00:00, 10.28it/s]
+⚠️ No results to save. The final DataFrame is empty or missing expected columns.
+
+Process finished with exit code 0
+
+
+
+
+
+
 import os
 import re
 import json
