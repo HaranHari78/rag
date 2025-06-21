@@ -496,6 +496,7 @@ else:
 
 WITHOUT EVIDENCE DROPING :::
 
+
 import os
 import re
 import json
@@ -559,23 +560,14 @@ def find_enriched_value(value, evidence_text):
 csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
-# Embedding setup
-embedding_model = AzureOpenAIEmbeddings(
-    deployment=EMBEDDING_DEPLOYMENT,
-    model=EMBEDDING_MODEL,
-    openai_api_key=AZURE_OPENAI_API_KEY,
-    azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    openai_api_version=AZURE_OPENAI_API_VERSION,
-    chunk_size=1000
-)
+# Dynamic chunking per doc
+grouped_batches = []
 
-# Chunking
-documents = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
         continue
     text = row["text"]
-    title = row["title"]
+    source = row["title"]
     word_count = len(text.split())
 
     if word_count < 500:
@@ -589,29 +581,59 @@ for _, row in tqdm(df.iterrows(), total=len(df)):
         chunk_overlap = 500
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    doc_chunks = splitter.split_documents([Document(page_content=text, metadata={"source": title})])
-    documents.extend(doc_chunks)
+    chunks = splitter.split_text(text)
+    doc_chunks = [Document(page_content=chunk, metadata={"source": source}) for chunk in chunks]
+
+    if doc_chunks:
+        grouped_batches.append(doc_chunks)
+
+# Embedding setup
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
 
 # Build FAISS
-vectorstore = FAISS.from_documents(documents, embedding_model)
-vectorstore.save_local("faiss_index")
+def build_faiss(batch):
+    return FAISS.from_documents(batch, embedding_model)
 
-# Reload index
+sub_indexes = []
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(build_faiss, batch): batch for batch in grouped_batches}
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        try:
+            sub_indexes.append(future.result())
+        except Exception as e:
+            print(f"Batch failed: {e}")
+
+main_index = sub_indexes[0]
+for sub_index in sub_indexes[1:]:
+    main_index.merge_from(sub_index)
+main_index.save_local("faiss_index")
+
+# Vector search
 vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
-
-# Search & Filter
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
-filtered_chunks = [
-    {"title": doc.metadata.get("source", "Unknown"), "content": doc.page_content}
-    for doc in results
-    if any(term in normalize_text(doc.page_content) for term in ["kappa", "lambda", "ratio"])
-]
 
-# Group chunks into batches
-def batchify(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+# Filter relevant chunks
+filtered_chunks = []
+for doc in results:
+    source_title = doc.metadata.get("source", "Unknown")
+    content = doc.page_content
+    norm_text = normalize_text(content)
+
+    if 'kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text:
+        filtered_chunks.append({"title": source_title, "content": content})
+
+# Regroup chunks by title
+grouped_filtered = {}
+for chunk in filtered_chunks:
+    grouped_filtered.setdefault(chunk["title"], []).append(chunk["content"])
 
 # LLM setup
 llm = AzureChatOpenAI(
@@ -623,10 +645,12 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Run extraction
+# Run LLM and parse
 final_results = []
-for i, batch in enumerate(tqdm(list(batchify(filtered_chunks, 10)), desc="🔍 Extracting")):
-    context = json.dumps([{"note_id": j+1, "title": doc["title"], "content": doc["content"]} for j, doc in enumerate(batch)], indent=2)
+used_hashes = set()
+
+for i, (doc_title, chunks) in enumerate(grouped_filtered.items()):
+    json_context = [{"note_id": j + 1, "title": doc_title, "content": chunk} for j, chunk in enumerate(chunks)]
 
     full_prompt = f"""
 You are a clinical data extraction assistant. For the given document, extract the following **only if all values are explicitly present with correct units (mg/dL or mg/L)**:
@@ -653,36 +677,69 @@ Respond only in strict JSON format:
 ]
 
 --- Context:
-{context}
+{json.dumps(json_context, indent=2)}
 """
 
     try:
+        print(f"\n🧠 Running batch {i+1}/{len(grouped_filtered)}...")
         response = llm.invoke(full_prompt)
         cleaned = parse_llm_json(response.content)
-        parsed = json.loads(cleaned)
+        batch_result = json.loads(cleaned)
 
-        for item in parsed:
-            item["kappa_flc"] = clean_numeric(item.get("kappa_flc"))
-            item["lambda_flc"] = clean_numeric(item.get("lambda_flc"))
-            item["kappa_lambda_ratio"] = clean_numeric(item.get("kappa_lambda_ratio"))
-            item["source_document"] = batch[0]["title"]
+        for item in batch_result:
+            kappa_clean = clean_numeric(item.get("kappa_flc", ""))
+            lambda_clean = clean_numeric(item.get("lambda_flc", ""))
+            ratio_clean = clean_numeric(item.get("kappa_lambda_ratio", ""))
+            evidence_text = "\n".join(item.get("evidence_sentences", []))
+
+            # Enrich with units/symbols
+            item["kappa_flc"] = find_enriched_value(kappa_clean, evidence_text)
+            item["lambda_flc"] = find_enriched_value(lambda_clean, evidence_text)
+            item["kappa_lambda_ratio"] = find_enriched_value(ratio_clean, evidence_text)
+
+            item["source_document"] = doc_title
             item["context"] = json.dumps(item, indent=2)
-            final_results.append(item)
+
+            evidence_key = (
+                item["kappa_flc"]
+                + item["lambda_flc"]
+                + item["kappa_lambda_ratio"]
+                + ''.join(item.get("evidence_sentences", []))
+                + item["source_document"]
+            )
+            evidence_hash = hashlib.md5(evidence_key.encode()).hexdigest()
+            if evidence_hash not in used_hashes:
+                final_results.append(item)
+                used_hashes.add(evidence_hash)
+            else:
+                print(f"🚫 Duplicate skipped for doc: {doc_title}")
 
     except Exception as e:
-        print(f"⚠️ Batch {i+1} failed: {e}")
+        print(f"❌ Failed batch {i+1}: {e}")
 
-# Final output
-if final_results:
-    df = pd.DataFrame(final_results)
-    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], inplace=True)
+# Final cleanup and output
+df = pd.DataFrame(final_results)
 
-    output_dir = "C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
+if "evidence_sentences" in df.columns and not df.empty:
+    if isinstance(df["evidence_sentences"].iloc[0], list):
+        df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x))
+
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"],keep='first', inplace=True)
+
+    output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
     os.makedirs(output_dir, exist_ok=True)
 
-    df.to_excel(os.path.join(output_dir, "Output1_with_units.xlsx"), index=False)
-    df.to_json(os.path.join(output_dir, "Output1_with_units.json"), orient="records", indent=2)
+    excel_path = os.path.join(output_dir, "Output_with_units.xlsx")
+    json_path = os.path.join(output_dir, "Output_with_units.json")
 
-    print("✅ Extraction completed and saved!")
+    df.to_excel(excel_path, index=False)
+    df.to_json(json_path, orient="records", indent=2)
+
+    print(f"\n✅ Excel saved: {excel_path}")
+    print(f"✅ JSON saved: {json_path}")
 else:
-    print("❌ No results to save.")
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
