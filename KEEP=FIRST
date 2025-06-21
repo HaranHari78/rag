@@ -31,7 +31,7 @@ embedding_model = AzureOpenAIEmbeddings(
 )
 
 # Load dataset
-df = pd.read_csv("MEDICAL_DATAS.csv")
+df = pd.read_csv("d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv")
 
 # Adaptive chunking strategy
 documents = []
@@ -156,7 +156,7 @@ if final_results:
         df_final.drop_duplicates(subset=key_columns, keep="first", inplace=True)
     columns_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
     df_final = df_final[[col for col in columns_order if col in df_final.columns]]
-    df_final.to_excel("Extract_Kappa_Lambda_Ratio.xlsx", index=False)
-    print("✅ Extraction complete. Saved to Extract_Kappa_Lambda_Ratio.xlsx")
+    df_final.to_excel("Extract_Kappa_Lambda_Ratio", index=False)
+    print("✅ Extraction complete. Saved to Extract_Kappa_Lambda.xlsx")
 else:
     print("❌ No results extracted.")
