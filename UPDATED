@@ -242,7 +242,7 @@ else:
 
 
 
-TO GET UNIT < >::::
+TO GET UNIT < >:::: PERFECTLY WORKS 
 
 
 import os
@@ -491,3 +491,198 @@ if not df.empty and all(col in df.columns for col in cols):
     print(f"✅ JSON saved: {json_path}")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+
+
+
+WITHOUT EVIDENCE DROPING :::
+
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+import hashlib
+
+# Load config.ini
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+def parse_llm_json(raw_text: str) -> str:
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError:
+        fixed = raw_text.replace("'", '"')
+        parsed = json.loads(fixed)
+    return json.dumps(parsed)
+
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+def clean_numeric(val: str) -> str:
+    if not isinstance(val, str):
+        return val
+    match = re.search(r"[\d.]+", val)
+    return match.group(0) if match else ""
+
+def find_enriched_value(value, evidence_text):
+    if not value or not evidence_text:
+        return value
+    value_str = str(value).strip()
+    pattern = rf"([<>]?\s*{re.escape(value_str)}\s*(?:mg/dL|mg/L)?)"
+    match = re.search(pattern, evidence_text, re.IGNORECASE)
+    if match:
+        return match.group(1).replace(" ", "")
+    return value_str
+
+# Load dataset
+csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+df = pd.read_csv(csv_path)
+
+# Embedding setup
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+# Chunking
+documents = []
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    if pd.isna(row["text"]):
+        continue
+    text = row["text"]
+    title = row["title"]
+    word_count = len(text.split())
+
+    if word_count < 500:
+        chunk_size = 1000
+        chunk_overlap = 0
+    elif word_count < 2000:
+        chunk_size = 1500
+        chunk_overlap = 250
+    else:
+        chunk_size = 3000
+        chunk_overlap = 500
+
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    doc_chunks = splitter.split_documents([Document(page_content=text, metadata={"source": title})])
+    documents.extend(doc_chunks)
+
+# Build FAISS
+vectorstore = FAISS.from_documents(documents, embedding_model)
+vectorstore.save_local("faiss_index")
+
+# Reload index
+vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
+
+# Search & Filter
+query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
+results = vectorstore.similarity_search(query, k=1000)
+filtered_chunks = [
+    {"title": doc.metadata.get("source", "Unknown"), "content": doc.page_content}
+    for doc in results
+    if any(term in normalize_text(doc.page_content) for term in ["kappa", "lambda", "ratio"])
+]
+
+# Group chunks into batches
+def batchify(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+# LLM setup
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+# Run extraction
+final_results = []
+for i, batch in enumerate(tqdm(list(batchify(filtered_chunks, 10)), desc="🔍 Extracting")):
+    context = json.dumps([{"note_id": j+1, "title": doc["title"], "content": doc["content"]} for j, doc in enumerate(batch)], indent=2)
+
+    full_prompt = f"""
+You are a clinical data extraction assistant. For the given document, extract the following **only if all values are explicitly present with correct units (mg/dL or mg/L)**:
+
+- `kappa_flc`: Kappa free light chain (numeric + unit like mg/dL or mg/L)
+- `lambda_flc`: Lambda free light chain (numeric + unit)
+- `kappa_lambda_ratio`: The ratio value (can be raw number or include < or >)
+- `date_of_lab`: If exact date found, use that. If partial (e.g. year only), format as:
+  - 2024 → 2024-XX-XX
+  - 2023-05 → 2023-05-XX
+- `evidence_sentences`: Sentence(s) where **ALL 3 values are clearly mentioned**. Do not extract values unless this sentence confirms all 3.
+
+🔴 Do NOT guess or infer. If even one value is missing, SKIP.
+
+Respond only in strict JSON format:
+[
+  {{
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences": ["...", "..."]
+  }}
+]
+
+--- Context:
+{context}
+"""
+
+    try:
+        response = llm.invoke(full_prompt)
+        cleaned = parse_llm_json(response.content)
+        parsed = json.loads(cleaned)
+
+        for item in parsed:
+            item["kappa_flc"] = clean_numeric(item.get("kappa_flc"))
+            item["lambda_flc"] = clean_numeric(item.get("lambda_flc"))
+            item["kappa_lambda_ratio"] = clean_numeric(item.get("kappa_lambda_ratio"))
+            item["source_document"] = batch[0]["title"]
+            item["context"] = json.dumps(item, indent=2)
+            final_results.append(item)
+
+    except Exception as e:
+        print(f"⚠️ Batch {i+1} failed: {e}")
+
+# Final output
+if final_results:
+    df = pd.DataFrame(final_results)
+    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], inplace=True)
+
+    output_dir = "C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
+    os.makedirs(output_dir, exist_ok=True)
+
+    df.to_excel(os.path.join(output_dir, "Output1_with_units.xlsx"), index=False)
+    df.to_json(os.path.join(output_dir, "Output1_with_units.json"), orient="records", indent=2)
+
+    print("✅ Extraction completed and saved!")
+else:
+    print("❌ No results to save.")
