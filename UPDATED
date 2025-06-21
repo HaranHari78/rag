@@ -193,6 +193,241 @@ Respond in JSON:
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
+# Final output with fuzzy deduplication
+final_df = pd.DataFrame(final_results)
+
+if not final_df.empty:
+    final_df["kappa_r"] = final_df["kappa_flc"].astype(float).round(1)
+    final_df["lambda_r"] = final_df["lambda_flc"].astype(float).fillna(-1).round(2)
+    final_df["ratio_r"] = final_df["kappa_lambda_ratio"].astype(float).apply(lambda x: round(x / 5) * 5 if pd.notnull(x) else -1)
+    final_df["completeness_score"] = (
+        final_df["kappa_flc"].notna().astype(int) +
+        final_df["lambda_flc"].notna().astype(int) +
+        final_df["kappa_lambda_ratio"].notna().astype(int)
+    )
+    final_df = final_df.sort_values(
+        by=["kappa_r", "lambda_r", "ratio_r", "completeness_score", "source_document"],
+        ascending=[True, True, True, False, True]
+    )
+    final_df = final_df.drop_duplicates(subset=["kappa_r", "lambda_r", "ratio_r"], keep="first")
+    final_df = final_df[~final_df["source_document"].str.contains("91091|91107")]
+    final_df.drop(columns=["kappa_r", "lambda_r", "ratio_r", "completeness_score"], inplace=True)
+
+    final_df["evidence_sentences"] = final_df["evidence_sentences"].apply(
+        lambda x: "\n".join(x) if isinstance(x, list) else x
+    )
+
+    output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
+    os.makedirs(output_dir, exist_ok=True)
+
+    excel_path = os.path.join(output_dir, "Removed_91091_91107_Result.xlsx")
+    json_path = os.path.join(output_dir, "Removed_91091_91107_Result.json")
+
+    final_df.to_excel(excel_path, index=False)
+    final_df.to_json(json_path, orient="records", indent=2)
+
+    print(f"\n✅ Excel saved: {excel_path}")
+    print(f"✅ JSON saved: {json_path}")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+
+
+
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+import hashlib
+
+# Load config.ini
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Helpers
+def parse_llm_json(raw_text: str) -> str:
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError:
+        fixed = raw_text.replace("'", '"')
+        parsed = json.loads(fixed)
+    return json.dumps(parsed)
+
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+def clean_numeric(val: str) -> str:
+    if not isinstance(val, str):
+        return val
+    match = re.search(r"[\d.]+", val)
+    return match.group(0) if match else ""
+
+# Load dataset
+csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+df = pd.read_csv(csv_path)
+
+# Dynamic chunking per doc
+grouped_batches = []
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    if pd.isna(row["text"]):
+        continue
+
+    text = row["text"]
+    source = row["title"]
+    word_count = len(text.split())
+
+    if word_count < 500:
+        chunk_size = 1000
+        chunk_overlap = 0
+    elif word_count < 2000:
+        chunk_size = 1500
+        chunk_overlap = 250
+    else:
+        chunk_size = 3000
+        chunk_overlap = 500
+
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    chunks = splitter.split_text(text)
+    doc_chunks = [Document(page_content=chunk, metadata={"source": source}) for chunk in chunks]
+
+    if doc_chunks:
+        grouped_batches.append(doc_chunks)
+
+# Embeddings
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+# Build FAISS
+def build_faiss(batch):
+    return FAISS.from_documents(batch, embedding_model)
+
+sub_indexes = []
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(build_faiss, batch): batch for batch in grouped_batches}
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        try:
+            sub_indexes.append(future.result())
+        except Exception as e:
+            print(f"Batch failed: {e}")
+
+main_index = sub_indexes[0]
+for sub_index in sub_indexes[1:]:
+    main_index.merge_from(sub_index)
+main_index.save_local("faiss_index")
+
+# Vector search
+vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
+query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
+results = vectorstore.similarity_search(query, k=1000)
+
+# Filter chunks
+filtered_chunks = []
+print(f"\n🔍 Vector search returned {len(results)} results")
+for doc in results:
+    source_title = doc.metadata.get("source", "Unknown")
+    content = doc.page_content
+    norm_text = normalize_text(content)
+
+    if 'kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text:
+        filtered_chunks.append({"title": source_title, "content": content})
+        print(f"✅ Match Found in Doc: {source_title}")
+
+print(f"\n🔢 Filtered Chunks Count: {len(filtered_chunks)}")
+
+# Regroup
+grouped_filtered = {}
+for chunk in filtered_chunks:
+    grouped_filtered.setdefault(chunk["title"], []).append(chunk["content"])
+
+print(f"🗂️ Grouped Documents Count: {len(grouped_filtered)}")
+
+# LLM setup
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+# Run LLM
+final_results = []
+used_hashes = set()
+for i, (doc_title, chunks) in enumerate(grouped_filtered.items()):
+    json_context = [{"note_id": j + 1, "title": doc_title, "content": chunk} for j, chunk in enumerate(chunks)]
+    full_prompt = f"""
+You are a medical information extraction assistant. Extract ONLY if the document contains numeric values for:
+- Kappa free light chains
+- Lambda free light chains
+- Kappa/Lambda ratio
+Include also:
+- Date of lab (format partial as YYYY-MM-XX or YYYY-XX-XX)
+- Evidence sentences (must contain the numeric value)
+If values are copied or unclear, SKIP.
+Respond in JSON:
+[
+  {{
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences": ["...", "..."]
+  }}
+]
+
+--- Context:
+{json.dumps(json_context, indent=2)}
+"""
+    try:
+        print(f"\n🧠 Running batch {i+1}/{len(grouped_filtered)}...")
+        response = llm.invoke(full_prompt)
+        cleaned = parse_llm_json(response.content)
+        batch_result = json.loads(cleaned)
+
+        for item in batch_result:
+            item["kappa_flc"] = clean_numeric(item.get("kappa_flc", ""))
+            item["lambda_flc"] = clean_numeric(item.get("lambda_flc", ""))
+            item["kappa_lambda_ratio"] = clean_numeric(item.get("kappa_lambda_ratio", ""))
+            item["source_document"] = doc_title
+            item["context"] = json.dumps(item, indent=2)
+
+            evidence_key = item["kappa_flc"] + item["lambda_flc"] + item["kappa_lambda_ratio"] + ''.join(item.get("evidence_sentences", []))
+            evidence_hash = hashlib.md5(evidence_key.encode()).hexdigest()
+            if evidence_hash not in used_hashes:
+                final_results.append(item)
+                used_hashes.add(evidence_hash)
+
+    except Exception as e:
+        print(f"❌ Failed batch {i+1}: {e}")
+
 # Clean output
 df = pd.DataFrame(final_results)
 if "evidence_sentences" in df.columns and not df.empty:
