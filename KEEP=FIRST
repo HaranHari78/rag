@@ -1,3 +1,10 @@
+C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Task2\main.py 
+C:\Users\HariharaM12\PycharmProjects\Task2\main.py:100: LangChainDeprecationWarning: The class `LLMChain` was deprecated in LangChain 0.1.17 and will be removed in 1.0. Use :meth:`~RunnableSequence, e.g., `prompt | llm`` instead.
+  llm_chain = LLMChain(llm=llm, prompt=prompt_template)
+C:\Users\HariharaM12\PycharmProjects\Task2\main.py:123: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 1.0. Use :meth:`~invoke` instead.
+  output = llm_chain.run({"context": context})
+
+
 import os
 import re
 import json
