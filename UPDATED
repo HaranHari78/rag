@@ -1,3 +1,922 @@
+C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\task_2\main.py 
+100%|██████████| 517/517 [00:00<00:00, 728.37it/s]
+100%|██████████| 517/517 [01:44<00:00,  4.94it/s]
+
+🔍 Vector search returned 1000 results
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_IMTX_Conference_Note_91586
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_IMTX_Conference_Note_91586
+✅ Match Found in Doc: 2024-03-05_00:00:00.000_IMTX_Conference_Note_91479
+✅ Match Found in Doc: 2024-02-22_00:00:00.000_Progress_Notes_91459
+✅ Match Found in Doc: 2024-06-25_00:00:00.000_Progress_Notes_91596
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Progress_Notes_91427
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Progress_Notes_91427
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Progress_Notes_91427
+✅ Match Found in Doc: 2021-12-15_00:00:00.000_Progress_Notes_91091
+✅ Match Found in Doc: 2024-01-16_00:00:00.000_Progress_Notes_91302
+✅ Match Found in Doc: 2024-06-25_00:00:00.000_Progress_Notes_91596
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_IMTX_Conference_Note_91586
+✅ Match Found in Doc: 2021-12-23_00:00:00.000_Progress_Notes_91107
+✅ Match Found in Doc: 2021-12-27_00:00:00.000_Progress_Notes_91111
+✅ Match Found in Doc: 2022-01-10_00:00:00.000_Progress_Notes_91134
+✅ Match Found in Doc: 2022-01-07_00:00:00.000_Progress_Notes_91124
+✅ Match Found in Doc: 2024-01-24_00:00:00.000_H&P_91325
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91591
+✅ Match Found in Doc: 2024-01-22_00:00:00.000_Progress_Notes_91317
+✅ Match Found in Doc: 2023-11-27_00:00:00.000_Progress_Notes_91273
+✅ Match Found in Doc: 2024-02-10_00:00:00.000_Progress_Notes_91437
+✅ Match Found in Doc: 2022-01-10_00:00:00.000_Progress_Notes_91135
+✅ Match Found in Doc: 2024-02-06_00:00:00.000_Progress_Notes_91413
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91240
+✅ Match Found in Doc: 2022-02-15_00:00:00.000_Progress_Notes_91233
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Progress_Notes_91357
+✅ Match Found in Doc: 2021-12-23_00:00:00.000_Progress_Notes_91107
+✅ Match Found in Doc: 2023-12-01_00:00:00.000_Progress_Notes_91285
+✅ Match Found in Doc: 2023-06-30_00:00:00.000_Progress_Notes_91265
+✅ Match Found in Doc: 2024-01-24_00:00:00.000_Progress_Notes_91323
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_H&P_91495
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_H&P_91495
+✅ Match Found in Doc: 2024-02-01_00:00:00.000_Progress_Notes_91383
+✅ Match Found in Doc: 2024-04-23_00:00:00.000_Progress_Notes_91592
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_H&P_91495
+✅ Match Found in Doc: 2024-01-24_00:00:00.000_H&P_91325
+✅ Match Found in Doc: 2024-02-07_00:00:00.000_Progress_Notes_91425
+✅ Match Found in Doc: 2022-01-07_00:00:00.000_Progress_Notes_91124
+✅ Match Found in Doc: 2024-07-30_00:00:00.000_Progress_Notes_91599
+✅ Match Found in Doc: 2022-07-13_00:00:00.000_Telephone_Encounter_91256
+✅ Match Found in Doc: 2022-01-18_00:00:00.000_BMT_Conference_Note_91158
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91591
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_H&P_91495
+✅ Match Found in Doc: 2024-01-22_00:00:00.000_Progress_Notes_91317
+✅ Match Found in Doc: 2024-02-03_00:00:00.000_Consults_91400
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_IMTX_Conference_Note_91586
+✅ Match Found in Doc: 2024-03-13_00:00:00.000_Progress_Notes_91509
+✅ Match Found in Doc: 2021-11-13_00:00:00.000_Consults_91085
+✅ Match Found in Doc: 2022-01-18_00:00:00.000_BMT_Conference_Note_91158
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91240
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_H&P_91495
+✅ Match Found in Doc: 2024-03-14_00:00:00.000_Progress_Notes_91512
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Discharge_Summary_91430
+✅ Match Found in Doc: 2024-02-29_00:00:00.000_Progress_Notes_91467
+✅ Match Found in Doc: 2024-03-24_00:00:00.000_Progress_Notes_91557
+✅ Match Found in Doc: 2021-12-15_00:00:00.000_Progress_Notes_91091
+✅ Match Found in Doc: 2024-04-23_00:00:00.000_Progress_Notes_91592
+✅ Match Found in Doc: 2023-11-27_00:00:00.000_Progress_Notes_91273
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_H&P_91495
+✅ Match Found in Doc: 2021-11-13_00:00:00.000_Consults_91085
+✅ Match Found in Doc: 2022-01-10_00:00:00.000_Progress_Notes_91134
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_H&P_91495
+✅ Match Found in Doc: 2024-04-15_00:00:00.000_Progress_Notes_91585
+✅ Match Found in Doc: 2021-12-15_00:00:00.000_Progress_Notes_91091
+✅ Match Found in Doc: 2024-02-29_00:00:00.000_Progress_Notes_91467
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91591
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_H&P_91495
+✅ Match Found in Doc: 2024-03-06_00:00:00.000_Progress_Notes_91482
+✅ Match Found in Doc: 2023-06-30_00:00:00.000_Progress_Notes_91265
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Progress_Notes_91529
+✅ Match Found in Doc: 2024-01-25_00:00:00.000_Progress_Notes_91330
+✅ Match Found in Doc: 2024-03-10_00:00:00.000_Progress_Notes_91489
+✅ Match Found in Doc: 2024-03-18_00:00:00.000_Progress_Notes_91526
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91591
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Progress_Notes_91357
+✅ Match Found in Doc: 2024-03-25_00:00:00.000_Progress_Notes_91561
+✅ Match Found in Doc: 2024-03-13_00:00:00.000_Nursing_Note_91505
+✅ Match Found in Doc: 2024-03-13_00:00:00.000_Nursing_Note_91506
+✅ Match Found in Doc: 2024-03-25_00:00:00.000_Progress_Notes_91561
+✅ Match Found in Doc: 2024-06-25_00:00:00.000_Progress_Notes_91596
+✅ Match Found in Doc: 2023-06-30_00:00:00.000_Progress_Notes_91265
+✅ Match Found in Doc: 2023-06-30_00:00:00.000_Progress_Notes_91265
+✅ Match Found in Doc: 2024-03-12_00:00:00.000_Nursing_Note_91500
+✅ Match Found in Doc: 2022-01-27_00:00:00.000_Progress_Notes_91189
+✅ Match Found in Doc: 2024-03-24_00:00:00.000_Progress_Notes_91557
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Consults_91344
+✅ Match Found in Doc: 2022-01-21_00:00:00.000_Progress_Notes_91172
+✅ Match Found in Doc: 2024-04-01_00:00:00.000_Progress_Notes_91568
+✅ Match Found in Doc: 2022-02-07_00:00:00.000_Progress_Notes_91220
+✅ Match Found in Doc: 2024-06-25_00:00:00.000_Progress_Notes_91596
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Progress_Notes_91427
+✅ Match Found in Doc: 2024-01-18_00:00:00.000_Progress_Notes_91309
+✅ Match Found in Doc: 2023-11-27_00:00:00.000_Progress_Notes_91273
+✅ Match Found in Doc: 2024-01-17_00:00:00.000_Progress_Notes_91306
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Transfusion_Consult_91533
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91240
+✅ Match Found in Doc: 2023-12-01_00:00:00.000_Progress_Notes_91285
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_Nursing_Note_91492
+✅ Match Found in Doc: 2024-03-20_00:00:00.000_Progress_Notes_91537
+✅ Match Found in Doc: 2024-06-25_00:00:00.000_Progress_Notes_91596
+✅ Match Found in Doc: 2024-03-06_00:00:00.000_Progress_Notes_91482
+✅ Match Found in Doc: 2024-02-29_00:00:00.000_Progress_Notes_91467
+✅ Match Found in Doc: 2024-04-08_00:00:00.000_Progress_Notes_91577
+✅ Match Found in Doc: 2024-04-23_00:00:00.000_Progress_Notes_91592
+✅ Match Found in Doc: 2024-01-26_00:00:00.000_Consults_91337
+✅ Match Found in Doc: 2023-12-01_00:00:00.000_Progress_Notes_91285
+✅ Match Found in Doc: 2023-11-27_00:00:00.000_Progress_Notes_91273
+✅ Match Found in Doc: 2024-01-31_00:00:00.000_Consults_91374
+✅ Match Found in Doc: 2024-02-05_00:00:00.000_Progress_Notes_91406
+✅ Match Found in Doc: 2024-02-13_00:00:00.000_Progress_Notes_91443
+✅ Match Found in Doc: 2024-03-23_00:00:00.000_Discharge_Summary_91555
+✅ Match Found in Doc: 2024-02-04_00:00:00.000_Progress_Notes_91403
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Progress_Notes_91343
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Progress_Notes_91427
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91238
+✅ Match Found in Doc: 2024-03-22_00:00:00.000_Progress_Notes_91550
+✅ Match Found in Doc: 2024-04-08_00:00:00.000_Progress_Notes_91577
+✅ Match Found in Doc: 2024-03-06_00:00:00.000_Progress_Notes_91482
+✅ Match Found in Doc: 2023-12-01_00:00:00.000_Progress_Notes_91285
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Progress_Notes_91357
+✅ Match Found in Doc: 2024-01-09_00:00:00.000_Progress_Notes_91300
+✅ Match Found in Doc: 2024-03-10_00:00:00.000_Progress_Notes_91489
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Transfusion_Consult_91533
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Progress_Notes_91357
+✅ Match Found in Doc: 2024-01-30_00:00:00.000_Progress_Notes_91369
+✅ Match Found in Doc: 2024-03-25_00:00:00.000_Progress_Notes_91561
+✅ Match Found in Doc: 2023-07-18_00:00:00.000_Procedure_Nursing_Note_91267
+✅ Match Found in Doc: 2023-06-30_00:00:00.000_Progress_Notes_91265
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91240
+✅ Match Found in Doc: 2024-01-26_00:00:00.000_Progress_Notes_91342
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Nursing_Note_91532
+✅ Match Found in Doc: 2024-03-18_00:00:00.000_Nursing_Note_91527
+✅ Match Found in Doc: 2024-01-16_00:00:00.000_Progress_Notes_91304
+✅ Match Found in Doc: 2022-02-02_00:00:00.000_Progress_Notes_91205
+✅ Match Found in Doc: 2024-01-24_00:00:00.000_H&P_91325
+✅ Match Found in Doc: 2024-03-16_00:00:00.000_Nursing_Note_91520
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91240
+✅ Match Found in Doc: 2024-03-30_00:00:00.000_Progress_Notes_91565
+✅ Match Found in Doc: 2024-03-21_00:00:00.000_Progress_Notes_91543
+✅ Match Found in Doc: 2024-02-05_00:00:00.000_Progress_Notes_91406
+✅ Match Found in Doc: 2024-03-14_00:00:00.000_Nursing_Note_91513
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91591
+✅ Match Found in Doc: 2024-02-05_00:00:00.000_Consults_91409
+✅ Match Found in Doc: 2024-03-18_00:00:00.000_Nursing_Note_91525
+✅ Match Found in Doc: 2024-03-05_00:00:00.000_IMTX_Conference_Note_91479
+✅ Match Found in Doc: 2024-03-14_00:00:00.000_Progress_Notes_91510
+✅ Match Found in Doc: 2024-03-23_00:00:00.000_Discharge_Summary_91555
+✅ Match Found in Doc: 2023-12-07_00:00:00.000_Progress_Notes_91298
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Hospital_Course_91346
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Progress_Notes_91349
+✅ Match Found in Doc: 2024-02-20_00:00:00.000_Procedure_Nursing_Note_91454
+✅ Match Found in Doc: 2024-03-13_00:00:00.000_Nursing_Note_91508
+✅ Match Found in Doc: 2024-04-08_00:00:00.000_Progress_Notes_91577
+✅ Match Found in Doc: 2024-01-18_00:00:00.000_Progress_Notes_91310
+✅ Match Found in Doc: 2024-03-23_00:00:00.000_Nursing_Note_91553
+✅ Match Found in Doc: 2022-02-01_00:00:00.000_Progress_Notes_91202
+✅ Match Found in Doc: 2024-02-10_00:00:00.000_Progress_Notes_91437
+✅ Match Found in Doc: 2024-02-07_00:00:00.000_Progress_Notes_91425
+✅ Match Found in Doc: 2024-03-10_00:00:00.000_Progress_Notes_91489
+✅ Match Found in Doc: 2024-03-22_00:00:00.000_Progress_Notes_91546
+✅ Match Found in Doc: 2024-03-23_00:00:00.000_Nursing_Note_91556
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Progress_Notes_91357
+✅ Match Found in Doc: 2024-06-25_00:00:00.000_Progress_Notes_91596
+✅ Match Found in Doc: 2024-01-24_00:00:00.000_H&P_91325
+✅ Match Found in Doc: 2024-02-29_00:00:00.000_Progress_Notes_91468
+✅ Match Found in Doc: 2024-03-07_00:00:00.000_Progress_Notes_91484
+✅ Match Found in Doc: 2024-03-12_00:00:00.000_Progress_Notes_91503
+✅ Match Found in Doc: 2024-01-16_00:00:00.000_Progress_Notes_91302
+✅ Match Found in Doc: 2024-03-24_00:00:00.000_Progress_Notes_91557
+✅ Match Found in Doc: 2024-01-26_00:00:00.000_Progress_Notes_91342
+✅ Match Found in Doc: 2023-11-30_00:00:00.000_Progress_Notes_91284
+✅ Match Found in Doc: 2024-03-22_00:00:00.000_Progress_Notes_91550
+✅ Match Found in Doc: 2024-02-03_00:00:00.000_Progress_Notes_91395
+✅ Match Found in Doc: 2024-03-17_00:00:00.000_Nursing_Note_91522
+✅ Match Found in Doc: 2024-04-08_00:00:00.000_Progress_Notes_91576
+✅ Match Found in Doc: 2024-01-17_00:00:00.000_Progress_Notes_91305
+✅ Match Found in Doc: 2024-03-14_00:00:00.000_Nursing_Note_91514
+✅ Match Found in Doc: 2024-02-02_00:00:00.000_Progress_Notes_91387
+✅ Match Found in Doc: 2024-02-22_00:00:00.000_Progress_Notes_91459
+✅ Match Found in Doc: 2024-03-13_00:00:00.000_Progress_Notes_91509
+✅ Match Found in Doc: 2024-03-22_00:00:00.000_Progress_Notes_91550
+✅ Match Found in Doc: 2024-03-23_00:00:00.000_Discharge_Summary_91555
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91587
+✅ Match Found in Doc: 2024-01-31_00:00:00.000_Progress_Notes_91377
+✅ Match Found in Doc: 2023-06-30_00:00:00.000_Progress_Notes_91263
+✅ Match Found in Doc: 2024-03-12_00:00:00.000_Nursing_Note_91502
+✅ Match Found in Doc: 2024-04-03_00:00:00.000_Progress_Notes_91572
+✅ Match Found in Doc: 2024-04-01_00:00:00.000_Progress_Notes_91568
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Progress_Notes_91347
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Progress_Notes_91343
+✅ Match Found in Doc: 2024-03-21_00:00:00.000_Progress_Notes_91543
+✅ Match Found in Doc: 2024-01-18_00:00:00.000_Progress_Notes_91307
+✅ Match Found in Doc: 2024-01-24_00:00:00.000_Progress_Notes_91327
+✅ Match Found in Doc: 2024-02-01_00:00:00.000_Progress_Notes_91383
+✅ Match Found in Doc: 2024-03-08_00:00:00.000_Progress_Notes_91487
+✅ Match Found in Doc: 2024-01-30_00:00:00.000_Progress_Notes_91369
+✅ Match Found in Doc: 2024-01-22_00:00:00.000_Progress_Notes_91317
+✅ Match Found in Doc: 2022-02-02_00:00:00.000_Progress_Notes_91204
+✅ Match Found in Doc: 2024-01-26_00:00:00.000_Progress_Notes_91342
+✅ Match Found in Doc: 2024-01-30_00:00:00.000_Progress_Notes_91367
+✅ Match Found in Doc: 2024-02-20_00:00:00.000_Progress_Notes_91455
+✅ Match Found in Doc: 2022-01-07_00:00:00.000_Progress_Notes_91121
+✅ Match Found in Doc: 2024-01-16_00:00:00.000_Progress_Notes_91302
+✅ Match Found in Doc: 2024-02-01_00:00:00.000_Progress_Notes_91383
+✅ Match Found in Doc: 2024-03-15_00:00:00.000_Progress_Notes_91516
+✅ Match Found in Doc: 2024-03-15_00:00:00.000_Nursing_Note_91515
+✅ Match Found in Doc: 2022-01-31_00:00:00.000_Progress_Notes_91199
+✅ Match Found in Doc: 2023-11-21_00:00:00.000_Progress_Notes_91270
+✅ Match Found in Doc: 2024-01-25_00:00:00.000_Progress_Notes_91330
+✅ Match Found in Doc: 2024-06-25_00:00:00.000_Progress_Notes_91596
+✅ Match Found in Doc: 2024-02-02_00:00:00.000_Progress_Notes_91387
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Discharge_Summary_91430
+✅ Match Found in Doc: 2023-12-02_00:00:00.000_IMTX_Conference_Note_91286
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Progress_Notes_91343
+✅ Match Found in Doc: 2024-03-22_00:00:00.000_Nursing_Note_91547
+✅ Match Found in Doc: 2024-03-17_00:00:00.000_Nursing_Note_91521
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Consults_91344
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91240
+✅ Match Found in Doc: 2024-03-22_00:00:00.000_Progress_Notes_91548
+✅ Match Found in Doc: 2022-01-19_00:00:00.000_Progress_Notes_91165
+✅ Match Found in Doc: 2024-01-18_00:00:00.000_Progress_Notes_91309
+✅ Match Found in Doc: 2024-02-24_00:00:00.000_Progress_Notes_91460
+✅ Match Found in Doc: 2024-01-18_00:00:00.000_Progress_Notes_91309
+✅ Match Found in Doc: 2022-01-11_00:00:00.000_Progress_Notes_91138
+✅ Match Found in Doc: 2022-01-28_00:00:00.000_Progress_Notes_91192
+✅ Match Found in Doc: 2021-12-23_00:00:00.000_Progress_Notes_91107
+✅ Match Found in Doc: 2024-02-04_00:00:00.000_Progress_Notes_91403
+✅ Match Found in Doc: 2024-03-15_00:00:00.000_Progress_Notes_91516
+✅ Match Found in Doc: 2024-03-12_00:00:00.000_Progress_Notes_91504
+✅ Match Found in Doc: 2021-12-27_00:00:00.000_Progress_Notes_91111
+✅ Match Found in Doc: 2022-02-05_00:00:00.000_Progress_Notes_91215
+✅ Match Found in Doc: 2024-03-16_00:00:00.000_Progress_Notes_91518
+✅ Match Found in Doc: 2022-01-31_00:00:00.000_Progress_Notes_91201
+✅ Match Found in Doc: 2024-03-21_00:00:00.000_Progress_Notes_91542
+✅ Match Found in Doc: 2024-03-21_00:00:00.000_Nursing_Note_91541
+✅ Match Found in Doc: 2022-01-10_00:00:00.000_Progress_Notes_91134
+✅ Match Found in Doc: 2024-02-16_00:00:00.000_Progress_Notes_91449
+✅ Match Found in Doc: 2024-03-13_00:00:00.000_Progress_Notes_91509
+✅ Match Found in Doc: 2024-03-16_00:00:00.000_Nursing_Note_91519
+✅ Match Found in Doc: 2024-02-12_00:00:00.000_Progress_Notes_91440
+✅ Match Found in Doc: 2024-03-20_00:00:00.000_Progress_Notes_91539
+✅ Match Found in Doc: 2024-02-01_00:00:00.000_Progress_Notes_91383
+✅ Match Found in Doc: 2022-02-04_00:00:00.000_Progress_Notes_91214
+✅ Match Found in Doc: 2024-03-12_00:00:00.000_Progress_Notes_91504
+✅ Match Found in Doc: 2024-01-31_00:00:00.000_Progress_Notes_91377
+✅ Match Found in Doc: 2021-12-17_00:00:00.000_Procedure_Nursing_Note_91097
+✅ Match Found in Doc: 2021-12-22_00:00:00.000_Progress_Notes_91105
+✅ Match Found in Doc: 2024-03-05_00:00:00.000_IMTX_Conference_Note_91479
+✅ Match Found in Doc: 2024-02-15_00:00:00.000_Progress_Notes_91447
+✅ Match Found in Doc: 2024-02-20_00:00:00.000_Procedure_Nursing_Note_91454
+✅ Match Found in Doc: 2024-04-08_00:00:00.000_Progress_Notes_91579
+✅ Match Found in Doc: 2022-01-30_00:00:00.000_Progress_Notes_91197
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91591
+✅ Match Found in Doc: 2022-02-07_00:00:00.000_Progress_Notes_91219
+✅ Match Found in Doc: 2024-02-03_00:00:00.000_Progress_Notes_91395
+✅ Match Found in Doc: 2024-04-09_00:00:00.000_Progress_Notes_91580
+✅ Match Found in Doc: 2024-03-22_00:00:00.000_Progress_Notes_91550
+✅ Match Found in Doc: 2024-01-22_00:00:00.000_Progress_Notes_91318
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91238
+✅ Match Found in Doc: 2024-01-30_00:00:00.000_Progress_Notes_91369
+✅ Match Found in Doc: 2022-01-27_00:00:00.000_Progress_Notes_91187
+✅ Match Found in Doc: 2024-02-07_00:00:00.000_Progress_Notes_91425
+✅ Match Found in Doc: 2024-04-13_00:00:00.000_Progress_Notes_91584
+✅ Match Found in Doc: 2024-04-01_00:00:00.000_Progress_Notes_91568
+✅ Match Found in Doc: 2024-01-25_00:00:00.000_Progress_Notes_91330
+✅ Match Found in Doc: 2022-01-18_00:00:00.000_BMT_Conference_Note_91158
+✅ Match Found in Doc: 2023-11-28_00:00:00.000_Progress_Notes_91279
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91238
+✅ Match Found in Doc: 2024-02-22_00:00:00.000_Progress_Notes_91459
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Consults_91344
+✅ Match Found in Doc: 2024-01-16_00:00:00.000_Progress_Notes_91302
+✅ Match Found in Doc: 2024-03-17_00:00:00.000_Progress_Notes_91523
+✅ Match Found in Doc: 2023-12-04_00:00:00.000_Progress_Notes_91287
+✅ Match Found in Doc: 2024-01-28_00:00:00.000_Progress_Notes_91350
+✅ Match Found in Doc: 2024-03-07_00:00:00.000_Progress_Notes_91483
+✅ Match Found in Doc: 2024-02-09_00:00:00.000_Progress_Notes_91436
+✅ Match Found in Doc: 2024-02-26_00:00:00.000_Progress_Notes_91462
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Transfusion_Consult_91533
+✅ Match Found in Doc: 2024-03-21_00:00:00.000_Nursing_Note_91540
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Progress_Notes_91529
+✅ Match Found in Doc: 2024-02-18_00:00:00.000_Progress_Notes_91451
+✅ Match Found in Doc: 2024-03-24_00:00:00.000_Progress_Notes_91557
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Nursing_Note_91528
+✅ Match Found in Doc: 2024-03-24_00:00:00.000_Progress_Notes_91559
+✅ Match Found in Doc: 2022-01-18_00:00:00.000_BMT_Conference_Note_91158
+✅ Match Found in Doc: 2024-03-20_00:00:00.000_Nursing_Note_91536
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_IMTX_Conference_Note_91586
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91591
+✅ Match Found in Doc: 2024-02-22_00:00:00.000_Progress_Notes_91457
+✅ Match Found in Doc: 2024-02-25_00:00:00.000_Progress_Notes_91461
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Consults_91363
+✅ Match Found in Doc: 2024-06-13_00:00:00.000_Progress_Notes_91593
+✅ Match Found in Doc: 2024-04-01_00:00:00.000_Progress_Notes_91569
+✅ Match Found in Doc: 2024-02-05_00:00:00.000_Progress_Notes_91407
+✅ Match Found in Doc: 2022-01-11_00:00:00.000_Progress_Notes_91138
+✅ Match Found in Doc: 2022-02-07_00:00:00.000_Progress_Notes_91220
+✅ Match Found in Doc: 2024-03-14_00:00:00.000_Progress_Notes_91512
+✅ Match Found in Doc: 2022-02-07_00:00:00.000_Progress_Notes_91220
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Consults_91344
+✅ Match Found in Doc: 2024-04-17_00:00:00.000_Progress_Notes_91591
+✅ Match Found in Doc: 2024-03-16_00:00:00.000_Progress_Notes_91518
+✅ Match Found in Doc: 2024-03-11_00:00:00.000_Consults_91496
+✅ Match Found in Doc: 2024-03-30_00:00:00.000_Progress_Notes_91566
+✅ Match Found in Doc: 2024-01-21_00:00:00.000_Progress_Notes_91312
+✅ Match Found in Doc: 2024-03-20_00:00:00.000_Nursing_Note_91538
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Progress_Notes_91343
+✅ Match Found in Doc: 2024-03-14_00:00:00.000_Progress_Notes_91512
+✅ Match Found in Doc: 2022-01-18_00:00:00.000_BMT_Conference_Note_91158
+✅ Match Found in Doc: 2024-02-06_00:00:00.000_Progress_Notes_91413
+✅ Match Found in Doc: 2022-01-29_00:00:00.000_Progress_Notes_91195
+✅ Match Found in Doc: 2022-01-07_00:00:00.000_Progress_Notes_91121
+✅ Match Found in Doc: 2024-02-13_00:00:00.000_Progress_Notes_91443
+✅ Match Found in Doc: 2021-12-17_00:00:00.000_Progress_Notes_91098
+✅ Match Found in Doc: 2022-01-21_00:00:00.000_Progress_Notes_91169
+✅ Match Found in Doc: 2024-03-21_00:00:00.000_Progress_Notes_91543
+✅ Match Found in Doc: 2024-02-27_00:00:00.000_Progress_Notes_91466
+✅ Match Found in Doc: 2022-02-08_00:00:00.000_Progress_Notes_91222
+✅ Match Found in Doc: 2023-07-12_00:00:00.000_Progress_Notes_91266
+✅ Match Found in Doc: 2024-03-15_00:00:00.000_Nursing_Note_91517
+✅ Match Found in Doc: 2024-01-28_00:00:00.000_Progress_Notes_91350
+✅ Match Found in Doc: 2024-03-20_00:00:00.000_Progress_Notes_91537
+✅ Match Found in Doc: 2022-02-07_00:00:00.000_Progress_Notes_91220
+✅ Match Found in Doc: 2024-03-10_00:00:00.000_Progress_Notes_91489
+✅ Match Found in Doc: 2024-01-17_00:00:00.000_Progress_Notes_91306
+✅ Match Found in Doc: 2022-01-07_00:00:00.000_Progress_Notes_91124
+✅ Match Found in Doc: 2024-02-06_00:00:00.000_Progress_Notes_91413
+✅ Match Found in Doc: 2022-01-29_00:00:00.000_Progress_Notes_91193
+✅ Match Found in Doc: 2022-01-25_00:00:00.000_Progress_Notes_91180
+✅ Match Found in Doc: 2024-02-10_00:00:00.000_Progress_Notes_91438
+✅ Match Found in Doc: 2022-02-07_00:00:00.000_Progress_Notes_91220
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Progress_Notes_91534
+✅ Match Found in Doc: 2022-02-07_00:00:00.000_Progress_Notes_91220
+✅ Match Found in Doc: 2021-12-21_00:00:00.000_Progress_Notes_91104
+✅ Match Found in Doc: 2022-01-07_00:00:00.000_Progress_Notes_91122
+✅ Match Found in Doc: 2024-03-12_00:00:00.000_Progress_Notes_91504
+✅ Match Found in Doc: 2021-12-17_00:00:00.000_Procedure_Nursing_Note_91097
+✅ Match Found in Doc: 2024-03-15_00:00:00.000_Progress_Notes_91516
+✅ Match Found in Doc: 2022-02-03_00:00:00.000_Progress_Notes_91209
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Consults_91363
+✅ Match Found in Doc: 2024-04-23_00:00:00.000_Progress_Notes_91592
+✅ Match Found in Doc: 2024-04-23_00:00:00.000_Progress_Notes_91592
+✅ Match Found in Doc: 2024-02-03_00:00:00.000_Progress_Notes_91395
+✅ Match Found in Doc: 2022-02-25_00:00:00.000_BMT_Conference_Note_91246
+✅ Match Found in Doc: 2024-03-22_00:00:00.000_Nursing_Note_91549
+✅ Match Found in Doc: 2024-04-23_00:00:00.000_Progress_Notes_91592
+✅ Match Found in Doc: 2024-03-16_00:00:00.000_Progress_Notes_91518
+✅ Match Found in Doc: 2024-03-17_00:00:00.000_Progress_Notes_91523
+✅ Match Found in Doc: 2024-03-18_00:00:00.000_Progress_Notes_91526
+✅ Match Found in Doc: 2024-02-13_00:00:00.000_Progress_Notes_91443
+✅ Match Found in Doc: 2024-04-06_00:00:00.000_Progress_Notes_91575
+✅ Match Found in Doc: 2024-03-19_00:00:00.000_Progress_Notes_91529
+✅ Match Found in Doc: 2024-03-17_00:00:00.000_Progress_Notes_91523
+✅ Match Found in Doc: 2022-02-06_00:00:00.000_Progress_Notes_91218
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Consults_91363
+✅ Match Found in Doc: 2024-01-31_00:00:00.000_Progress_Notes_91377
+✅ Match Found in Doc: 2024-03-04_00:00:00.000_Progress_Notes_91474
+✅ Match Found in Doc: 2024-03-10_00:00:00.000_Progress_Notes_91488
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Consults_91363
+✅ Match Found in Doc: 2024-03-23_00:00:00.000_Progress_Notes_91552
+✅ Match Found in Doc: 2024-01-28_00:00:00.000_Progress_Notes_91350
+✅ Match Found in Doc: 2024-03-18_00:00:00.000_Progress_Notes_91526
+✅ Match Found in Doc: 2024-01-24_00:00:00.000_H&P_91325
+✅ Match Found in Doc: 2024-01-27_00:00:00.000_Consults_91344
+✅ Match Found in Doc: 2022-01-22_00:00:00.000_Progress_Notes_91173
+✅ Match Found in Doc: 2024-03-12_00:00:00.000_Progress_Notes_91504
+✅ Match Found in Doc: 2022-02-02_00:00:00.000_Progress_Notes_91205
+✅ Match Found in Doc: 2024-03-13_00:00:00.000_Progress_Notes_91509
+✅ Match Found in Doc: 2022-01-10_00:00:00.000_Progress_Notes_91134
+✅ Match Found in Doc: 2023-12-06_00:00:00.000_H&P_91293
+✅ Match Found in Doc: 2024-01-31_00:00:00.000_Progress_Notes_91377
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Consults_91363
+✅ Match Found in Doc: 2022-02-11_00:00:00.000_Progress_Notes_91229
+✅ Match Found in Doc: 2022-02-10_00:00:00.000_Progress_Notes_91226
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Discharge_Summary_91430
+✅ Match Found in Doc: 2022-01-12_00:00:00.000_Progress_Notes_91148
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Discharge_Summary_91430
+✅ Match Found in Doc: 2024-02-22_00:00:00.000_Progress_Notes_91459
+✅ Match Found in Doc: 2022-01-08_00:00:00.000_Progress_Notes_91128
+✅ Match Found in Doc: 2023-12-01_00:00:00.000_Progress_Notes_91285
+✅ Match Found in Doc: 2022-02-09_00:00:00.000_Progress_Notes_91224
+✅ Match Found in Doc: 2021-12-23_00:00:00.000_Progress_Notes_91109
+✅ Match Found in Doc: 2022-01-23_00:00:00.000_Progress_Notes_91176
+✅ Match Found in Doc: 2021-12-27_00:00:00.000_Progress_Notes_91111
+✅ Match Found in Doc: 2024-02-29_00:00:00.000_Progress_Notes_91467
+✅ Match Found in Doc: 2024-03-02_00:00:00.000_Progress_Notes_91472
+✅ Match Found in Doc: 2024-01-30_00:00:00.000_Progress_Notes_91369
+✅ Match Found in Doc: 2022-01-29_00:00:00.000_Progress_Notes_91194
+✅ Match Found in Doc: 2022-01-08_00:00:00.000_Progress_Notes_91127
+✅ Match Found in Doc: 2024-03-18_00:00:00.000_Progress_Notes_91526
+✅ Match Found in Doc: 2022-01-12_00:00:00.000_Progress_Notes_91143
+✅ Match Found in Doc: 2022-01-31_00:00:00.000_Progress_Notes_91201
+✅ Match Found in Doc: 2022-02-22_00:00:00.000_Progress_Notes_91238
+✅ Match Found in Doc: 2022-01-11_00:00:00.000_Progress_Notes_91136
+✅ Match Found in Doc: 2022-01-21_00:00:00.000_Progress_Notes_91172
+✅ Match Found in Doc: 2022-01-09_00:00:00.000_Progress_Notes_91129
+✅ Match Found in Doc: 2023-07-18_00:00:00.000_Procedure_Nursing_Note_91267
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Progress_Notes_91431
+✅ Match Found in Doc: 2024-04-08_00:00:00.000_Progress_Notes_91576
+✅ Match Found in Doc: 2022-01-31_00:00:00.000_Progress_Notes_91199
+✅ Match Found in Doc: 2024-03-21_00:00:00.000_Progress_Notes_91543
+✅ Match Found in Doc: 2022-01-25_00:00:00.000_Progress_Notes_91180
+✅ Match Found in Doc: 2024-02-05_00:00:00.000_Progress_Notes_91406
+✅ Match Found in Doc: 2022-01-10_00:00:00.000_Progress_Notes_91133
+✅ Match Found in Doc: 2022-01-10_00:00:00.000_Progress_Notes_91132
+✅ Match Found in Doc: 2024-02-04_00:00:00.000_Progress_Notes_91403
+✅ Match Found in Doc: 2024-01-30_00:00:00.000_Progress_Notes_91369
+✅ Match Found in Doc: 2024-02-08_00:00:00.000_Progress_Notes_91427
+✅ Match Found in Doc: 2022-01-31_00:00:00.000_Progress_Notes_91200
+✅ Match Found in Doc: 2022-01-20_00:00:00.000_Progress_Notes_91168
+✅ Match Found in Doc: 2024-03-06_00:00:00.000_Progress_Notes_91482
+✅ Match Found in Doc: 2024-03-16_00:00:00.000_Progress_Notes_91518
+✅ Match Found in Doc: 2024-02-06_00:00:00.000_Progress_Notes_91413
+✅ Match Found in Doc: 2022-01-09_00:00:00.000_Progress_Notes_91130
+✅ Match Found in Doc: 2024-02-10_00:00:00.000_Progress_Notes_91437
+✅ Match Found in Doc: 2024-03-20_00:00:00.000_Progress_Notes_91537
+✅ Match Found in Doc: 2024-02-04_00:00:00.000_Progress_Notes_91403
+✅ Match Found in Doc: 2022-02-10_00:00:00.000_Progress_Notes_91226
+✅ Match Found in Doc: 2022-02-02_00:00:00.000_Progress_Notes_91205
+✅ Match Found in Doc: 2022-01-09_00:00:00.000_Progress_Notes_91131
+✅ Match Found in Doc: 2022-02-25_00:00:00.000_BMT_Conference_Note_91246
+✅ Match Found in Doc: 2024-01-29_00:00:00.000_Consults_91363
+✅ Match Found in Doc: 2022-01-24_00:00:00.000_Progress_Notes_91178
+✅ Match Found in Doc: 2024-01-28_00:00:00.000_Progress_Notes_91350
+✅ Match Found in Doc: 2024-02-03_00:00:00.000_Consults_91400
+✅ Match Found in Doc: 2022-01-13_00:00:00.000_Progress_Notes_91150
+✅ Match Found in Doc: 2024-01-31_00:00:00.000_Progress_Notes_91377
+✅ Match Found in Doc: 2022-01-19_00:00:00.000_Progress_Notes_91162
+✅ Match Found in Doc: 2024-01-30_00:00:00.000_Progress_Notes_91369
+✅ Match Found in Doc: 2022-02-25_00:00:00.000_BMT_Conference_Note_91246
+✅ Match Found in Doc: 2022-01-26_00:00:00.000_Progress_Notes_91184
+✅ Match Found in Doc: 2024-02-05_00:00:00.000_Progress_Notes_91407
+✅ Match Found in Doc: 2023-11-27_00:00:00.000_Progress_Notes_91273
+✅ Match Found in Doc: 2022-01-27_00:00:00.000_Progress_Notes_91187
+
+🔢 Filtered Chunks Count: 433
+🗂️ Grouped Documents Count: 218
+
+🧠 Running batch 1/218...
+
+🧠 Running batch 2/218...
+
+🧠 Running batch 3/218...
+
+🧠 Running batch 4/218...
+
+🧠 Running batch 5/218...
+
+🧠 Running batch 6/218...
+❌ Failed batch 6: can only concatenate str (not "NoneType") to str
+
+🧠 Running batch 7/218...
+
+🧠 Running batch 8/218...
+❌ Failed batch 8: can only concatenate str (not "NoneType") to str
+
+🧠 Running batch 9/218...
+❌ Failed batch 9: can only concatenate str (not "NoneType") to str
+
+🧠 Running batch 10/218...
+❌ Failed batch 10: can only concatenate str (not "NoneType") to str
+
+🧠 Running batch 11/218...
+❌ Failed batch 11: can only concatenate str (not "NoneType") to str
+
+🧠 Running batch 12/218...
+
+🧠 Running batch 13/218...
+
+🧠 Running batch 14/218...
+
+🧠 Running batch 15/218...
+
+🧠 Running batch 16/218...
+
+🧠 Running batch 17/218...
+
+🧠 Running batch 18/218...
+
+🧠 Running batch 19/218...
+
+🧠 Running batch 20/218...
+
+🧠 Running batch 21/218...
+
+🧠 Running batch 22/218...
+
+🧠 Running batch 23/218...
+
+🧠 Running batch 24/218...
+
+🧠 Running batch 25/218...
+
+🧠 Running batch 26/218...
+
+🧠 Running batch 27/218...
+
+🧠 Running batch 28/218...
+
+🧠 Running batch 29/218...
+
+🧠 Running batch 30/218...
+
+🧠 Running batch 31/218...
+
+🧠 Running batch 32/218...
+
+🧠 Running batch 33/218...
+
+🧠 Running batch 34/218...
+
+🧠 Running batch 35/218...
+
+🧠 Running batch 36/218...
+
+🧠 Running batch 37/218...
+
+🧠 Running batch 38/218...
+
+🧠 Running batch 39/218...
+
+🧠 Running batch 40/218...
+
+🧠 Running batch 41/218...
+
+🧠 Running batch 42/218...
+
+🧠 Running batch 43/218...
+
+🧠 Running batch 44/218...
+
+🧠 Running batch 45/218...
+
+🧠 Running batch 46/218...
+
+🧠 Running batch 47/218...
+
+🧠 Running batch 48/218...
+
+🧠 Running batch 49/218...
+
+🧠 Running batch 50/218...
+
+🧠 Running batch 51/218...
+
+🧠 Running batch 52/218...
+
+🧠 Running batch 53/218...
+
+🧠 Running batch 54/218...
+
+🧠 Running batch 55/218...
+
+🧠 Running batch 56/218...
+
+🧠 Running batch 57/218...
+
+🧠 Running batch 58/218...
+❌ Failed batch 58: can only concatenate str (not "NoneType") to str
+
+🧠 Running batch 59/218...
+
+🧠 Running batch 60/218...
+
+🧠 Running batch 61/218...
+
+🧠 Running batch 62/218...
+
+🧠 Running batch 63/218...
+
+🧠 Running batch 64/218...
+
+🧠 Running batch 65/218...
+
+🧠 Running batch 66/218...
+
+🧠 Running batch 67/218...
+
+🧠 Running batch 68/218...
+
+🧠 Running batch 69/218...
+
+🧠 Running batch 70/218...
+
+🧠 Running batch 71/218...
+
+🧠 Running batch 72/218...
+
+🧠 Running batch 73/218...
+
+🧠 Running batch 74/218...
+
+🧠 Running batch 75/218...
+
+🧠 Running batch 76/218...
+
+🧠 Running batch 77/218...
+
+🧠 Running batch 78/218...
+
+🧠 Running batch 79/218...
+
+🧠 Running batch 80/218...
+
+🧠 Running batch 81/218...
+
+🧠 Running batch 82/218...
+
+🧠 Running batch 83/218...
+
+🧠 Running batch 84/218...
+
+🧠 Running batch 85/218...
+
+🧠 Running batch 86/218...
+
+🧠 Running batch 87/218...
+
+🧠 Running batch 88/218...
+
+🧠 Running batch 89/218...
+
+🧠 Running batch 90/218...
+
+🧠 Running batch 91/218...
+
+🧠 Running batch 92/218...
+
+🧠 Running batch 93/218...
+
+🧠 Running batch 94/218...
+
+🧠 Running batch 95/218...
+
+🧠 Running batch 96/218...
+
+🧠 Running batch 97/218...
+
+🧠 Running batch 98/218...
+
+🧠 Running batch 99/218...
+
+🧠 Running batch 100/218...
+
+🧠 Running batch 101/218...
+
+🧠 Running batch 102/218...
+
+🧠 Running batch 103/218...
+
+🧠 Running batch 104/218...
+
+🧠 Running batch 105/218...
+
+🧠 Running batch 106/218...
+
+🧠 Running batch 107/218...
+
+🧠 Running batch 108/218...
+
+🧠 Running batch 109/218...
+
+🧠 Running batch 110/218...
+
+🧠 Running batch 111/218...
+
+🧠 Running batch 112/218...
+
+🧠 Running batch 113/218...
+
+🧠 Running batch 114/218...
+
+🧠 Running batch 115/218...
+
+🧠 Running batch 116/218...
+
+🧠 Running batch 117/218...
+
+🧠 Running batch 118/218...
+
+🧠 Running batch 119/218...
+
+🧠 Running batch 120/218...
+
+🧠 Running batch 121/218...
+
+🧠 Running batch 122/218...
+
+🧠 Running batch 123/218...
+
+🧠 Running batch 124/218...
+
+🧠 Running batch 125/218...
+
+🧠 Running batch 126/218...
+
+🧠 Running batch 127/218...
+
+🧠 Running batch 128/218...
+
+🧠 Running batch 129/218...
+
+🧠 Running batch 130/218...
+
+🧠 Running batch 131/218...
+
+🧠 Running batch 132/218...
+
+🧠 Running batch 133/218...
+
+🧠 Running batch 134/218...
+
+🧠 Running batch 135/218...
+
+🧠 Running batch 136/218...
+
+🧠 Running batch 137/218...
+
+🧠 Running batch 138/218...
+
+🧠 Running batch 139/218...
+
+🧠 Running batch 140/218...
+
+🧠 Running batch 141/218...
+
+🧠 Running batch 142/218...
+
+🧠 Running batch 143/218...
+
+🧠 Running batch 144/218...
+
+🧠 Running batch 145/218...
+
+🧠 Running batch 146/218...
+
+🧠 Running batch 147/218...
+
+🧠 Running batch 148/218...
+
+🧠 Running batch 149/218...
+
+🧠 Running batch 150/218...
+
+🧠 Running batch 151/218...
+
+🧠 Running batch 152/218...
+
+🧠 Running batch 153/218...
+
+🧠 Running batch 154/218...
+
+🧠 Running batch 155/218...
+
+🧠 Running batch 156/218...
+
+🧠 Running batch 157/218...
+
+🧠 Running batch 158/218...
+
+🧠 Running batch 159/218...
+
+🧠 Running batch 160/218...
+
+🧠 Running batch 161/218...
+
+🧠 Running batch 162/218...
+
+🧠 Running batch 163/218...
+
+🧠 Running batch 164/218...
+
+🧠 Running batch 165/218...
+
+🧠 Running batch 166/218...
+
+🧠 Running batch 167/218...
+
+🧠 Running batch 168/218...
+
+🧠 Running batch 169/218...
+
+🧠 Running batch 170/218...
+
+🧠 Running batch 171/218...
+
+🧠 Running batch 172/218...
+
+🧠 Running batch 173/218...
+❌ Failed batch 173: can only concatenate str (not "NoneType") to str
+
+🧠 Running batch 174/218...
+
+🧠 Running batch 175/218...
+
+🧠 Running batch 176/218...
+
+🧠 Running batch 177/218...
+
+🧠 Running batch 178/218...
+
+🧠 Running batch 179/218...
+
+🧠 Running batch 180/218...
+
+🧠 Running batch 181/218...
+
+🧠 Running batch 182/218...
+
+🧠 Running batch 183/218...
+
+🧠 Running batch 184/218...
+
+🧠 Running batch 185/218...
+
+🧠 Running batch 186/218...
+
+🧠 Running batch 187/218...
+
+🧠 Running batch 188/218...
+
+🧠 Running batch 189/218...
+
+🧠 Running batch 190/218...
+
+🧠 Running batch 191/218...
+
+🧠 Running batch 192/218...
+
+🧠 Running batch 193/218...
+
+🧠 Running batch 194/218...
+
+🧠 Running batch 195/218...
+
+🧠 Running batch 196/218...
+
+🧠 Running batch 197/218...
+
+🧠 Running batch 198/218...
+
+🧠 Running batch 199/218...
+
+🧠 Running batch 200/218...
+
+🧠 Running batch 201/218...
+
+🧠 Running batch 202/218...
+
+🧠 Running batch 203/218...
+
+🧠 Running batch 204/218...
+
+🧠 Running batch 205/218...
+
+🧠 Running batch 206/218...
+
+🧠 Running batch 207/218...
+
+🧠 Running batch 208/218...
+
+🧠 Running batch 209/218...
+
+🧠 Running batch 210/218...
+
+🧠 Running batch 211/218...
+
+🧠 Running batch 212/218...
+
+🧠 Running batch 213/218...
+
+🧠 Running batch 214/218...
+
+🧠 Running batch 215/218...
+
+🧠 Running batch 216/218...
+
+🧠 Running batch 217/218...
+
+🧠 Running batch 218/218...
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\task_2\main.py", line 201, in <module>
+    final_df["lambda_r"] = final_df["lambda_flc"].astype(float).fillna(-1).round(2)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\generic.py", line 6662, in astype
+    new_data = self._mgr.astype(dtype=dtype, copy=copy, errors=errors)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\internals\managers.py", line 430, in astype
+    return self.apply(
+           ^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\internals\managers.py", line 363, in apply
+    applied = getattr(b, f)(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\internals\blocks.py", line 784, in astype
+    new_values = astype_array_safe(values, dtype, copy=copy, errors=errors)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\dtypes\astype.py", line 237, in astype_array_safe
+    new_values = astype_array(values, dtype, copy=copy)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\dtypes\astype.py", line 182, in astype_array
+    values = _astype_nansafe(values, dtype, copy=copy)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\dtypes\astype.py", line 133, in _astype_nansafe
+    return arr.astype(dtype, copy=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: ''
+
+Process finished with exit code 1
+
+
+
+
+
+
+
 import os
 import re
 import json
