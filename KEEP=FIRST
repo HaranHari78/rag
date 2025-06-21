@@ -95,7 +95,6 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Use pipe syntax instead of deprecated LLMChain
 chain = prompt_template | llm
 
 def batchify(lst, n):
@@ -113,6 +112,14 @@ def parse_llm_json(raw_text: str) -> str:
     except json.JSONDecodeError:
         return json.dumps(json.loads(raw_text.replace("'", '"')))
 
+def clean_numeric(value):
+    if isinstance(value, str):
+        value = re.sub(r"[^0-9.]+", "", value)
+    try:
+        return float(value)
+    except:
+        return None
+
 # Run extraction
 final_results = []
 for i, batch in enumerate(batchify(filtered_chunks, 10)):
@@ -120,11 +127,175 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
     try:
         print(f"\n🔍 Processing batch {i + 1}...")
         output = chain.invoke({"context": context})
-        cleaned = parse_llm_json(output.content)
-        for item in json.loads(cleaned):
-            # Fallback to batch[0]'s metadata for source and context
-            item["source_document"] = batch[0][0]
-            item["context"] = batch[0][1]
+        cleaned_json = parse_llm_json(output.content)
+        parsed = json.loads(cleaned_json)
+
+        for item in parsed:
+            source_doc, chunk_context = batch[0]
+            item["source_document"] = source_doc
+            item["context"] = cleaned_json  # Save the raw structured JSON, not the chunk
+            item["kappa_flc"] = clean_numeric(item.get("kappa_flc"))
+            item["lambda_flc"] = clean_numeric(item.get("lambda_flc"))
+            item["kappa_lambda_ratio"] = clean_numeric(item.get("kappa_lambda_ratio"))
+            final_results.append(item)
+    except Exception as e:
+        print(f"⚠️ Error in batch {i + 1}: {e}")
+
+# Save to Excel
+if final_results:
+    df_final = pd.DataFrame(final_results)
+    key_columns = [col for col in ["kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab"] if col in df_final.columns]
+    if key_columns:
+        df_final.drop_duplicates(subset=key_columns, keep="first", inplace=True)
+    columns_order = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+    df_final = df_final[[col for col in columns_order if col in df_final.columns]]
+    df_final.to_excel("Extract_Kappa_Lambda_Ratio.xlsx", index=False)
+    print("✅ Extraction complete. Saved to Extract_Kappa_Lambda_Ratio.xlsx")
+else:
+    print("❌ No results extracted.") 
+
+
+
+
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+from langchain.prompts import PromptTemplate
+
+# Load config
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000,
+)
+
+# Load dataset
+df = pd.read_csv("MEDICAL_DATAS.csv")
+
+# Adaptive chunking strategy
+documents = []
+for _, row in df.iterrows():
+    if pd.notna(row["text"]):
+        text = row["text"]
+        word_count = len(text.split())
+        if word_count < 500:
+            chunk_size, chunk_overlap = 1000, 0
+        elif word_count < 2000:
+            chunk_size, chunk_overlap = 1500, 250
+        else:
+            chunk_size, chunk_overlap = 3000, 500
+
+        splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+        doc_chunks = splitter.split_documents([Document(page_content=text, metadata={"source": row["title"]})])
+        documents.extend(doc_chunks)
+
+vectorstore = FAISS.from_documents(documents, embedding_model)
+
+# Search
+query = "kappa free light chains mg/l, lambda free light chain mg/l, and kappa/lambda ratio"
+results = vectorstore.similarity_search(query, k=1000)
+
+# Filter
+def normalize_text(text):
+    return re.sub(r'\s+', ' ', re.sub(r'[^a-z0-9]', ' ', text.lower())).strip()
+
+filtered_chunks = [(doc.metadata.get("source", "Unknown"), doc.page_content)
+                   for doc in results if any(term in normalize_text(doc.page_content) for term in ["kappa", "lambda", "ratio"])]
+
+# Prompt
+structured_prompt = """
+You are a medical information extraction assistant. Your task is to extract lab results from the provided clinical notes.
+
+From the context below, extract the following values **only if they are explicitly mentioned**:
+- Kappa free light chains (mg/L)
+- Lambda free light chains (mg/L)
+- Kappa/Lambda ratio
+- Lab test date (YYYY-MM-DD format)
+- Supporting evidence sentence
+- The document title the sentence came from (you will be given that)
+
+IMPORTANT:
+- If the date is incomplete (e.g., only month and year), fill the missing parts with "XX".
+- DO NOT guess or infer dates.
+- Return structured JSON list. One object per lab result.
+
+Here is the context:
+{context}
+"""
+
+prompt_template = PromptTemplate(input_variables=["context"], template=structured_prompt)
+
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+chain = prompt_template | llm
+
+def batchify(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+def parse_llm_json(raw_text: str) -> str:
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
+    try:
+        return json.dumps(json.loads(raw_text))
+    except json.JSONDecodeError:
+        return json.dumps(json.loads(raw_text.replace("'", '"')))
+
+def clean_numeric(value):
+    if isinstance(value, str):
+        value = re.sub(r"[^0-9.]+", "", value)
+    try:
+        return float(value)
+    except:
+        return None
+
+# Run extraction
+final_results = []
+for i, batch in enumerate(batchify(filtered_chunks, 10)):
+    context = "\n\n".join(f"Note {j + 1} ({title}):\n{body}" for j, (title, body) in enumerate(batch))
+    try:
+        print(f"\n🔍 Processing batch {i + 1}...")
+        output = chain.invoke({"context": context})
+        cleaned_json = parse_llm_json(output.content)
+        parsed = json.loads(cleaned_json)
+
+        for item in parsed:
+            source_doc, chunk_context = batch[0]
+            item["source_document"] = source_doc
+            item["context"] = cleaned_json  # Save the raw structured JSON, not the chunk
+            item["kappa_flc"] = clean_numeric(item.get("kappa_flc"))
+            item["lambda_flc"] = clean_numeric(item.get("lambda_flc"))
+            item["kappa_lambda_ratio"] = clean_numeric(item.get("kappa_lambda_ratio"))
             final_results.append(item)
     except Exception as e:
         print(f"⚠️ Error in batch {i + 1}: {e}")
