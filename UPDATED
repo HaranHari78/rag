@@ -230,43 +230,43 @@ Respond in JSON:
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
-# Final output with fuzzy deduplication
-final_df = pd.DataFrame(final_results)
+#df_final = pd.DataFrame(final_results)
 
-if not final_df.empty:
-    final_df["kappa_r"] = final_df["kappa_flc"].astype(float).round(1)
-    final_df["lambda_r"] = final_df["lambda_flc"].astype(float).fillna(-1).round(2)
-    final_df["ratio_r"] = final_df["kappa_lambda_ratio"].astype(float).apply(lambda x: round(x / 5) * 5 if pd.notnull(x) else -1)
-    final_df["completeness_score"] = (
-        final_df["kappa_flc"].notna().astype(int) +
-        final_df["lambda_flc"].notna().astype(int) +
-        final_df["kappa_lambda_ratio"].notna().astype(int)
-    )
-    final_df = final_df.sort_values(
-        by=["kappa_r", "lambda_r", "ratio_r", "completeness_score", "source_document"],
-        ascending=[True, True, True, False, True]
-    )
-    final_df = final_df.drop_duplicates(subset=["kappa_r", "lambda_r", "ratio_r"], keep="first")
+# Round values with safe conversion
+df_final["kappa_r"] = pd.to_numeric(df_final["kappa_flc"], errors="coerce").fillna(-1).round(1)
+df_final["lambda_r"] = pd.to_numeric(df_final["lambda_flc"], errors="coerce").fillna(-1).round(2)
+df_final["ratio_r"] = pd.to_numeric(df_final["kappa_lambda_ratio"], errors="coerce").apply(lambda x: round(x / 5) * 5 if not np.isnan(x) else -1)
 
-    if DOC_IDS_TO_REMOVE:
-        final_df = final_df[~final_df["source_document"].str.contains("|".join(DOC_IDS_TO_REMOVE))]
+# Completeness score
+df_final["completeness"] = (
+    df_final["kappa_flc"].apply(lambda x: 1 if x not in [None, ""] else 0) +
+    df_final["lambda_flc"].apply(lambda x: 1 if x not in [None, ""] else 0) +
+    df_final["kappa_lambda_ratio"].apply(lambda x: 1 if x not in [None, ""] else 0)
+)
 
-    final_df.drop(columns=["kappa_r", "lambda_r", "ratio_r", "completeness_score"], inplace=True)
+# ----------------------------
+# ✅ Sort and Deduplicate
+# ----------------------------
+df_final = df_final.sort_values(by=["kappa_r", "lambda_r", "ratio_r", "completeness", "source_document"], ascending=[True, True, True, False, True])
 
-    final_df["evidence_sentences"] = final_df["evidence_sentences"].apply(
-        lambda x: "\n".join(x) if isinstance(x, list) else x
-    )
+deduped_df = df_final.drop_duplicates(subset=["kappa_r", "lambda_r", "ratio_r"], keep="first")
 
-    output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
-    os.makedirs(output_dir, exist_ok=True)
+# Optional: move source_document to front
+cols = ["source_document"] + [col for col in deduped_df.columns if col != "source_document"]
+deduped_df = deduped_df[cols]
 
-    excel_path = os.path.join(output_dir, "Removed_91091_91107_Result.xlsx")
-    json_path = os.path.join(output_dir, "Removed_91091_91107_Result.json")
+# ----------------------------
+# ✅ Save Output
+# ----------------------------
+excel_path = "Final_Fuzzy_Deduplicated_Result.xlsx"
+deduped_df.to_excel(excel_path, index=False)
 
-    final_df.to_excel(excel_path, index=False)
-    final_df.to_json(json_path, orient="records", indent=2)
+json_path = "Final_Fuzzy_Deduplicated_Result.json"
+deduped_df.to_json(json_path, orient="records", indent=2)
 
-    print(f"\n✅ Excel saved: {excel_path}")
-    print(f"✅ JSON saved: {json_path}")
-else:
-    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+# ----------------------------
+# ✅ Done
+# ----------------------------
+print(f"\n🎉 DONE — Deduplicated Output Saved")
+print(f"📁 Excel: {excel_path}")
+print(f"📁 JSON : {json_path}")
