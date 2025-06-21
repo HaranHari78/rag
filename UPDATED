@@ -1,37 +1,3 @@
-Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\task_2\main.py", line 204, in <module>
-    final_df["lambda_r"] = final_df["lambda_flc"].astype(float).fillna(-1).round(2)
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\generic.py", line 6662, in astype
-    new_data = self._mgr.astype(dtype=dtype, copy=copy, errors=errors)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\internals\managers.py", line 430, in astype
-    return self.apply(
-           ^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\internals\managers.py", line 363, in apply
-    applied = getattr(b, f)(**kwargs)
-              ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\internals\blocks.py", line 784, in astype
-    new_values = astype_array_safe(values, dtype, copy=copy, errors=errors)
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\dtypes\astype.py", line 237, in astype_array_safe
-    new_values = astype_array(values, dtype, copy=copy)
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\dtypes\astype.py", line 182, in astype_array
-    values = _astype_nansafe(values, dtype, copy=copy)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HariharaM12\PycharmProjects\task_2\.venv\Lib\site-packages\pandas\core\dtypes\astype.py", line 133, in _astype_nansafe
-    return arr.astype(dtype, copy=True)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: could not convert string to float: ''
-
-Process finished with exit code 1
-
-
-
-
-
-
 import os
 import re
 import json
@@ -56,10 +22,6 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-# Dynamic exclusion list
-DOC_IDS_TO_REMOVE = ["91091", "91107"]
-
-# Helpers
 def parse_llm_json(raw_text: str) -> str:
     pattern = r"```(?:json)?\s*(.*?)```"
     match = re.search(pattern, raw_text, flags=re.DOTALL)
@@ -91,6 +53,7 @@ df = pd.read_csv(csv_path)
 
 # Dynamic chunking per doc
 grouped_batches = []
+
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
         continue
@@ -149,9 +112,8 @@ vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter chunks
+# Filter relevant chunks
 filtered_chunks = []
-print(f"\n🔍 Vector search returned {len(results)} results")
 for doc in results:
     source_title = doc.metadata.get("source", "Unknown")
     content = doc.page_content
@@ -159,11 +121,13 @@ for doc in results:
 
     if 'kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text:
         filtered_chunks.append({"title": source_title, "content": content})
-        print(f"✅ Match Found in Doc: {source_title}")
 
 print(f"\n🔢 Filtered Chunks Count: {len(filtered_chunks)}")
+for i, c in enumerate(filtered_chunks[:3]):
+    print(f"\n🔹 Example {i+1} Title: {c['title']}")
+    print(c['content'][:400])
 
-# Regroup
+# Regroup chunks by title
 grouped_filtered = {}
 for chunk in filtered_chunks:
     grouped_filtered.setdefault(chunk["title"], []).append(chunk["content"])
@@ -183,18 +147,24 @@ llm = AzureChatOpenAI(
 # Run LLM
 final_results = []
 used_hashes = set()
+
 for i, (doc_title, chunks) in enumerate(grouped_filtered.items()):
     json_context = [{"note_id": j + 1, "title": doc_title, "content": chunk} for j, chunk in enumerate(chunks)]
+
     full_prompt = f"""
-You are a medical information extraction assistant. Extract ONLY if the document contains numeric values for:
-- Kappa free light chains
-- Lambda free light chains
-- Kappa/Lambda ratio
-Include also:
-- Date of lab (format partial as YYYY-MM-XX or YYYY-XX-XX)
-- Evidence sentences (must contain the numeric value)
-If values are copied or unclear, SKIP.
-Respond in JSON:
+You are a clinical data extraction assistant. For the given document, extract the following **only if all values are explicitly present with correct units (mg/dL or mg/L)**:
+
+- `kappa_flc`: Kappa free light chain (numeric + unit like mg/dL or mg/L)
+- `lambda_flc`: Lambda free light chain (numeric + unit)
+- `kappa_lambda_ratio`: The ratio value (can be raw number or include < or >)
+- `date_of_lab`: If exact date found, use that. If partial (e.g. year only), format as:
+  - 2024 → 2024-XX-XX
+  - 2023-05 → 2023-05-XX
+- `evidence_sentences`: Sentence(s) where **ALL 3 values are clearly mentioned**. Do not extract values unless this sentence confirms all 3.
+
+🔴 Do NOT guess or infer. If even one value is missing, SKIP.
+
+Respond only in strict JSON format:
 [
   {{
     "kappa_flc": "...",
@@ -208,9 +178,11 @@ Respond in JSON:
 --- Context:
 {json.dumps(json_context, indent=2)}
 """
+
     try:
         print(f"\n🧠 Running batch {i+1}/{len(grouped_filtered)}...")
         response = llm.invoke(full_prompt)
+        print("\n🔎 Raw LLM Response:\n", response.content)
         cleaned = parse_llm_json(response.content)
         batch_result = json.loads(cleaned)
 
@@ -221,52 +193,46 @@ Respond in JSON:
             item["source_document"] = doc_title
             item["context"] = json.dumps(item, indent=2)
 
-            evidence_key = item["kappa_flc"] + item["lambda_flc"] + item["kappa_lambda_ratio"] + ''.join(item.get("evidence_sentences", []))
+            evidence_key = (
+                item["kappa_flc"]
+                + item["lambda_flc"]
+                + item["kappa_lambda_ratio"]
+                + ''.join(item.get("evidence_sentences", []))
+                + item["source_document"]
+            )
             evidence_hash = hashlib.md5(evidence_key.encode()).hexdigest()
             if evidence_hash not in used_hashes:
                 final_results.append(item)
                 used_hashes.add(evidence_hash)
+            else:
+                print(f"🚫 Duplicate skipped for doc: {doc_title}")
 
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
-#df_final = pd.DataFrame(final_results)
+# Clean output
+df = pd.DataFrame(final_results)
 
-# Round values with safe conversion
-df_final["kappa_r"] = pd.to_numeric(df_final["kappa_flc"], errors="coerce").fillna(-1).round(1)
-df_final["lambda_r"] = pd.to_numeric(df_final["lambda_flc"], errors="coerce").fillna(-1).round(2)
-df_final["ratio_r"] = pd.to_numeric(df_final["kappa_lambda_ratio"], errors="coerce").apply(lambda x: round(x / 5) * 5 if not np.isnan(x) else -1)
+if "evidence_sentences" in df.columns and not df.empty:
+    if isinstance(df["evidence_sentences"].iloc[0], list):
+        df["evidence_sentences"] = df["evidence_sentences"].apply(lambda x: "\n".join(x))
 
-# Completeness score
-df_final["completeness"] = (
-    df_final["kappa_flc"].apply(lambda x: 1 if x not in [None, ""] else 0) +
-    df_final["lambda_flc"].apply(lambda x: 1 if x not in [None, ""] else 0) +
-    df_final["kappa_lambda_ratio"].apply(lambda x: 1 if x not in [None, ""] else 0)
-)
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
 
-# ----------------------------
-# ✅ Sort and Deduplicate
-# ----------------------------
-df_final = df_final.sort_values(by=["kappa_r", "lambda_r", "ratio_r", "completeness", "source_document"], ascending=[True, True, True, False, True])
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], inplace=True)
 
-deduped_df = df_final.drop_duplicates(subset=["kappa_r", "lambda_r", "ratio_r"], keep="first")
+    output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
+    os.makedirs(output_dir, exist_ok=True)
 
-# Optional: move source_document to front
-cols = ["source_document"] + [col for col in deduped_df.columns if col != "source_document"]
-deduped_df = deduped_df[cols]
+    excel_path = os.path.join(output_dir, "Output1.xlsx")
+    json_path = os.path.join(output_dir, "Output1.json")
 
-# ----------------------------
-# ✅ Save Output
-# ----------------------------
-excel_path = "Final_Fuzzy_Deduplicated_Result.xlsx"
-deduped_df.to_excel(excel_path, index=False)
+    df.to_excel(excel_path, index=False)
+    df.to_json(json_path, orient="records", indent=2)
 
-json_path = "Final_Fuzzy_Deduplicated_Result.json"
-deduped_df.to_json(json_path, orient="records", indent=2)
-
-# ----------------------------
-# ✅ Done
-# ----------------------------
-print(f"\n🎉 DONE — Deduplicated Output Saved")
-print(f"📁 Excel: {excel_path}")
-print(f"📁 JSON : {json_path}")
+    print(f"\n✅ Excel saved: {excel_path}")
+    print(f"✅ JSON saved: {json_path}")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
