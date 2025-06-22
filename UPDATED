@@ -761,9 +761,8 @@ from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
-import hashlib
 
-# Load config.ini
+# --- Config Load ---
 config = configparser.ConfigParser()
 config.read("config.ini")
 
@@ -793,22 +792,15 @@ def normalize_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-def clean_numeric(val: str) -> str:
-    if not isinstance(val, str):
-        return val
-    match = re.search(r"[\d.]+", val)
-    return match.group(0) if match else ""
-
 def batchify(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-# Load dataset
+# --- Load and Split Dataset ---
 csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
-# Dynamic chunking per doc
-grouped_batches = []
+all_documents = []
 
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
@@ -829,12 +821,12 @@ for _, row in tqdm(df.iterrows(), total=len(df)):
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     chunks = splitter.split_text(text)
-    doc_chunks = [Document(page_content=chunk, metadata={"source": source}) for chunk in chunks]
+    all_documents.extend([Document(page_content=chunk, metadata={"source": source}) for chunk in chunks])
 
-    if doc_chunks:
-        grouped_batches.append(doc_chunks)
+# ✅ Batch all documents
+grouped_batches = list(batchify(all_documents, 10))
 
-# Embedding setup
+# --- Embedding Setup ---
 embedding_model = AzureOpenAIEmbeddings(
     deployment=EMBEDDING_DEPLOYMENT,
     model=EMBEDDING_MODEL,
@@ -844,7 +836,6 @@ embedding_model = AzureOpenAIEmbeddings(
     chunk_size=1000
 )
 
-# Build FAISS
 def build_faiss(batch):
     return FAISS.from_documents(batch, embedding_model)
 
@@ -862,12 +853,12 @@ for sub_index in sub_indexes[1:]:
     main_index.merge_from(sub_index)
 main_index.save_local("faiss_index")
 
-# Vector search
+# --- Vector Search ---
 vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
 query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter relevant chunks
+# --- Filter Relevant Chunks ---
 filtered_chunks = []
 for doc in results:
     source_title = doc.metadata.get("source", "Unknown")
@@ -877,7 +868,7 @@ for doc in results:
     if 'kappa' in norm_text or 'lambda' in norm_text or 'ratio' in norm_text:
         filtered_chunks.append({"title": source_title, "content": content})
 
-# LLM setup
+# --- LLM Setup ---
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -887,7 +878,7 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Run LLM and parse
+# --- Prompt Execution ---
 final_results = []
 
 for i, batch in enumerate(batchify(filtered_chunks, 10)):
@@ -928,17 +919,16 @@ Respond only in strict JSON format:
         cleaned = parse_llm_json(response.content)
         batch_result = json.loads(cleaned)
 
-        for item,doc in batch_result:
-            item["source_document"] = doc["title"]
+        for item, title in zip(batch_result, titles):
+            item["source_document"] = title
             item["context"] = json.dumps(item, indent=2)
             final_results.append(item)
 
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
-# Final cleanup and output
+# --- Save to Output ---
 df = pd.DataFrame(final_results)
-
 cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
 
 if not df.empty and all(col in df.columns for col in cols):
@@ -948,131 +938,9 @@ if not df.empty and all(col in df.columns for col in cols):
     output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
     os.makedirs(output_dir, exist_ok=True)
 
-    excel_path = os.path.join(output_dir, "Output_with_unit.xlsx")
-    json_path = os.path.join(output_dir, "Output_with_unit.json")
+    df.to_excel(os.path.join(output_dir, "Output_with_unit.xlsx"), index=False)
+    df.to_json(os.path.join(output_dir, "Output_with_unit.json"), orient="records", indent=2)
 
-    df.to_excel(excel_path, index=False)
-    df.to_json(json_path, orient="records", indent=2)
-
-    print(f"\n✅ Excel saved: {excel_path}")
-    print(f"✅ JSON saved: {json_path}")
+    print(f"\n✅ Excel and JSON exported successfully.")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
-
-
-
-C:\Users\HariharaM12\PycharmProjects\Task2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\Task2\main.py 
-100%|██████████| 517/517 [00:00<00:00, 718.82it/s]
-100%|██████████| 517/517 [00:27<00:00, 18.84it/s]
-
-🧠 Running batch 1...
-❌ Failed batch 1: too many values to unpack (expected 2)
-
-🧠 Running batch 2...
-❌ Failed batch 2: too many values to unpack (expected 2)
-
-🧠 Running batch 3...
-❌ Failed batch 3: too many values to unpack (expected 2)
-
-🧠 Running batch 4...
-❌ Failed batch 4: too many values to unpack (expected 2)
-
-🧠 Running batch 5...
-
-🧠 Running batch 6...
-❌ Failed batch 6: too many values to unpack (expected 2)
-
-🧠 Running batch 7...
-❌ Failed batch 7: too many values to unpack (expected 2)
-
-🧠 Running batch 8...
-❌ Failed batch 8: too many values to unpack (expected 2)
-
-🧠 Running batch 9...
-❌ Failed batch 9: too many values to unpack (expected 2)
-
-🧠 Running batch 10...
-❌ Failed batch 10: too many values to unpack (expected 2)
-
-🧠 Running batch 11...
-❌ Failed batch 11: too many values to unpack (expected 2)
-
-🧠 Running batch 12...
-❌ Failed batch 12: too many values to unpack (expected 2)
-
-🧠 Running batch 13...
-❌ Failed batch 13: too many values to unpack (expected 2)
-
-🧠 Running batch 14...
-❌ Failed batch 14: too many values to unpack (expected 2)
-
-🧠 Running batch 15...
-
-🧠 Running batch 16...
-
-🧠 Running batch 17...
-
-🧠 Running batch 18...
-❌ Failed batch 18: too many values to unpack (expected 2)
-
-🧠 Running batch 19...
-
-🧠 Running batch 20...
-
-🧠 Running batch 21...
-❌ Failed batch 21: too many values to unpack (expected 2)
-
-🧠 Running batch 22...
-
-🧠 Running batch 23...
-
-🧠 Running batch 24...
-
-🧠 Running batch 25...
-❌ Failed batch 25: too many values to unpack (expected 2)
-
-🧠 Running batch 26...
-
-🧠 Running batch 27...
-❌ Failed batch 27: too many values to unpack (expected 2)
-
-🧠 Running batch 28...
-
-🧠 Running batch 29...
-
-🧠 Running batch 30...
-❌ Failed batch 30: too many values to unpack (expected 2)
-
-🧠 Running batch 31...
-
-🧠 Running batch 32...
-❌ Failed batch 32: too many values to unpack (expected 2)
-
-🧠 Running batch 33...
-
-🧠 Running batch 34...
-
-🧠 Running batch 35...
-❌ Failed batch 35: too many values to unpack (expected 2)
-
-🧠 Running batch 36...
-
-🧠 Running batch 37...
-
-🧠 Running batch 38...
-
-🧠 Running batch 39...
-
-🧠 Running batch 40...
-
-🧠 Running batch 41...
-
-🧠 Running batch 42...
-
-🧠 Running batch 43...
-❌ Failed batch 43: too many values to unpack (expected 2)
-
-🧠 Running batch 44...
-⚠️ No results to save. The final DataFrame is empty or missing expected columns.
-
-Process finished with exit code 0
