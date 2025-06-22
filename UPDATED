@@ -929,7 +929,7 @@ Respond only in strict JSON format:
         batch_result = json.loads(cleaned)
 
         for item in batch_result:
-            item["source_document"] = ", ".join(titles)
+            item["source_document"] = doc(titles)
             item["context"] = json.dumps(item, indent=2)
             final_results.append(item)
 
