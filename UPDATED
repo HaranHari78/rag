@@ -928,8 +928,8 @@ Respond only in strict JSON format:
         cleaned = parse_llm_json(response.content)
         batch_result = json.loads(cleaned)
 
-        for item in batch_result:
-            item["source_document"] = doc(titles)
+        for item,doc in batch_result:
+            item["source_document"] = doc["title"]
             item["context"] = json.dumps(item, indent=2)
             final_results.append(item)
 
@@ -948,8 +948,8 @@ if not df.empty and all(col in df.columns for col in cols):
     output_dir = r"C:\\Users\\HariharaM12\\PycharmProjects\\task_2"
     os.makedirs(output_dir, exist_ok=True)
 
-    excel_path = os.path.join(output_dir, "Output_with_units.xlsx")
-    json_path = os.path.join(output_dir, "Output_with_units.json")
+    excel_path = os.path.join(output_dir, "Output_with_unit.xlsx")
+    json_path = os.path.join(output_dir, "Output_with_unit.json")
 
     df.to_excel(excel_path, index=False)
     df.to_json(json_path, orient="records", indent=2)
