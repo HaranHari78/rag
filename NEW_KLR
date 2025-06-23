@@ -89,17 +89,22 @@ GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
 # --- Helpers ---
 def parse_llm_json(raw_text: str) -> str:
-    pattern = r"```(?:json)?\\s*(.*?)```"
-    match = re.search(pattern, raw_text, flags=re.DOTALL)
-    raw_text = match.group(1).strip() if match else raw_text.strip()
-    if raw_text.startswith("json"):
-        raw_text = raw_text[len("json"):].strip()
+    raw_text = raw_text.strip()
+
+    # ✅ If the content starts with triple backticks, strip them
+    if raw_text.startswith("```json"):
+        raw_text = raw_text[len("```json"):].strip()
+    elif raw_text.startswith("```"):
+        raw_text = raw_text[len("```"):].strip()
+
+    if raw_text.endswith("```"):
+        raw_text = raw_text[:-3].strip()
+
     try:
-        parsed = json.loads(raw_text)
-    except json.JSONDecodeError:
-        fixed = raw_text.replace("'", '"')
-        parsed = json.loads(fixed)
-    return json.dumps(parsed)
+        return json.dumps(json.loads(raw_text))
+    except Exception as e:
+        print("⚠️ Failed to parse JSON even after cleanup")
+        print(raw_
 
 def normalize_text(text):
     text = text.lower()
