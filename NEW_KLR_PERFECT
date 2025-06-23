@@ -403,6 +403,15 @@ def enrich_value_with_units(value: str, evidence: str) -> str:
     return match.group(1).strip() if match else value
 
 
+def extract_lab_date(evidence: str, fallback: str) -> str:
+    # Look for formats like: Labs from 2/22/2024 or on 04/08/2024
+    date_match = re.search(r'(\d{1,2})[/-](\d{1,2})[/-](20\d{2})', evidence)
+    if date_match:
+        mm, dd, yyyy = date_match.groups()
+        return f"{yyyy}-{int(mm):02d}-{int(dd):02d}"
+    return fallback
+
+
 def batchify(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
@@ -518,6 +527,7 @@ Context:
             item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
             item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
             item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
+            item["date_of_lab"] = extract_lab_date(evidence_text, fallback=title[:10])
             item["source_document"] = title
             item["context"] = json.dumps(item, indent=2)
             final_results.append(item)
@@ -531,3 +541,4 @@ output_df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio
 output_df.to_excel("output/Output.xlsx", index=False)
 output_df.to_json("output/Output.json", orient="records", indent=2)
 print("\n✅ Output saved!")
+
