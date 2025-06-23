@@ -468,3 +468,120 @@ df_out = df_out.drop_duplicates(subset=["source_document"], keep="first")
 df_out.to_excel("output/Baseline_and_3_Labs.xlsx", index=False)
 print("\n✅ Saved exact Baseline + 3 post-TAL labs output.")
 
+
+
+
+
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from langchain_openai import AzureChatOpenAI
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+# Load API config
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# Prompt template
+PROMPT_TEMPLATE = """
+You are a clinical AI assistant. From the following medical note, extract the most recent and clinically relevant lab values for:
+
+1. `kappa_flc`: numeric value + unit (e.g., mg/dL or mg/L) + reference symbols if present (`<`, `>`, `=`).
+2. `lambda_flc`: same format as above.
+3. `kappa_lambda_ratio`: numeric or symbolic ratio (may include `<`, `>`, `missing`, or `unable to calculate`).
+
+For each field, also extract:
+- `lab_date`: the **exact date** the value was recorded. If date is partial (e.g., just month or year), format it as:
+    🔹 "2024-01" → "2024-01-XX", "2024" → "2024-XX-XX"
+    ❗ Never guess the date — extract only if explicitly present near the value.
+- `evidence`: exact sentence or phrase (verbatim) that justifies the value.
+
+Return the result in strict JSON like this:
+
+```json
+{
+  "kappa_flc": {
+    "value": "203.94",
+    "lab_date": "2024-01-24",
+    "evidence": "KFLC 203.94, LFLC <0.15, ratio >1456.71"
+  },
+  "lambda_flc": {
+    "value": "<0.15",
+    "lab_date": "2024-01-24",
+    "evidence": "KFLC 203.94, LFLC <0.15, ratio >1456.71"
+  },
+  "kappa_lambda_ratio": {
+    "value": ">1456.71",
+    "lab_date": "2024-01-24",
+    "evidence": "KFLC 203.94, LFLC <0.15, ratio >1456.71"
+  }
+}
+```
+
+Only extract what is explicitly present. Do not infer or hallucinate.
+
+Medical Note:
+"""{context}"""
+"""
+
+# Initialize LLM
+llm = AzureChatOpenAI(
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    api_version=AZURE_OPENAI_API_VERSION,
+    deployment_name=GPT_DEPLOYMENT,
+    temperature=0.0
+)
+
+def parse_llm_json(raw_text):
+    pattern = r"```(?:json)?\\s*(.*?)```"
+    match = re.search(pattern, raw_text, re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    try:
+        return json.loads(raw_text)
+    except:
+        return {}
+
+def extract_fields_from_note(note_text):
+    full_prompt = PROMPT_TEMPLATE.replace("{context}", note_text)
+    response = llm.invoke(full_prompt)
+    return parse_llm_json(response.content)
+
+# Example use
+if __name__ == "__main__":
+    df = pd.read_csv("MEDICAL_DATAS.csv")  # Assuming your notes are here
+    final_data = []
+
+    for _, row in tqdm(df.iterrows(), total=len(df)):
+        note_text = row.get("text", "")
+        doc_id = row.get("title", "")
+        if not note_text.strip():
+            continue
+        try:
+            result = extract_fields_from_note(note_text)
+            for key in result:
+                result[key]["source_document"] = doc_id
+            final_data.append(result)
+        except Exception as e:
+            print(f"❌ Error in {doc_id}: {e}")
+
+    # Flatten and save
+    flat = []
+    for entry in final_data:
+        for field, value in entry.items():
+            value["field"] = field
+            flat.append(value)
+
+    out_df = pd.DataFrame(flat)
+    out_df.to_excel("extracted_lab_values.xlsx", index=False)
+    print("✅ Extraction complete and saved to Excel")
+
