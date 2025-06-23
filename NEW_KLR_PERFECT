@@ -264,7 +264,7 @@ else:
 # --- Save results ---
 df = pd.DataFrame(final_results)
 
-# 🔍 Filter by most recent lab year dynamically
+# 🔍 Extract latest year from available lab dates
 df["date_of_lab"] = df["date_of_lab"].astype(str)
 lab_years = df["date_of_lab"].str.extract(r"(20\d{2})")[0].dropna()
 lab_years = lab_years[lab_years.astype(int) <= 2100]
@@ -272,13 +272,18 @@ latest_year = lab_years.astype(int).max()
 print(f"🕒 Filtering for latest lab year: {latest_year}")
 df = df[df["date_of_lab"].str.contains(str(latest_year), na=False)]
 
-# Convert to datetime safely
+# ✅ Convert to datetime, safely handle NaT
 df["date_of_lab"] = pd.to_datetime(df["date_of_lab"], errors='coerce')
+df = df.dropna(subset=["date_of_lab"])
 
-# Sort and drop duplicate docs keeping the earliest date
+# ✅ Sort and keep only earliest lab per doc
 df = df.sort_values(by=["source_document", "date_of_lab"])
 df = df.drop_duplicates(subset=["source_document"], keep="first")
 
+# ✅ Convert date back to string to avoid Excel ####
+df["date_of_lab"] = df["date_of_lab"].dt.strftime("%Y-%m-%d")
+
+# ✅ Save final cleaned output
 cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
 if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
@@ -288,4 +293,3 @@ if not df.empty and all(col in df.columns for col in cols):
     print("\n✅ Final cleaned output saved to 'output/' folder")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
-
