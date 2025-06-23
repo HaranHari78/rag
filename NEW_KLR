@@ -1,3 +1,25 @@
+
+
+
+
+
+
+
+C:\Users\HariharaM12\PycharmProjects\T_2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\T_2\main.py 
+100%|██████████| 517/517 [00:00<00:00, 675.22it/s]
+100%|██████████| 164/164 [00:17<00:00,  9.51it/s]
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\T_2\main.py", line 145, in <module>
+    full_prompt = f"""
+                  ^^^^
+ValueError: Invalid format specifier ' "0.08 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": ">0.57",
+    "date_of_lab": "2024-06-25",
+    "evidence_sentences": ["Kappa Free Light Chain 0.08 (L)..."]
+  ' for object of type 'str'
+
+Process finished with exit code 1
 import os
 import re
 import json
