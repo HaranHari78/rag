@@ -537,10 +537,16 @@ Context:
 output_df = pd.DataFrame(final_results)
 output_df["date_of_lab"] = pd.to_datetime(output_df["date_of_lab"], errors="coerce")
 output_df = output_df[output_df["date_of_lab"].dt.year == 2024]
-output_df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio", "source_document"], keep='first', inplace=True)
+
+# Remove identical lab values across different documents
+output_df["unique_key"] = output_df["kappa_flc"].astype(str) + "|" + output_df["lambda_flc"].astype(str) + "|" + output_df["kappa_lambda_ratio"].astype(str)
+output_df = output_df.drop_duplicates(subset="unique_key", keep="first").drop(columns="unique_key")
+
+# Move source_document as first column
+cols = ["source_document"] + [col for col in output_df.columns if col != "source_document"]
+output_df = output_df[cols]
 
 os.makedirs("output", exist_ok=True)
 output_df.to_excel("output/Filtered_2024_Lab_Results.xlsx", index=False)
 output_df.to_json("output/Filtered_2024_Lab_Results.json", orient="records", indent=2)
-print("\n✅ Output saved: 2024 lab values only")
-
+print("\n✅ Output saved: 2024 lab values only, duplicates removed, source_document first")
