@@ -143,6 +143,18 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
     titles = [doc["title"] for doc in batch]
 
     full_prompt = f"""
+Respond ONLY in valid JSON like below:
+```json
+[
+  {{
+    "kappa_flc": "0.08 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": ">0.57",
+    "date_of_lab": "2024-06-25",
+    "evidence_sentences": ["Kappa Free Light Chain 0.08 (L)..."]
+  }}
+]
+```
 You are a clinical data extraction assistant.
 
 For each note below, ONLY extract lab values if a sentence contains ALL THREE:
@@ -167,28 +179,35 @@ Return this strict JSON format:
 {json.dumps(json_context, indent=2)}
 """
 
+    print(f"\n\U0001f9e0 Running batch {i+1}...")
+    response = llm.invoke(full_prompt)
+
+    if not response or not response.content.strip():
+        print(f"⚠️ Empty response for batch {i+1}")
+        continue
+
     try:
-        print(f"\n\U0001f9e0 Running batch {i+1}...")
-        response = llm.invoke(full_prompt)
         cleaned = parse_llm_json(response.content)
         batch_result = json.loads(cleaned)
+    except Exception as parse_error:
+        print(f"❌ Batch {i+1} JSON parse error: {parse_error}")
+        print("🔎 Raw response:")
+        print(response.content)
+        continue
 
-        for item, title in zip(batch_result, titles):
-            evidence_text = " ".join(item.get("evidence_sentences", []))
-            kappa = clean_numeric(item.get("kappa_flc", ""))
-            lambda_ = clean_numeric(item.get("lambda_flc", ""))
-            ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
-            item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
-            item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
-            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text)
-            item["source_document"] = title
-            item["context"] = json.dumps(item, indent=2)
+    for item, title in zip(batch_result, titles):
+        evidence_text = " ".join(item.get("evidence_sentences", []))
+        kappa = clean_numeric(item.get("kappa_flc", ""))
+        lambda_ = clean_numeric(item.get("lambda_flc", ""))
+        ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
+        item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
+        item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
+        item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text)
+        item["source_document"] = title
+        item["context"] = json.dumps(item, indent=2)
 
-            if all(field in evidence_text.lower() for field in ["kappa", "lambda", "ratio"]):
-                final_results.append(item)
-
-    except Exception as e:
-        print(f"\u274c Failed batch {i+1}: {e}")
+        if all(field in evidence_text.lower() for field in ["kappa", "lambda", "ratio"]):
+            final_results.append(item)
 
 # --- Save results ---
 df = pd.DataFrame(final_results)
