@@ -220,6 +220,38 @@ if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
     df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
     os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output_with_units_enriched1.xlsx", index=False)
+    df.to_json("output/Output_with_units_enriched1.json", orient="records", indent=2)
+    print("\n✅ Output saved to 'output/' folder")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+
+
+
+
+THE BEST ::
+
+# --- Save results ---
+df = pd.DataFrame(final_results)
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+
+    # ✅ Filter by latest year from date_of_lab
+    df["lab_year"] = df["date_of_lab"].astype(str).str.extract(r"(20\d{2})")
+    df["lab_year"] = pd.to_numeric(df["lab_year"], errors="coerce")
+    latest_lab_year = df["lab_year"].dropna().max()
+
+    if not pd.isna(latest_lab_year):
+        df = df[df["lab_year"] == latest_lab_year]
+        print(f"\n📅 Keeping only results from latest lab year: {int(latest_lab_year)}")
+    else:
+        print("⚠️ No valid lab year found. Skipping year filter.")
+
+    df.drop(columns=["lab_year"], inplace=True)
+    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
+    os.makedirs("output", exist_ok=True)
     df.to_excel("output/Output_with_units_enriched.xlsx", index=False)
     df.to_json("output/Output_with_units_enriched.json", orient="records", indent=2)
     print("\n✅ Output saved to 'output/' folder")
