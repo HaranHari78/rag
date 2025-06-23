@@ -330,20 +330,18 @@ print("✅ Final output saved.")
 
 
 JUST TRY IT 
-### ✅ FINAL UPDATED CODE (Auto-detect baseline + 1st, 2nd, 3rd lab appearances based on TAL initiation date)
-
 import os
 import re
 import json
 import pandas as pd
 import configparser
 from tqdm import tqdm
+from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
-from datetime import datetime
 
 # --- Load config.ini ---
 config = configparser.ConfigParser()
@@ -387,23 +385,6 @@ def normalize_text(text):
     text = re.sub(r'[^a-z0-9]', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
-
-def clean_numeric(val: str) -> str:
-    if not isinstance(val, str):
-        return val
-    match = re.search(r"[0-9]+\.?[0-9]*", val)
-    return match.group(0) if match else ""
-
-def enrich_value_with_units(value: str, evidence: str) -> str:
-    if not value or not evidence:
-        return value
-    try:
-        float_value = float(value)
-    except:
-        return value
-    pattern = re.compile(rf"([<>]?\s*{re.escape(value)}\s*(?:mg/dl|mg/l)?)", re.IGNORECASE)
-    match = pattern.search(evidence)
-    return match.group(1).strip() if match else value
 
 def batchify(lst, n):
     for i in range(0, len(lst), n):
@@ -461,16 +442,45 @@ main_index.save_local("faiss_index")
 
 # --- Search relevant chunks ---
 vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
-query = "When did the patient start taking talquetamab (TAL)? What date did it begin? Also extract kappa, lambda, and ratio with evidence and lab date."
+query = "Extract the patient's kappa free light chain (mg/dL), lambda free light chain (mg/dL), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
 filtered_chunks = []
 for doc in results:
     source_title = doc.metadata.get("source", "Unknown")
     content = doc.page_content
-    norm = content.lower()
-    if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm) or "talquetamab" in norm:
+    if any(keyword in content.lower() for keyword in ["kappa", "lambda", "ratio"]):
         filtered_chunks.append({"title": source_title, "content": content})
+
+# --- Prompt Template ---
+prompt_template = """
+You are a clinical data extraction assistant. For each given clinical note, extract **Free Light Chain Assay** results 
+and categorize them into one of the following phases:
+
+1. Baseline (most recent prior to or on TAL initiation)
+2. 1st lab after TAL initiation
+3. 2nd lab after TAL initiation
+4. 3rd lab after TAL initiation
+
+Instructions:
+- The TAL (Talquetamab) initiation date should be inferred from statements like "received talquetamab from 1/24/2024".
+- Only extract results with clearly stated **kappa**, **lambda**, and **kappa/lambda ratio**, preferably with units like mg/dL or mg/L.
+- Ignore any estimated, referenced, or repeated values from previous documents.
+- Only extract new lab test results per phase (i.e., each one should have unique kappa/lambda readings).
+
+Return strict JSON in this format:
+[
+  {
+    "phase": "baseline" | "1st lab" | "2nd lab" | "3rd lab",
+    "date_of_lab": "YYYY-MM-DD",
+    "kappa_flc": "...",               
+    "lambda_flc": "...",              
+    "kappa_lambda_ratio": "...",      
+    "record_id": "...",
+    "evidence": "..."
+  }
+]
+"""
 
 # --- LLM setup ---
 llm = AzureChatOpenAI(
@@ -486,31 +496,7 @@ llm = AzureChatOpenAI(
 final_results = []
 for i, batch in enumerate(batchify(filtered_chunks, 10)):
     json_context = [{"note_id": j + 1, "title": doc["title"], "content": doc["content"]} for j, doc in enumerate(batch)]
-    titles = [doc["title"] for doc in batch]
-
-    full_prompt = f"""
-You are a clinical data extraction assistant.
-
-1. Extract the **TAL (talquetamab) initiation date** if mentioned. Use only one date.
-2. Extract the kappa free light chain, lambda free light chain, and kappa/lambda ratio (with mg/dL or mg/L units) **only when real lab results** are reported — skip if just mentioned without lab value.
-3. Include `evidence_sentences` and exact `date_of_lab` (if present in context).
-
-Respond in strict JSON format:
-[
-  {{
-    "tal_initiation_date": "YYYY-MM-DD" (null if not found),
-    "kappa_flc": "...",
-    "lambda_flc": "...",
-    "kappa_lambda_ratio": "...",
-    "date_of_lab": "...",
-    "evidence_sentences": ["..."],
-    "source_document": "..."
-  }}
-]
-
---- Context:
-{json.dumps(json_context, indent=2)}
-"""
+    full_prompt = prompt_template + "\n--- Context:\n" + json.dumps(json_context, indent=2)
 
     try:
         print(f"\n🧠 Running batch {i+1}...")
@@ -520,40 +506,17 @@ Respond in strict JSON format:
         batch_result = json.loads(cleaned)
 
         for item in batch_result:
-            evidence_text = " ".join(item.get("evidence_sentences", []))
-            kappa = clean_numeric(item.get("kappa_flc", ""))
-            lambda_ = clean_numeric(item.get("lambda_flc", ""))
-            ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
-            item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
-            item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
-            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
             final_results.append(item)
 
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
-# --- Select baseline + 1st to 3rd post-TAL labs ---
+# --- Save results ---
 df = pd.DataFrame(final_results)
-df = df[df["date_of_lab"].notna()].copy()
-df["date_of_lab"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
-df = df[df["date_of_lab"].notna()].sort_values("date_of_lab")
-
-# Detect TAL start date dynamically
-potential_dates = df["tal_initiation_date"].dropna().unique()
-TAL_START = pd.to_datetime(potential_dates[0]) if len(potential_dates) > 0 else None
-
-if TAL_START:
-    baseline_df = df[df["date_of_lab"] <= TAL_START].copy()
-    post_tal_df = df[df["date_of_lab"] > TAL_START].copy()
-
-    baseline_doc = baseline_df.tail(1)
-    post_tal_labs = post_tal_df.head(3)
-    final_labs = pd.concat([baseline_doc, post_tal_labs])
-
+if not df.empty:
+    df = df[["phase", "date_of_lab", "record_id", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "evidence"]]
     os.makedirs("output", exist_ok=True)
-    final_labs.to_excel("output/Baseline_and_3_Post_TAL_Labs.xlsx", index=False)
-    final_labs.to_json("output/Baseline_and_3_Post_TAL_Labs.json", orient="records", indent=2)
-    print("\n✅ Final structured results saved with baseline and 3 post-TAL labs")
+    df.to_excel("output/Baseline_and_3_Post_TAL_Labs.xlsx", index=False)
+    print("\n✅ Saved structured output to 'output/Baseline_and_3_Post_TAL_Labs.xlsx'")
 else:
-    print("❌ Could not detect TAL initiation date in the documents.")
-
+    print("⚠️ No structured lab results extracted.")
