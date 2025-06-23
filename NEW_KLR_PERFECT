@@ -330,6 +330,7 @@ print("✅ Final output saved.")
 
 
 JUST TRY IT 
+### ✅ FINAL UPDATED CODE (Auto-detect baseline + 1st, 2nd, 3rd lab appearances based on TAL initiation date)
 
 import os
 import re
@@ -342,6 +343,7 @@ from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+from datetime import datetime
 
 # --- Load config.ini ---
 config = configparser.ConfigParser()
@@ -354,109 +356,123 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-
+# --- Helpers ---
 def parse_llm_json(raw_text: str) -> str:
     if not raw_text.strip():
+        print("⚠️ Warning: Empty LLM response")
         return "[]"
+
     pattern = r"```(?:json)?\s*(.*?)```"
     match = re.search(pattern, raw_text, flags=re.DOTALL)
     raw_text = match.group(1).strip() if match else raw_text.strip()
+
     if raw_text.startswith("json"):
         raw_text = raw_text[len("json"):].strip()
+
     try:
         parsed = json.loads(raw_text)
     except json.JSONDecodeError:
+        print("⚠️ JSON decode error, trying to fix quotes")
         fixed = raw_text.replace("'", '"')
-        parsed = json.loads(fixed)
+        try:
+            parsed = json.loads(fixed)
+        except Exception as e:
+            print("❌ Still failed:", e)
+            return "[]"
+
     return json.dumps(parsed)
 
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 def clean_numeric(val: str) -> str:
     if not isinstance(val, str):
         return val
-    match = re.search(r"[<>]?[0-9]+\.?[0-9]*", val)
+    match = re.search(r"[0-9]+\.?[0-9]*", val)
     return match.group(0) if match else ""
-
 
 def enrich_value_with_units(value: str, evidence: str) -> str:
     if not value or not evidence:
         return value
     try:
-        float(re.sub(r"[<>]", "", value))
+        float_value = float(value)
     except:
         return value
-    pattern = re.compile(rf"([<>]?[ ]*{re.escape(value)}[ ]*(mg/dl|mg/l)?)", re.IGNORECASE)
+    pattern = re.compile(rf"([<>]?\s*{re.escape(value)}\s*(?:mg/dl|mg/l)?)", re.IGNORECASE)
     match = pattern.search(evidence)
     return match.group(1).strip() if match else value
-
-
-def extract_lab_date(evidence: str) -> str:
-    patterns = [
-        r'(\d{1,2})[/-](\d{1,2})[/-](20\d{2})',
-        r'(20\d{2})[/-](\d{1,2})[/-](\d{1,2})'
-    ]
-    for pattern in patterns:
-        match = re.search(pattern, evidence)
-        if match:
-            groups = list(match.groups())
-            if len(groups[0]) == 4:
-                yyyy, mm, dd = groups
-            else:
-                mm, dd, yyyy = groups
-            return f"{yyyy}-{int(mm):02d}-{int(dd):02d}"
-    return "Unknown"
-
 
 def batchify(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
+# --- Load dataset ---
+csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+df = pd.read_csv(csv_path)
 
-# Load CSV
-df = pd.read_csv("d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv")
-
+# --- Create documents ---
 all_documents = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
         continue
     text = row["text"]
     source = row["title"]
-    splitter = RecursiveCharacterTextSplitter(chunk_size=3000, chunk_overlap=500)
+    word_count = len(text.split())
+    if word_count < 500:
+        chunk_size = 1000
+        chunk_overlap = 0
+    elif word_count < 2000:
+        chunk_size = 1500
+        chunk_overlap = 250
+    else:
+        chunk_size = 3000
+        chunk_overlap = 500
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     chunks = splitter.split_text(text)
     all_documents.extend([Document(page_content=chunk, metadata={"source": source}) for chunk in chunks])
 
+# --- Embedding & FAISS index ---
 embedding_model = AzureOpenAIEmbeddings(
     deployment=EMBEDDING_DEPLOYMENT,
     model=EMBEDDING_MODEL,
     openai_api_key=AZURE_OPENAI_API_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    openai_api_version=AZURE_OPENAI_API_VERSION
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
 )
 
-# Build FAISS index
-sub_indexes = []
 grouped_batches = list(batchify(all_documents, 10))
+sub_indexes = []
 with ThreadPoolExecutor(max_workers=4) as executor:
     futures = {executor.submit(FAISS.from_documents, batch, embedding_model): batch for batch in grouped_batches}
     for future in tqdm(as_completed(futures), total=len(futures)):
-        sub_indexes.append(future.result())
+        try:
+            sub_indexes.append(future.result())
+        except Exception as e:
+            print(f"Batch failed: {e}")
+
 main_index = sub_indexes[0]
 for sub_index in sub_indexes[1:]:
     main_index.merge_from(sub_index)
 main_index.save_local("faiss_index")
 
+# --- Search relevant chunks ---
 vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
-query = "Extract lab values for kappa, lambda, and kappa/lambda ratio, including date and evidence."
+query = "When did the patient start taking talquetamab (TAL)? What date did it begin? Also extract kappa, lambda, and ratio with evidence and lab date."
 results = vectorstore.similarity_search(query, k=1000)
 
-# Filter for lab-relevant content
 filtered_chunks = []
 for doc in results:
-    content = doc.page_content.lower()
-    if all(keyword in content for keyword in ["kappa", "lambda"]):
-        filtered_chunks.append({"title": doc.metadata["source"], "content": doc.page_content})
+    source_title = doc.metadata.get("source", "Unknown")
+    content = doc.page_content
+    norm = content.lower()
+    if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm) or "talquetamab" in norm:
+        filtered_chunks.append({"title": source_title, "content": content})
 
-# LLM setup
+# --- LLM setup ---
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
     model_name="gpt-4o",
@@ -466,52 +482,78 @@ llm = AzureChatOpenAI(
     temperature=0
 )
 
-# Extract values
+# --- Extraction ---
 final_results = []
 for i, batch in enumerate(batchify(filtered_chunks, 10)):
-    json_context = [{"title": doc["title"], "content": doc["content"]} for doc in batch]
+    json_context = [{"note_id": j + 1, "title": doc["title"], "content": doc["content"]} for j, doc in enumerate(batch)]
+    titles = [doc["title"] for doc in batch]
+
     full_prompt = f"""
-Extract exact values for kappa, lambda, and ratio from the clinical notes. If ratio is not found, leave it null.
-Also extract lab test date if mentioned in the content (like 'labs from MM/DD/YYYY')
-Respond in strict JSON:
+You are a clinical data extraction assistant.
+
+1. Extract the **TAL (talquetamab) initiation date** if mentioned. Use only one date.
+2. Extract the kappa free light chain, lambda free light chain, and kappa/lambda ratio (with mg/dL or mg/L units) **only when real lab results** are reported — skip if just mentioned without lab value.
+3. Include `evidence_sentences` and exact `date_of_lab` (if present in context).
+
+Respond in strict JSON format:
 [
   {{
+    "tal_initiation_date": "YYYY-MM-DD" (null if not found),
     "kappa_flc": "...",
     "lambda_flc": "...",
     "kappa_lambda_ratio": "...",
     "date_of_lab": "...",
-    "evidence_sentences": ["..."]
+    "evidence_sentences": ["..."],
+    "source_document": "..."
   }}
 ]
 
-Context:
+--- Context:
 {json.dumps(json_context, indent=2)}
 """
+
     try:
+        print(f"\n🧠 Running batch {i+1}...")
         response = llm.invoke(full_prompt)
-        parsed = json.loads(parse_llm_json(response.content))
-        for item, ref in zip(parsed, json_context):
-            evidence = " ".join(item.get("evidence_sentences", []))
-            item["source_document"] = ref["title"]
-            item["kappa_flc"] = enrich_value_with_units(clean_numeric(item.get("kappa_flc", "")), evidence)
-            item["lambda_flc"] = enrich_value_with_units(clean_numeric(item.get("lambda_flc", "")), evidence)
+        print("\n🔎 Raw LLM response:\n", response.content[:1000])
+        cleaned = parse_llm_json(response.content)
+        batch_result = json.loads(cleaned)
+
+        for item in batch_result:
+            evidence_text = " ".join(item.get("evidence_sentences", []))
+            kappa = clean_numeric(item.get("kappa_flc", ""))
+            lambda_ = clean_numeric(item.get("lambda_flc", ""))
             ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
-            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence) if ratio else None
-            item["date_of_lab"] = extract_lab_date(evidence)
+            item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
+            item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
+            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
             final_results.append(item)
+
     except Exception as e:
-        print(f"Batch {i+1} failed: {e}")
+        print(f"❌ Failed batch {i+1}: {e}")
 
-# Create DataFrame and sort chronologically
-df_final = pd.DataFrame(final_results)
-df_final = df_final[df_final["date_of_lab"] != "Unknown"]
-df_final["date_of_lab"] = pd.to_datetime(df_final["date_of_lab"], errors="coerce")
-df_final.dropna(subset=["date_of_lab"], inplace=True)
-df_final.sort_values("date_of_lab", inplace=True)
+# --- Select baseline + 1st to 3rd post-TAL labs ---
+df = pd.DataFrame(final_results)
+df = df[df["date_of_lab"].notna()].copy()
+df["date_of_lab"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+df = df[df["date_of_lab"].notna()].sort_values("date_of_lab")
 
-# Save final result
-os.makedirs("output", exist_ok=True)
-df_final.to_excel("output/Final_Lab_Results_Chronological.xlsx", index=False)
-df_final.to_json("output/Final_Lab_Results_Chronological.json", orient="records", indent=2)
-print("\n✅ Final lab output saved with all 4 lab cycles.")
+# Detect TAL start date dynamically
+potential_dates = df["tal_initiation_date"].dropna().unique()
+TAL_START = pd.to_datetime(potential_dates[0]) if len(potential_dates) > 0 else None
+
+if TAL_START:
+    baseline_df = df[df["date_of_lab"] <= TAL_START].copy()
+    post_tal_df = df[df["date_of_lab"] > TAL_START].copy()
+
+    baseline_doc = baseline_df.tail(1)
+    post_tal_labs = post_tal_df.head(3)
+    final_labs = pd.concat([baseline_doc, post_tal_labs])
+
+    os.makedirs("output", exist_ok=True)
+    final_labs.to_excel("output/Baseline_and_3_Post_TAL_Labs.xlsx", index=False)
+    final_labs.to_json("output/Baseline_and_3_Post_TAL_Labs.json", orient="records", indent=2)
+    print("\n✅ Final structured results saved with baseline and 3 post-TAL labs")
+else:
+    print("❌ Could not detect TAL initiation date in the documents.")
 
