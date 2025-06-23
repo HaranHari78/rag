@@ -203,7 +203,7 @@ Respond only in strict JSON format:
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
-# --- Save results ---
+# --- Save results --- got 203,16,0.08
 df = pd.DataFrame(final_results)
 
 # 🔍 Filter by most recent lab year dynamically
@@ -220,8 +220,8 @@ if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
     df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
     os.makedirs("output", exist_ok=True)
-    df.to_excel("output/Output_with_units_enriched1.xlsx", index=False)
-    df.to_json("output/Output_with_units_enriched1.json", orient="records", indent=2)
+    df.to_excel("output/Output.xlsx", index=False)
+    df.to_json("output/Output.json", orient="records", indent=2)
     print("\n✅ Output saved to 'output/' folder")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
