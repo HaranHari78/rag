@@ -1,3 +1,69 @@
+C:\Users\HariharaM12\PycharmProjects\T_2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\T_2\main.py 
+100%|██████████| 517/517 [00:00<00:00, 706.71it/s]
+100%|██████████| 164/164 [00:24<00:00,  6.74it/s]
+ Running batch 1...
+❌ Batch 1 JSON parse error: Expecting value: line 1 column 1 (char 0)
+🔎 Raw response:
+```json
+[
+  {
+    "kappa_flc": "56.21 mg/dL",
+    "lambda_flc": "<3.08 mg/dL",
+    "kappa_lambda_ratio": ">115.57",
+    "date_of_lab": "2024-02-22",
+    "evidence_sentences": [
+      "Latest Reference Range & Units 02/22/24 09:20   Kappa Free Light Chain 0.76 - 6.83 mg/dL 56.21 (H)   Lambda Free Light Chain 0.68 - 4.58 mg/dL <3.08 (L)   Kappa/Lambda FLC Ratio 0.66 - 2.22  >115.57 (H)"
+    ]
+  },
+  {
+    "kappa_flc": "203.94 mg/dL",
+    "lambda_flc": "<0.15 mg/dL",
+    "kappa_lambda_ratio": ">1456.71",
+    "date_of_lab": "2024-02-08",
+    "evidence_sentences": [
+      "Free Light Chains   Result Value Ref Range    Kappa Free Light Chain 203.94 (H) 0.76 - 6.83 mg/dL    Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg/dL    Kappa/Lambda FLC Ratio >1456.71 (H) 0.66 - 2.22"
+    ]
+  },
+  {
+    "kappa_flc": "20.78 mg/dL",
+    "lambda_flc": "0.24 mg/dL",
+    "kappa_lambda_ratio": "86.58",
+    "date_of_lab": "2021-06-XX",
+    "evidence_sentences": [
+      "In 6/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."
+    ]
+  }
+]
+```
+ Running batch 2...
+❌ Batch 2 JSON parse error: Expecting value: line 1 column 1 (char 0)
+🔎 Raw response:
+```json
+[]
+```
+ Running batch 3...
+❌ Batch 3 JSON parse error: Expecting value: line 1 column 1 (char 0)
+🔎 Raw response:
+```json
+[
+  {
+    "kappa_flc": "129.54mg/dL",
+    "lambda_flc": "15mg/dL",
+    "kappa_lambda_ratio": ">914.29",
+    "date_of_lab": "2023-11-28",
+    "evidence_sentences": [
+      "11/28/23: kappa free light chain (KFLC) 129.54mg /dL, lambda free light chain (LFLC) 15mg /dL, kappa/lambda ratio >914.29."
+    ]
+  }
+]
+```
+ No results to save. The final DataFrame is empty or missing expected columns.
+
+Process finished with exit code 0
+
+
+
+
 import os
 import re
 import json
