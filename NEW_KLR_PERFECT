@@ -404,10 +404,9 @@ def enrich_value_with_units(value: str, evidence: str) -> str:
 
 
 def extract_lab_date(evidence: str) -> str:
-    # Extract MM/DD/YYYY or M-D-YYYY or YYYY-MM-DD from evidence
     patterns = [
-        r'(\d{1,2})[/-](\d{1,2})[/-](20\d{2})',  # MM/DD/YYYY or M-D-YYYY
-        r'(20\d{2})[/-](\d{1,2})[/-](\d{1,2})'   # YYYY-MM-DD
+        r'(\d{1,2})[/-](\d{1,2})[/-](20\d{2})',
+        r'(20\d{2})[/-](\d{1,2})[/-](\d{1,2})'
     ]
     for pattern in patterns:
         match = re.search(pattern, evidence)
@@ -543,22 +542,28 @@ Context:
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
 
-# Save only 2024 lab entries from evidence (not fallback from title)
-output_df = pd.DataFrame(final_results)
-output_df = output_df[output_df["date_of_lab"] != "Unknown"]
-output_df["date_of_lab"] = pd.to_datetime(output_df["date_of_lab"], errors="coerce")
-output_df = output_df[output_df["date_of_lab"].dt.year == 2024]
+# Convert to DataFrame
+df = pd.DataFrame(final_results)
 
-# Remove identical lab values across documents
-output_df["unique_key"] = output_df["kappa_flc"].astype(str) + "|" + output_df["lambda_flc"].astype(str) + "|" + output_df["kappa_lambda_ratio"].astype(str)
-output_df = output_df.drop_duplicates(subset="unique_key", keep="first").drop(columns="unique_key")
+# 🔍 Filter by most recent lab year dynamically
+df["date_of_lab"] = df["date_of_lab"].astype(str)
+lab_years = df["date_of_lab"].str.extract(r"(20\d{2})")[0].dropna()
+lab_years = lab_years[lab_years.astype(int) <= 2100]
+latest_year = lab_years.astype(int).max()
+print(f"🕒 Filtering for latest lab year: {latest_year}")
+df = df[df["date_of_lab"].str.contains(str(latest_year), na=False)]
 
-# Set source_document as first column
-cols = ["source_document"] + [col for col in output_df.columns if col != "source_document"]
-output_df = output_df[cols]
+# Remove duplicate lab values across docs
+df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
 
-os.makedirs("output", exist_ok=True)
-output_df.to_excel("output/Filtered_2024_Lab_Results.xlsx", index=False)
-output_df.to_json("output/Filtered_2024_Lab_Results.json", orient="records", indent=2)
-print("\n✅ Output saved: 2024 lab values with real evidence dates only")
+# Format and save
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output.xlsx", index=False)
+    df.to_json("output/Output.json", orient="records", indent=2)
+    print("\n✅ Output saved to 'output/' folder")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
 
