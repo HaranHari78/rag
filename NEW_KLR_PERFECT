@@ -260,7 +260,7 @@ else:
 
 
 
-
+THIS IS VERYU PERFECT FROM ROWS BECOME  6 TO 5 UNIQU :
 # --- Save results ---
 df = pd.DataFrame(final_results)
 
