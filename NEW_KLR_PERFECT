@@ -74,10 +74,14 @@ def batchify(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-year_matches = df["text"].dropna().str.extractall(r"(?<!\d)(20\d{2})(?!\d)")[0].astype(int)
-valid_years = year_matches[year_matches <= 2025]
-latest_year = valid_years.max() if not valid_years.empty else 2025
-print(f"📅 Most recent valid year found in text: {latest_year}")
+def extract_years(text):
+    return re.findall(r"\b(20\d{2})\b", str(text))
+
+all_years = []
+for val in df["text"]:
+    all_years.extend(extract_years(val))
+valid_years = [int(y) for y in all_years if int(y) <= 2024]
+latest_year = max(valid_years) if valid_years else None
 
 # --- Load dataset ---
 csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
