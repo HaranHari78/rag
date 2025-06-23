@@ -404,7 +404,6 @@ def enrich_value_with_units(value: str, evidence: str) -> str:
 
 
 def extract_lab_date(evidence: str, fallback: str) -> str:
-    # Look for formats like: Labs from 2/22/2024 or on 04/08/2024
     date_match = re.search(r'(\d{1,2})[/-](\d{1,2})[/-](20\d{2})', evidence)
     if date_match:
         mm, dd, yyyy = date_match.groups()
@@ -417,7 +416,6 @@ def batchify(lst, n):
         yield lst[i:i + n]
 
 
-# Load data
 csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
@@ -535,10 +533,14 @@ Context:
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
 
-# Save output
+# Save only 2024 lab entries
 output_df = pd.DataFrame(final_results)
+output_df["date_of_lab"] = pd.to_datetime(output_df["date_of_lab"], errors="coerce")
+output_df = output_df[output_df["date_of_lab"].dt.year == 2024]
 output_df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio", "source_document"], keep='first', inplace=True)
-output_df.to_excel("output/Output.xlsx", index=False)
-output_df.to_json("output/Output.json", orient="records", indent=2)
-print("\n✅ Output saved!")
+
+os.makedirs("output", exist_ok=True)
+output_df.to_excel("output/Filtered_2024_Lab_Results.xlsx", index=False)
+output_df.to_json("output/Filtered_2024_Lab_Results.json", orient="records", indent=2)
+print("\n✅ Output saved: 2024 lab values only")
 
