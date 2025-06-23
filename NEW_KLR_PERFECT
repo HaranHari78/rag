@@ -321,3 +321,213 @@ os.makedirs("output", exist_ok=True)
 df.to_excel("output/Output_with_units_enriched_final.xlsx", index=False)
 df.to_json("output/Output_with_units_enriched_final.json", orient="records", indent=2)
 print("✅ Final output saved.")
+
+
+
+
+
+
+
+
+JUST TRY IT 
+
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+
+# --- Load config.ini ---
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+
+def parse_llm_json(raw_text: str) -> str:
+    if not raw_text.strip():
+        print("⚠️ Warning: Empty LLM response")
+        return "[]"
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError:
+        print("⚠️ JSON decode error, trying to fix quotes")
+        fixed = raw_text.replace("'", '"')
+        try:
+            parsed = json.loads(fixed)
+        except Exception as e:
+            print("❌ Still failed:", e)
+            return "[]"
+    return json.dumps(parsed)
+
+
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+
+def clean_numeric(val: str) -> str:
+    if not isinstance(val, str):
+        return val
+    match = re.search(r"[<>]?[0-9]+\.?[0-9]*", val)
+    return match.group(0) if match else ""
+
+
+def enrich_value_with_units(value: str, evidence: str) -> str:
+    if not value or not evidence:
+        return value
+    try:
+        float(re.sub(r"[<>]", "", value))
+    except:
+        return value
+    pattern = re.compile(rf"([<>]?\s*{re.escape(value)}\s*(?:mg/dl|mg/l)?)", re.IGNORECASE)
+    match = pattern.search(evidence)
+    return match.group(1).strip() if match else value
+
+
+def batchify(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+# Load data
+csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+df = pd.read_csv(csv_path)
+
+all_documents = []
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    if pd.isna(row["text"]):
+        continue
+    text = row["text"]
+    source = row["title"]
+    word_count = len(text.split())
+    if word_count < 500:
+        chunk_size = 1000
+        chunk_overlap = 0
+    elif word_count < 2000:
+        chunk_size = 1500
+        chunk_overlap = 250
+    else:
+        chunk_size = 3000
+        chunk_overlap = 500
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    chunks = splitter.split_text(text)
+    all_documents.extend([Document(page_content=chunk, metadata={"source": source}) for chunk in chunks])
+
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+grouped_batches = list(batchify(all_documents, 10))
+sub_indexes = []
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(FAISS.from_documents, batch, embedding_model): batch for batch in grouped_batches}
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        try:
+            sub_indexes.append(future.result())
+        except Exception as e:
+            print(f"Batch failed: {e}")
+
+main_index = sub_indexes[0]
+for sub_index in sub_indexes[1:]:
+    main_index.merge_from(sub_index)
+main_index.save_local("faiss_index")
+
+vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
+query = "Extract the patient's kappa free light chain (mg/L), lambda free light chain (mg/L), and kappa/lambda ratio, along with the lab date and evidence."
+results = vectorstore.similarity_search(query, k=1000)
+
+filtered_chunks = []
+for doc in results:
+    source_title = doc.metadata.get("source", "Unknown")
+    content = doc.page_content
+    norm = content.lower()
+    if "kappa" in norm and "lambda" in norm and ("ratio" in norm or "kappa/lambda" in norm):
+        filtered_chunks.append({"title": source_title, "content": content})
+
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+final_results = []
+for i, batch in enumerate(batchify(filtered_chunks, 10)):
+    json_context = [{"note_id": j + 1, "title": doc["title"], "content": doc["content"]} for j, doc in enumerate(batch)]
+    titles = [doc["title"] for doc in batch]
+
+    full_prompt = f"""
+You are a clinical data extraction assistant. For each document, extract:
+- kappa and lambda free light chain values (with < or > and mg/L or mg/dL)
+- kappa/lambda ratio if present; if not, set it to null
+- lab test date (in YYYY-MM-DD)
+- sentence-level evidence
+
+Respond in strict JSON format:
+[
+  {{
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences": ["..."]
+  }}
+]
+
+Context:
+{json.dumps(json_context, indent=2)}
+"""
+
+    try:
+        print(f"\n🧠 Running batch {i + 1}...")
+        response = llm.invoke(full_prompt)
+        cleaned = parse_llm_json(response.content)
+        batch_result = json.loads(cleaned)
+
+        for item, title in zip(batch_result, titles):
+            evidence_text = " ".join(item.get("evidence_sentences", []))
+            kappa = clean_numeric(item.get("kappa_flc", ""))
+            lambda_ = clean_numeric(item.get("lambda_flc", ""))
+            ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
+            item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
+            item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
+            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
+            item["source_document"] = title
+            item["context"] = json.dumps(item, indent=2)
+            final_results.append(item)
+
+    except Exception as e:
+        print(f"❌ Failed batch {i + 1}: {e}")
+
+# Save output
+output_df = pd.DataFrame(final_results)
+output_df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio", "source_document"], keep='first', inplace=True)
+output_df.to_excel("output/Output.xlsx", index=False)
+output_df.to_json("output/Output.json", orient="records", indent=2)
+print("\n✅ Output saved!")
