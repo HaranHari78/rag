@@ -1,31 +1,3 @@
-C:\Users\HariharaM12\PycharmProjects\T_2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\T_2\main.py 
-100%|██████████| 517/517 [00:00<00:00, 728.42it/s]
-100%|██████████| 164/164 [00:17<00:00,  9.55it/s]
-
-🧠 Running batch 1...
-❌ Failed batch 1: Expecting value: line 1 column 1 (char 0)
-
-🧠 Running batch 2...
-❌ Failed batch 2: Expecting value: line 1 column 1 (char 0)
-
-🧠 Running batch 3...
-❌ Failed batch 3: Expecting value: line 1 column 1 (char 0)
-
-🧠 Running batch 4...
-❌ Failed batch 4: Expecting value: line 1 column 1 (char 0)
-
-🧠 Running batch 5...
-❌ Failed batch 5: Expecting value: line 1 column 1 (char 0)
-
-🧠 Running batch 6...
-❌ Failed batch 6: Expecting value: line 1 column 1 (char 0)
-⚠️ No results to save. The final DataFrame is empty or missing expected columns.
-
-Process finished with exit code 0
-
-
-
-
 import os
 import re
 import json
@@ -51,17 +23,21 @@ GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
 # --- Helpers ---
 def parse_llm_json(raw_text: str) -> str:
-    pattern = r"```(?:json)?\\s*(.*?)```"
+    pattern = r"```(?:json)?\s*(.*?)```"
     match = re.search(pattern, raw_text, flags=re.DOTALL)
     raw_text = match.group(1).strip() if match else raw_text.strip()
+    if not raw_text:
+        print("⚠️ Empty LLM response")
+        return "[]"
     if raw_text.startswith("json"):
         raw_text = raw_text[len("json"):].strip()
     try:
         parsed = json.loads(raw_text)
-    except json.JSONDecodeError:
-        fixed = raw_text.replace("'", '"')
-        parsed = json.loads(fixed)
-    return json.dumps(parsed)
+        return json.dumps(parsed)
+    except json.JSONDecodeError as e:
+        print(f"❌ JSON Decode Error: {e}")
+        print(f"🔎 Raw response preview:\n{raw_text[:500]}")
+        return "[]"
 
 def normalize_text(text):
     text = text.lower()
@@ -79,7 +55,7 @@ def enrich_value_with_units(value: str, evidence: str) -> str:
     if not value or not evidence:
         return value
     try:
-        float_value = float(value)
+        float(value)
     except:
         return value
     pattern = re.compile(rf"([<>]?\s*{re.escape(value)}\s*(?:mg/dl|mg/l)?)", re.IGNORECASE)
@@ -102,15 +78,8 @@ for _, row in tqdm(df.iterrows(), total=len(df)):
     text = row["text"]
     source = row["title"]
     word_count = len(text.split())
-    if word_count < 500:
-        chunk_size = 1000
-        chunk_overlap = 0
-    elif word_count < 2000:
-        chunk_size = 1500
-        chunk_overlap = 250
-    else:
-        chunk_size = 3000
-        chunk_overlap = 500
+    chunk_size = 3000 if word_count >= 2000 else 1500 if word_count >= 500 else 1000
+    chunk_overlap = 500 if word_count >= 2000 else 250 if word_count >= 500 else 0
     splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     chunks = splitter.split_text(text)
     all_documents.extend([Document(page_content=chunk, metadata={"source": source}) for chunk in chunks])
@@ -147,10 +116,9 @@ results = vectorstore.similarity_search(query, k=1000)
 
 filtered_chunks = []
 for doc in results:
-    source_title = doc.metadata.get("source", "Unknown")
     content = doc.page_content
     if "kappa" in content.lower() and "lambda" in content.lower():
-        filtered_chunks.append({"title": source_title, "content": content})
+        filtered_chunks.append({"title": doc.metadata["source"], "content": content})
 
 # --- LLM setup ---
 llm = AzureChatOpenAI(
@@ -164,31 +132,22 @@ llm = AzureChatOpenAI(
 
 # --- Extraction ---
 final_results = []
-for i, batch in enumerate(batchify(filtered_chunks, 10)):
+for i, batch in enumerate(batchify(filtered_chunks, 3)):
     json_context = [{"note_id": j + 1, "title": doc["title"], "content": doc["content"]} for j, doc in enumerate(batch)]
     titles = [doc["title"] for doc in batch]
 
     full_prompt = f"""
-You are a clinical data extraction assistant. For the given document, extract if at least **kappa and lambda** are found with correct units (mg/dL or mg/L).  
-If `kappa_lambda_ratio` is missing in the sentence, set it to null.
+You are a clinical data extraction assistant. For the given document, extract **at least** kappa and lambda values with correct units (mg/dL or mg/L).
+If `kappa_lambda_ratio` is not found, set it to null.
 
-Example:
-{{
-  "kappa_flc": "1.91 mg/dL",
-  "lambda_flc": "<0.15 mg/dL",
-  "kappa_lambda_ratio": null,
-  "date_of_lab": "...",
-  "evidence_sentences": ["..."]
-}}
-
-Respond only in strict JSON format:
+Respond only in valid JSON format:
 [
   {{
     "kappa_flc": "...",
     "lambda_flc": "...",
-    "kappa_lambda_ratio": "...",
+    "kappa_lambda_ratio": "...",   ← can be null
     "date_of_lab": "...",
-    "evidence_sentences": ["...", "..."]
+    "evidence_sentences": ["..."]
   }}
 ]
 
@@ -199,6 +158,8 @@ Respond only in strict JSON format:
     try:
         print(f"\n🧠 Running batch {i+1}...")
         response = llm.invoke(full_prompt)
+        print(f"\n🔎 Raw LLM output:\n{response.content}")
+
         cleaned = parse_llm_json(response.content)
         batch_result = json.loads(cleaned)
 
@@ -206,7 +167,8 @@ Respond only in strict JSON format:
             evidence_text = " ".join(item.get("evidence_sentences", []))
             kappa = clean_numeric(item.get("kappa_flc", ""))
             lambda_ = clean_numeric(item.get("lambda_flc", ""))
-            ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
+            ratio = clean_numeric(item.get("kappa_lambda_ratio", "")) if item.get("kappa_lambda_ratio") else None
+
             item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
             item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
             item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
