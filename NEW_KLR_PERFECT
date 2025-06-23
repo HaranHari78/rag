@@ -263,17 +263,27 @@ else:
 
 # --- Save results ---
 df = pd.DataFrame(final_results)
-df["date_of_lab"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
-df.sort_values(["source_document", "date_of_lab"], ascending=[True, False], inplace=True)
-df = df.drop_duplicates(subset=["source_document"], keep="first")
 
+# Filter by latest year in lab dates
+lab_years = df["date_of_lab"].astype(str).str.extract(r"(20\d{2})")[0].dropna()
+lab_years = lab_years[lab_years.astype(int) <= 2100]
+latest_year = lab_years.astype(int).max()
+print(f"\ud83d\udd52 Filtering for latest lab year: {latest_year}")
+df = df[df["date_of_lab"].astype(str).str.contains(str(latest_year), na=False)]
+
+# Keep only the most recent date_of_lab for each source_document
+df["date_of_lab"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+df.sort_values(by="date_of_lab", ascending=False, inplace=True)
+df.drop_duplicates(subset=["source_document"], keep="first", inplace=True)
+df["date_of_lab"] = df["date_of_lab"].dt.strftime("%Y-%m-%d")
+
+# Final formatting and output
 cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
 if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
-    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
     os.makedirs("output", exist_ok=True)
-    df.to_excel("output/Output_with_units_enriched.xlsx", index=False)
-    df.to_json("output/Output_with_units_enriched.json", orient="records", indent=2)
-    print("\n✅ Output saved to 'output/' folder")
+    df.to_excel("output/Output_with_units_enriched1.xlsx", index=False)
+    df.to_json("output/Output_with_units_enriched1.json", orient="records", indent=2)
+    print("\n\u2705 Output saved to 'output/' folder")
 else:
-    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+    print("\u26a0\ufe0f No results to save. The final DataFrame is empty or missing expected columns.")
