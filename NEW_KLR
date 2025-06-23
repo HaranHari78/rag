@@ -1,25 +1,3 @@
-
-
-
-
-
-
-
-C:\Users\HariharaM12\PycharmProjects\T_2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\T_2\main.py 
-100%|██████████| 517/517 [00:00<00:00, 675.22it/s]
-100%|██████████| 164/164 [00:17<00:00,  9.51it/s]
-Traceback (most recent call last):
-  File "C:\Users\HariharaM12\PycharmProjects\T_2\main.py", line 145, in <module>
-    full_prompt = f"""
-                  ^^^^
-ValueError: Invalid format specifier ' "0.08 mg/dL",
-    "lambda_flc": "<0.15 mg/dL",
-    "kappa_lambda_ratio": ">0.57",
-    "date_of_lab": "2024-06-25",
-    "evidence_sentences": ["Kappa Free Light Chain 0.08 (L)..."]
-  ' for object of type 'str'
-
-Process finished with exit code 1
 import os
 import re
 import json
@@ -165,36 +143,27 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
     titles = [doc["title"] for doc in batch]
 
     full_prompt = f"""
-Respond ONLY in valid JSON like below:
-```json
+You are a clinical data extraction assistant. For the given document, extract the following **only if all values are explicitly present with correct units (mg/dL or mg/L)**:
+
+- `kappa_flc`: Kappa free light chain (numeric + unit like mg/dL or mg/L)
+- `lambda_flc`: Lambda free light chain (numeric + unit)
+- `kappa_lambda_ratio`: The ratio value (can be raw number or include < or >)
+- `date_of_lab`: If exact date found, use that. If partial (e.g. year only), format as:
+  - 2024 → 2024-XX-XX
+  - 2023-05 → 2023-05-XX
+- `evidence_sentences`: Sentence(s) where **ALL 3 values are clearly mentioned**. Do not extract values unless this sentence confirms all 3.
+
+🔴 Do NOT guess or infer. If even one value is missing, SKIP.
+
+Respond only in strict JSON format:
 [
-  {
-    "kappa_flc": "0.08 mg/dL",
-    "lambda_flc": "<0.15 mg/dL",
-    "kappa_lambda_ratio": ">0.57",
-    "date_of_lab": "2024-06-25",
-    "evidence_sentences": ["Kappa Free Light Chain 0.08 (L)..."]
-  }
-]
-```
-You are a clinical data extraction assistant.
-
-For each note below, ONLY extract lab values if a sentence contains ALL THREE:
-- kappa free light chain (value + unit, e.g. "0.08 mg/dL")
-- lambda free light chain (value + unit, e.g. "<0.15 mg/dL")
-- kappa/lambda ratio (value, may include < or >)
-
-Skip anything partial or vague. DO NOT guess or combine values from different sentences.
-
-Return this strict JSON format:
-[
-  {
+  {{
     "kappa_flc": "...",
     "lambda_flc": "...",
     "kappa_lambda_ratio": "...",
     "date_of_lab": "...",
-    "evidence_sentences": ["..."]
-  }
+    "evidence_sentences": ["...", "..."]
+  }}
 ]
 
 --- Context:
