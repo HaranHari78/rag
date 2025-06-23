@@ -403,12 +403,22 @@ def enrich_value_with_units(value: str, evidence: str) -> str:
     return match.group(1).strip() if match else value
 
 
-def extract_lab_date(evidence: str, fallback: str) -> str:
-    date_match = re.search(r'(\d{1,2})[/-](\d{1,2})[/-](20\d{2})', evidence)
-    if date_match:
-        mm, dd, yyyy = date_match.groups()
-        return f"{yyyy}-{int(mm):02d}-{int(dd):02d}"
-    return fallback
+def extract_lab_date(evidence: str) -> str:
+    # Extract MM/DD/YYYY or M-D-YYYY or YYYY-MM-DD from evidence
+    patterns = [
+        r'(\d{1,2})[/-](\d{1,2})[/-](20\d{2})',  # MM/DD/YYYY or M-D-YYYY
+        r'(20\d{2})[/-](\d{1,2})[/-](\d{1,2})'   # YYYY-MM-DD
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, evidence)
+        if match:
+            groups = list(match.groups())
+            if len(groups[0]) == 4:
+                yyyy, mm, dd = groups
+            else:
+                mm, dd, yyyy = groups
+            return f"{yyyy}-{int(mm):02d}-{int(dd):02d}"
+    return "Unknown"
 
 
 def batchify(lst, n):
@@ -525,7 +535,7 @@ Context:
             item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
             item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
             item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
-            item["date_of_lab"] = extract_lab_date(evidence_text, fallback=title[:10])
+            item["date_of_lab"] = extract_lab_date(evidence_text)
             item["source_document"] = title
             item["context"] = json.dumps(item, indent=2)
             final_results.append(item)
@@ -533,20 +543,22 @@ Context:
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
 
-# Save only 2024 lab entries
+# Save only 2024 lab entries from evidence (not fallback from title)
 output_df = pd.DataFrame(final_results)
+output_df = output_df[output_df["date_of_lab"] != "Unknown"]
 output_df["date_of_lab"] = pd.to_datetime(output_df["date_of_lab"], errors="coerce")
 output_df = output_df[output_df["date_of_lab"].dt.year == 2024]
 
-# Remove identical lab values across different documents
+# Remove identical lab values across documents
 output_df["unique_key"] = output_df["kappa_flc"].astype(str) + "|" + output_df["lambda_flc"].astype(str) + "|" + output_df["kappa_lambda_ratio"].astype(str)
 output_df = output_df.drop_duplicates(subset="unique_key", keep="first").drop(columns="unique_key")
 
-# Move source_document as first column
+# Set source_document as first column
 cols = ["source_document"] + [col for col in output_df.columns if col != "source_document"]
 output_df = output_df[cols]
 
 os.makedirs("output", exist_ok=True)
 output_df.to_excel("output/Filtered_2024_Lab_Results.xlsx", index=False)
 output_df.to_json("output/Filtered_2024_Lab_Results.json", orient="records", indent=2)
-print("\n✅ Output saved: 2024 lab values only, duplicates removed, source_document first")
+print("\n✅ Output saved: 2024 lab values with real evidence dates only")
+
