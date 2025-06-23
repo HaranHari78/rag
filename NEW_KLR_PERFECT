@@ -257,3 +257,23 @@ if not df.empty and all(col in df.columns for col in cols):
     print("\n✅ Output saved to 'output/' folder")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+
+
+
+
+# --- Save results ---
+df = pd.DataFrame(final_results)
+df["date_of_lab"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+df.sort_values(["source_document", "date_of_lab"], ascending=[True, False], inplace=True)
+df = df.drop_duplicates(subset=["source_document"], keep="first")
+
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output_with_units_enriched.xlsx", index=False)
+    df.to_json("output/Output_with_units_enriched.json", orient="records", indent=2)
+    print("\n✅ Output saved to 'output/' folder")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
