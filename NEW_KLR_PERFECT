@@ -75,7 +75,7 @@ def batchify(lst, n):
         yield lst[i:i + n]
 
 # --- Load dataset ---
-csv_path = "MEDICAL_DATAS.csv"
+csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
 # --- Create documents ---
@@ -133,7 +133,8 @@ filtered_chunks = []
 for doc in results:
     source_title = doc.metadata.get("source", "Unknown")
     content = doc.page_content
-    if "kappa" in content.lower() and "lambda" in content.lower():
+    norm = content.lower()
+    if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
         filtered_chunks.append({"title": source_title, "content": content})
 
 # --- LLM setup ---
