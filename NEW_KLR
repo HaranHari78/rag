@@ -23,17 +23,35 @@ GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
 # --- Helpers ---
 def parse_llm_json(raw_text: str) -> str:
-    pattern = r"```(?:json)?\\s*(.*?)```"
+    if not raw_text.strip():
+        print("⚠️ Warning: Empty LLM response")
+        return "[]"
+
+    pattern = r"```(?:json)?\s*(.*?)```"
     match = re.search(pattern, raw_text, flags=re.DOTALL)
     raw_text = match.group(1).strip() if match else raw_text.strip()
+
     if raw_text.startswith("json"):
         raw_text = raw_text[len("json"):].strip()
+
     try:
         parsed = json.loads(raw_text)
     except json.JSONDecodeError:
+        print("⚠️ JSON decode error, trying to fix quotes")
         fixed = raw_text.replace("'", '"')
-        parsed = json.loads(fixed)
+        try:
+            parsed = json.loads(fixed)
+        except Exception as e:
+            print("❌ Still failed:", e)
+            return "[]"
+
     return json.dumps(parsed)
+
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 def clean_numeric(val: str) -> str:
     if not isinstance(val, str):
@@ -111,7 +129,6 @@ vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_
 query = "Extract the patient's kappa free light chain (mg/dL), lambda free light chain (mg/dL), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
-# 🔁 No more filtering on 'ratio' — allow extraction if kappa+lambda exists
 filtered_chunks = []
 for doc in results:
     source_title = doc.metadata.get("source", "Unknown")
@@ -136,55 +153,4 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
     titles = [doc["title"] for doc in batch]
 
     full_prompt = f"""
-You are a clinical data extraction assistant. Extract if at least kappa and lambda are found with correct units (mg/dL or mg/L).  
-If kappa_lambda_ratio is missing in the sentence, set it to null.
-
-Respond only in strict JSON format:
-[
-  {{
-    "kappa_flc": "...",
-    "lambda_flc": "...",
-    "kappa_lambda_ratio": "...",
-    "date_of_lab": "...",
-    "evidence_sentences": ["...", "..."]
-  }}
-]
-
---- Context:
-{json.dumps(json_context, indent=2)}
-"""
-
-    try:
-        print(f"\n🧠 Running batch {i+1}...")
-        response = llm.invoke(full_prompt)
-        cleaned = parse_llm_json(response.content)
-        batch_result = json.loads(cleaned)
-
-        for item, title in zip(batch_result, titles):
-            evidence_text = " ".join(item.get("evidence_sentences", []))
-            kappa = clean_numeric(item.get("kappa_flc", ""))
-            lambda_ = clean_numeric(item.get("lambda_flc", ""))
-            ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
-            item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
-            item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
-            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
-            item["source_document"] = title
-            item["context"] = json.dumps(item, indent=2)
-            final_results.append(item)
-
-    except Exception as e:
-        print(f"❌ Failed batch {i+1}: {e}")
-
-# --- Save results ---
-df = pd.DataFrame(final_results)
-cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
-
-if not df.empty and all(col in df.columns for col in cols):
-    df = df[cols]
-    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
-    os.makedirs("output", exist_ok=True)
-    df.to_excel("output/Output_with_units_enriched.xlsx", index=False)
-    df.to_json("output/Output_with_units_enriched.json", orient="records", indent=2)
-    print("\n✅ Output saved to 'output/' folder")
-else:
-    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+You are a clinical data extraction assis
