@@ -153,4 +153,65 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
     titles = [doc["title"] for doc in batch]
 
     full_prompt = f"""
-You are a clinical data extraction assis
+You are a clinical data extraction assistant. For the given document, extract if at least **kappa and lambda** are found with correct units (mg/dL or mg/L).  
+If `kappa_lambda_ratio` is missing in the sentence, set it to null.
+
+Example:
+{{
+  "kappa_flc": "1.91 mg/dL",
+  "lambda_flc": "<0.15 mg/dL",
+  "kappa_lambda_ratio": null,
+  "date_of_lab": "...",
+  "evidence_sentences": ["..."]
+}}
+
+Respond only in strict JSON format:
+[
+  {{
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences": ["...", "..."]
+  }}
+]
+
+--- Context:
+{json.dumps(json_context, indent=2)}
+"""
+
+    try:
+        print(f"\n🧠 Running batch {i+1}...")
+        response = llm.invoke(full_prompt)
+        print("\n🔎 Raw LLM response:\n", response.content[:1000])
+        cleaned = parse_llm_json(response.content)
+        batch_result = json.loads(cleaned)
+
+        for item, title in zip(batch_result, titles):
+            evidence_text = " ".join(item.get("evidence_sentences", []))
+            kappa = clean_numeric(item.get("kappa_flc", ""))
+            lambda_ = clean_numeric(item.get("lambda_flc", ""))
+            ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
+            item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
+            item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
+            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
+            item["source_document"] = title
+            item["context"] = json.dumps(item, indent=2)
+            final_results.append(item)
+
+    except Exception as e:
+        print(f"❌ Failed batch {i+1}: {e}")
+
+# --- Save results ---
+df = pd.DataFrame(final_results)
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output_with_units_enriched.xlsx", index=False)
+    df.to_json("output/Output_with_units_enriched.json", orient="records", indent=2)
+    print("\n✅ Output saved to 'output/' folder")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
