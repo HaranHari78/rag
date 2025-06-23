@@ -1,98 +1,3 @@
-C:\Users\HariharaM12\PycharmProjects\T_2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\T_2\main.py 
-100%|██████████| 517/517 [00:00<00:00, 666.99it/s]
-100%|██████████| 164/164 [00:27<00:00,  6.03it/s]
-
-🧠 Running batch 1...
-❌ Batch 1 JSON parse error: Expecting value: line 1 column 1 (char 0)
-🔎 Raw response:
-```json
-[
-  {
-    "kappa_flc": "56.21 mg/dL",
-    "lambda_flc": "<3.08 mg/dL",
-    "kappa_lambda_ratio": ">115.57",
-    "date_of_lab": "2024-02-22",
-    "evidence_sentences": [
-      "Kappa Free Light Chain 0.76 - 6.83 mg/dL 56.21 (H) Lambda Free Light Chain 0.68 - 4.58 mg/dL <3.08 (L) Kappa/Lambda FLC Ratio 0.66 - 2.22 >115.57 (H)"
-    ]
-  },
-  {
-    "kappa_flc": "203.94 mg/dL",
-    "lambda_flc": "<0.15 mg/dL",
-    "kappa_lambda_ratio": ">1456.71",
-    "date_of_lab": "2024-02-08",
-    "evidence_sentences": [
-      "Kappa Free Light Chain 203.94 (H) 0.76 - 6.83 mg/dL Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg/dL Kappa/Lambda FLC Ratio >1456.71 (H) 0.66 - 2.22"
-    ]
-  },
-  {
-    "kappa_flc": "0.08 mg/dL",
-    "lambda_flc": "<0.15 mg/dL",
-    "kappa_lambda_ratio": ">0.57",
-    "date_of_lab": "2024-06-25",
-    "evidence_sentences": [
-      "Kappa Free Light Chain 0.08 (L) 0.76 - 6.83 mg/dL Lambda Free Light Chain <0.15 (L) 0.68 - 4.58 mg/dL Kappa/Lambda FLC Ratio >0.57 (L) 0.66 - 2.22"
-    ]
-  }
-]
-```
-
-🧠 Running batch 2...
-❌ Batch 2 JSON parse error: Expecting value: line 1 column 1 (char 0)
-🔎 Raw response:
-```json
-[
-  {
-    "kappa_flc": "1.24 mg/dL",
-    "lambda_flc": "0.72 mg/dL",
-    "kappa_lambda_ratio": "1.72",
-    "date_of_lab": "2021-12-15",
-    "evidence_sentences": ["12/15: SPEP IgG kappa M spike of 0.1, Kappa light chain 1.24, lambda light chain 0.72. Kappa/ lambda ratio 1.72, beta 2 microglobulin 1.3"]
-  },
-  {
-    "kappa_flc": "1.45 mg/dL",
-    "lambda_flc": "0.73 mg/dL",
-    "kappa_lambda_ratio": "1.99",
-    "date_of_lab": "2021-12-01",
-    "evidence_sentences": ["His most recent labs on 12/1/21 show an M-spike of 0.2, kappa FLC 1.45, lambda FLC 0.73, and kappa/lambda ratio of 1.99."]
-  }
-]
-```
-
-🧠 Running batch 3...
-❌ Batch 3 JSON parse error: Expecting value: line 1 column 1 (char 0)
-🔎 Raw response:
-```json
-[
-  {
-    "kappa_flc": "242.66",
-    "lambda_flc": "<0.15",
-    "kappa_lambda_ratio": ">1733.29",
-    "date_of_lab": "2024-01-16",
-    "evidence_sentences": ["1/16/24: KFLC 242.66, LFLC <0.15, kappa/lambda ratio >1733.29."]
-  },
-  {
-    "kappa_flc": "203.94",
-    "lambda_flc": "<0.15",
-    "kappa_lambda_ratio": ">1456.71",
-    "date_of_lab": "2024-01-24",
-    "evidence_sentences": ["1/24/24: KFLC 203.94, LFLC <0.15, ratio >1456.71."]
-  },
-  {
-    "kappa_flc": "16.18",
-    "lambda_flc": "<0.15",
-    "kappa_lambda_ratio": ">115.57",
-    "date_of_lab": "2024-02-22",
-    "evidence_sentences": ["2/22/24: KFLC 16.18, LFLC <0.15, kappa/lambda ratio >115.57."]
-  }
-]
-```
-⚠️ No results to save. The final DataFrame is empty or missing expected columns.
-
-Process finished with exit code 0
-
-
-
 import os
 import re
 import json
@@ -241,13 +146,13 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
 Respond ONLY in valid JSON like below:
 ```json
 [
-  {{
+  {
     "kappa_flc": "0.08 mg/dL",
     "lambda_flc": "<0.15 mg/dL",
     "kappa_lambda_ratio": ">0.57",
     "date_of_lab": "2024-06-25",
     "evidence_sentences": ["Kappa Free Light Chain 0.08 (L)..."]
-  }}
+  }
 ]
 ```
 You are a clinical data extraction assistant.
@@ -261,13 +166,13 @@ Skip anything partial or vague. DO NOT guess or combine values from different se
 
 Return this strict JSON format:
 [
-  {{
+  {
     "kappa_flc": "...",
     "lambda_flc": "...",
     "kappa_lambda_ratio": "...",
     "date_of_lab": "...",
     "evidence_sentences": ["..."]
-  }}
+  }
 ]
 
 --- Context:
