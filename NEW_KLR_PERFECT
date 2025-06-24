@@ -157,6 +157,11 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
 You are a clinical data extraction assistant. For the given document, extract if at least **kappa and lambda** are found with correct units (mg/dL or mg/L).  
 If `kappa_lambda_ratio` is missing in the sentence, set it to null.
 
+Recognize alternate names:
+- `KLC`, `Kappa light`, `Kappa FLC` = `kappa_flc`
+- `LLC`, `Lambda light`, `Lambda FLC` = `lambda_flc`
+- `K/L`, `kappa/lambda`, `kappa_lambda` = `kappa_lambda_ratio`
+
 Example:
 {{
   "kappa_flc": "1.91 mg/dL",
