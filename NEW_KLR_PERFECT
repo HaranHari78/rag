@@ -565,110 +565,239 @@ import json
 import pandas as pd
 import configparser
 from tqdm import tqdm
-from langchain_openai import AzureChatOpenAI
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 
-# Load API config
+# --- Load config.ini ---
 config = configparser.ConfigParser()
 config.read("config.ini")
 
 AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
 AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
 AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
-# Prompt template
-PROMPT_TEMPLATE = """
-You are a clinical AI assistant. From the following medical note, extract the most recent and clinically relevant lab values for:
+# --- Helpers ---
+def parse_llm_json(raw_text: str) -> str:
+    if not raw_text.strip():
+        print("⚠️ Warning: Empty LLM response")
+        return "[]"
 
-1. `kappa_flc`: numeric value + unit (e.g., mg/dL or mg/L) + reference symbols if present (`<`, `>`, `=`).
-2. `lambda_flc`: same format as above.
-3. `kappa_lambda_ratio`: numeric or symbolic ratio (may include `<`, `>`, `missing`, or `unable to calculate`).
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
 
-For each field, also extract:
-- `lab_date`: the **exact date** the value was recorded. If date is partial (e.g., just month or year), format it as:
-    🔹 "2024-01" → "2024-01-XX", "2024" → "2024-XX-XX"
-    ❗ Never guess the date — extract only if explicitly present near the value.
-- `evidence`: exact sentence or phrase (verbatim) that justifies the value.
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
 
-Return the result in strict JSON like this:
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError:
+        print("⚠️ JSON decode error, trying to fix quotes")
+        fixed = raw_text.replace("'", '"')
+        try:
+            parsed = json.loads(fixed)
+        except Exception as e:
+            print("❌ Still failed:", e)
+            return "[]"
 
-```json
-{
-  "kappa_flc": {
-    "value": "203.94",
-    "lab_date": "2024-01-24",
-    "evidence": "KFLC 203.94, LFLC <0.15, ratio >1456.71"
-  },
-  "lambda_flc": {
-    "value": "<0.15",
-    "lab_date": "2024-01-24",
-    "evidence": "KFLC 203.94, LFLC <0.15, ratio >1456.71"
-  },
-  "kappa_lambda_ratio": {
-    "value": ">1456.71",
-    "lab_date": "2024-01-24",
-    "evidence": "KFLC 203.94, LFLC <0.15, ratio >1456.71"
-  }
-}
-```
+    return json.dumps(parsed)
 
-Only extract what is explicitly present. Do not infer or hallucinate.
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
-Medical Note:
-"""{context}"""
-"""
+def clean_numeric(val: str) -> str:
+    if not isinstance(val, str):
+        return val
+    match = re.search(r"[0-9]+\.?[0-9]*", val)
+    return match.group(0) if match else ""
 
-# Initialize LLM
-llm = AzureChatOpenAI(
+def enrich_value_with_units(value: str, evidence: str) -> str:
+    if not value or not evidence:
+        return value
+    try:
+        float_value = float(value)
+    except:
+        return value
+    pattern = re.compile(rf"([<>]?\s*{re.escape(value)}\s*(?:mg/dl|mg/l)?)", re.IGNORECASE)
+    match = pattern.search(evidence)
+    return match.group(1).strip() if match else value
+
+def batchify(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+def is_historical_context(text):
+    hist_terms = [
+        "diagnosed with", "baseline", "presented with", "initial labs",
+        "at diagnosis", "in march 2019", "history of", "previous labs", "was found to have"
+    ]
+    return any(kw in text.lower() for kw in hist_terms)
+
+# --- Load dataset ---
+csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+df = pd.read_csv(csv_path)
+
+# --- Create documents ---
+all_documents = []
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    if pd.isna(row["text"]):
+        continue
+    text = row["text"]
+    source = row["title"]
+    word_count = len(text.split())
+    if word_count < 500:
+        chunk_size = 1000
+        chunk_overlap = 0
+    elif word_count < 2000:
+        chunk_size = 1500
+        chunk_overlap = 250
+    else:
+        chunk_size = 3000
+        chunk_overlap = 500
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    chunks = splitter.split_text(text)
+    all_documents.extend([Document(page_content=chunk, metadata={"source": source}) for chunk in chunks])
+
+# --- Embedding & FAISS index ---
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
     openai_api_key=AZURE_OPENAI_API_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    api_version=AZURE_OPENAI_API_VERSION,
-    deployment_name=GPT_DEPLOYMENT,
-    temperature=0.0
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
 )
 
-def parse_llm_json(raw_text):
-    pattern = r"```(?:json)?\\s*(.*?)```"
-    match = re.search(pattern, raw_text, re.DOTALL)
-    raw_text = match.group(1).strip() if match else raw_text.strip()
-    try:
-        return json.loads(raw_text)
-    except:
-        return {}
-
-def extract_fields_from_note(note_text):
-    full_prompt = PROMPT_TEMPLATE.replace("{context}", note_text)
-    response = llm.invoke(full_prompt)
-    return parse_llm_json(response.content)
-
-# Example use
-if __name__ == "__main__":
-    df = pd.read_csv("MEDICAL_DATAS.csv")  # Assuming your notes are here
-    final_data = []
-
-    for _, row in tqdm(df.iterrows(), total=len(df)):
-        note_text = row.get("text", "")
-        doc_id = row.get("title", "")
-        if not note_text.strip():
-            continue
+grouped_batches = list(batchify(all_documents, 10))
+sub_indexes = []
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(FAISS.from_documents, batch, embedding_model): batch for batch in grouped_batches}
+    for future in tqdm(as_completed(futures), total=len(futures)):
         try:
-            result = extract_fields_from_note(note_text)
-            for key in result:
-                result[key]["source_document"] = doc_id
-            final_data.append(result)
+            sub_indexes.append(future.result())
         except Exception as e:
-            print(f"❌ Error in {doc_id}: {e}")
+            print(f"Batch failed: {e}")
 
-    # Flatten and save
-    flat = []
-    for entry in final_data:
-        for field, value in entry.items():
-            value["field"] = field
-            flat.append(value)
+main_index = sub_indexes[0]
+for sub_index in sub_indexes[1:]:
+    main_index.merge_from(sub_index)
+main_index.save_local("faiss_index")
 
-    out_df = pd.DataFrame(flat)
-    out_df.to_excel("extracted_lab_values.xlsx", index=False)
-    print("✅ Extraction complete and saved to Excel")
+# --- Search relevant chunks ---
+vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
+query = "Extract the patient's kappa free light chain (mg/dL), lambda free light chain (mg/dL), and kappa/lambda ratio, along with the lab date and evidence."
+results = vectorstore.similarity_search(query, k=1000)
+
+filtered_chunks = []
+for doc in results:
+    source_title = doc.metadata.get("source", "Unknown")
+    content = doc.page_content
+    norm = content.lower()
+    if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
+        filtered_chunks.append({"title": source_title, "content": content})
+
+# --- LLM setup ---
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+# --- Extraction ---
+final_results = []
+for i, batch in enumerate(batchify(filtered_chunks, 10)):
+    json_context = [{"note_id": j + 1, "title": doc["title"], "content": doc["content"]} for j, doc in enumerate(batch)]
+    titles = [doc["title"] for doc in batch]
+
+    full_prompt = f"""
+You are a clinical data extraction assistant. From the given medical note, extract **only the most recent and clinically relevant** lab values.
+
+You must **avoid values** if they appear:
+- In historical summaries (e.g., "baseline labs", "diagnosed in", "initial presentation")
+- As part of context for diagnosis
+
+Only extract values from **actual lab results**, usually under sections like:
+- "Lab results", "Laboratory studies", "Recent labs", "CBC", or "Chemistry"
+
+🔍 Extract the following:
+1. `kappa_flc`: numeric + unit (prefer mg/dL or mg/L)
+2. `lambda_flc`: numeric + unit (prefer mg/dL or mg/L)
+3. `kappa_lambda_ratio`: with possible <, >, or null
+
+Also extract:
+- `date_of_lab`: exact date tied to the values (or nearest found)
+- `evidence_sentences`: only use recent or dated lab mentions, not diagnosis history
+
+Respond only in strict JSON format:
+[
+  {{
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences": ["..."]
+  }}
+]
+
+--- Context:
+{json.dumps(json_context, indent=2)}
+"""
+
+    try:
+        print(f"\n🧠 Running batch {i+1}...")
+        response = llm.invoke(full_prompt)
+        print("\n🔎 Raw LLM response:\n", response.content[:1000])
+        cleaned = parse_llm_json(response.content)
+        batch_result = json.loads(cleaned)
+
+        for item, title in zip(batch_result, titles):
+            evidence_text = " ".join(item.get("evidence_sentences", []))
+            if is_historical_context(evidence_text):
+                print(f"⚠️ Skipping historical value from: {title}")
+                continue
+
+            kappa = clean_numeric(item.get("kappa_flc", ""))
+            lambda_ = clean_numeric(item.get("lambda_flc", ""))
+            ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
+            item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
+            item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
+            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
+            item["source_document"] = title
+            item["context"] = json.dumps(item, indent=2)
+            final_results.append(item)
+
+    except Exception as e:
+        print(f"❌ Failed batch {i+1}: {e}")
+
+# --- Save results ---
+df = pd.DataFrame(final_results)
+df["date_of_lab"] = df["date_of_lab"].astype(str)
+lab_years = df["date_of_lab"].str.extract(r"(20\d{2})")[0].dropna()
+lab_years = lab_years[lab_years.astype(int) <= 2100]
+latest_year = lab_years.astype(int).max()
+print(f"🕒 Filtering for latest lab year: {latest_year}")
+df = df[df["date_of_lab"].str.contains(str(latest_year), na=False)]
+
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output.xlsx", index=False)
+    df.to_json("output/Output.json", orient="records", indent=2)
+    print("\n✅ Output saved to 'output/' folder")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
 
