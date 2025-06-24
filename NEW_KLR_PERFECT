@@ -137,7 +137,7 @@ for doc in results:
     if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
         filtered_chunks.append({"title": source_title, "content": content})
 
-JUST TRY 
+JUST TRY :1
 filtered_chunks = []
 
 # Define all full terms and abbreviations
@@ -155,6 +155,24 @@ for doc in results:
 
     # Check if any term is present in the content
     if any(term in norm for term in search_terms):
+        filtered_chunks.append({
+            "title": source_title,
+            "content": content
+        })
+JUS TRY :2
+filtered_chunks = []
+
+for doc in results:
+    source_title = doc.metadata.get("source", "Unknown")
+    content = doc.page_content
+    norm = content.lower()
+
+    # If full OR abbreviation exists for any field
+    if (
+        "kappa" in norm or "klc" in norm or "kappa light" in norm or
+        "lambda" in norm or "llc" in norm or "lambda light" in norm or
+        "ratio" in norm or "k/l" in norm or "kappa/lambda" in norm or "kappa_lambda" in norm
+    ):
         filtered_chunks.append({
             "title": source_title,
             "content": content
