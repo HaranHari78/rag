@@ -624,7 +624,7 @@ def enrich_value_with_units(value: str, evidence: str) -> str:
     if not value or not evidence:
         return value
     try:
-        float_value = float(value)
+        float(value)
     except:
         return value
     pattern = re.compile(rf"([<>]?\s*{re.escape(value)}\s*(?:mg/dl|mg/l)?)", re.IGNORECASE)
@@ -636,11 +636,9 @@ def batchify(lst, n):
         yield lst[i:i + n]
 
 def is_historical_context(text):
-    hist_terms = [
-        "diagnosed with", "baseline", "presented with", "initial labs",
-        "at diagnosis", "in march 2019", "history of", "previous labs", "was found to have"
-    ]
-    return any(kw in text.lower() for kw in hist_terms)
+    # Milder version — only skip if 2+ historical markers appear
+    hist_terms = ["diagnosed with", "at diagnosis", "baseline"]
+    return sum(kw in text.lower() for kw in hist_terms) >= 2
 
 # --- Load dataset ---
 csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
@@ -697,12 +695,12 @@ vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_
 query = "Extract the patient's kappa free light chain (mg/dL), lambda free light chain (mg/dL), and kappa/lambda ratio, along with the lab date and evidence."
 results = vectorstore.similarity_search(query, k=1000)
 
+search_terms = ["kappa", "lambda", "ratio", "kappa/lambda", "kappa_lambda", "klc", "llc", "k/l", "kappa light", "lambda light"]
 filtered_chunks = []
 for doc in results:
     source_title = doc.metadata.get("source", "Unknown")
     content = doc.page_content
-    norm = content.lower()
-    if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
+    if any(term in content.lower() for term in search_terms):
         filtered_chunks.append({"title": source_title, "content": content})
 
 # --- LLM setup ---
@@ -724,23 +722,14 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
     full_prompt = f"""
 You are a clinical data extraction assistant. From the given medical note, extract **only the most recent and clinically relevant** lab values.
 
-You must **avoid values** if they appear:
-- In historical summaries (e.g., "baseline labs", "diagnosed in", "initial presentation")
-- As part of context for diagnosis
+Do NOT extract values that are from diagnosis summaries, history, or baseline descriptions.
 
-Only extract values from **actual lab results**, usually under sections like:
-- "Lab results", "Laboratory studies", "Recent labs", "CBC", or "Chemistry"
+Only extract values from actual **lab result sections** such as:
+- Laboratory studies
+- Lab results
+- CBC / Chemistry / Immunoglobulin panels
 
-🔍 Extract the following:
-1. `kappa_flc`: numeric + unit (prefer mg/dL or mg/L)
-2. `lambda_flc`: numeric + unit (prefer mg/dL or mg/L)
-3. `kappa_lambda_ratio`: with possible <, >, or null
-
-Also extract:
-- `date_of_lab`: exact date tied to the values (or nearest found)
-- `evidence_sentences`: only use recent or dated lab mentions, not diagnosis history
-
-Respond only in strict JSON format:
+Return JSON like:
 [
   {{
     "kappa_flc": "...",
@@ -781,23 +770,25 @@ Respond only in strict JSON format:
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
-# --- Save results ---
+# --- Final cleanup and output ---
 df = pd.DataFrame(final_results)
-df["date_of_lab"] = df["date_of_lab"].astype(str)
-lab_years = df["date_of_lab"].str.extract(r"(20\d{2})")[0].dropna()
-lab_years = lab_years[lab_years.astype(int) <= 2100]
-latest_year = lab_years.astype(int).max()
-print(f"🕒 Filtering for latest lab year: {latest_year}")
-df = df[df["date_of_lab"].str.contains(str(latest_year), na=False)]
+df["date_parsed"] = pd.to_datetime(df["date_of_lab"].str.replace("XX", "01"), errors="coerce")
+df = df.sort_values("date_parsed", ascending=False)
 
+# Group by unique value set and keep only most recent one
+df = df.groupby(
+    ["kappa_flc", "lambda_flc", "kappa_lambda_ratio"],
+    as_index=False
+).first()
+
+# Final columns
 cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
-if not df.empty and all(col in df.columns for col in cols):
-    df = df[cols]
-    df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
-    os.makedirs("output", exist_ok=True)
-    df.to_excel("output/Output.xlsx", index=False)
-    df.to_json("output/Output.json", orient="records", indent=2)
-    print("\n✅ Output saved to 'output/' folder")
-else:
-    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+df = df[cols]
+
+# Save results
+os.makedirs("output", exist_ok=True)
+df.to_excel("output/Output.xlsx", index=False)
+df.to_json("output/Output.json", orient="records", indent=2)
+print("\n✅ Output saved to 'output/' folder")
+
 
