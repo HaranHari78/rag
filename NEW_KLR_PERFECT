@@ -249,15 +249,41 @@ Respond only in strict JSON format:
 
 TRY :
 for item, title in zip(batch_result, titles):
+    # 🔍 Combine evidence sentences into a single string
     evidence_text = " ".join(item.get("evidence_sentences", []))
 
-    # ✅ Enhanced handling: preserve symbols and units if already present
-    item["kappa_flc"] = item["kappa_flc"].strip() if "<" in item["kappa_flc"] or ">" in item["kappa_flc"] else enrich_value_with_units(clean_numeric(item["kappa_flc"]), evidence_text)
-    item["lambda_flc"] = item["lambda_flc"].strip() if "<" in item["lambda_flc"] or ">" in item["lambda_flc"] else enrich_value_with_units(clean_numeric(item["lambda_flc"]), evidence_text)
-    item["kappa_lambda_ratio"] = item["kappa_lambda_ratio"].strip() if item["kappa_lambda_ratio"] and ("<" in item["kappa_lambda_ratio"] or ">" in item["kappa_lambda_ratio"]) else enrich_value_with_units(clean_numeric(item["kappa_lambda_ratio"]), evidence_text) if item["kappa_lambda_ratio"] else None
+    # --- Process kappa_flc ---
+    kappa_raw = item.get("kappa_flc", "")
+    if "<" in kappa_raw or ">" in kappa_raw:
+        item["kappa_flc"] = kappa_raw.strip()
+    else:
+        kappa_clean = clean_numeric(kappa_raw)
+        item["kappa_flc"] = enrich_value_with_units(kappa_clean, evidence_text)
 
+    # --- Process lambda_flc ---
+    lambda_raw = item.get("lambda_flc", "")
+    if "<" in lambda_raw or ">" in lambda_raw:
+        item["lambda_flc"] = lambda_raw.strip()
+    else:
+        lambda_clean = clean_numeric(lambda_raw)
+        item["lambda_flc"] = enrich_value_with_units(lambda_clean, evidence_text)
+
+    # --- Process kappa_lambda_ratio ---
+    ratio_raw = item.get("kappa_lambda_ratio", "")
+    if ratio_raw:
+        if "<" in ratio_raw or ">" in ratio_raw:
+            item["kappa_lambda_ratio"] = ratio_raw.strip()
+        else:
+            ratio_clean = clean_numeric(ratio_raw)
+            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio_clean, evidence_text)
+    else:
+        item["kappa_lambda_ratio"] = None  # Handle nulls
+
+    # Add metadata
     item["source_document"] = title
     item["context"] = json.dumps(item, indent=2)
+
+    # ✅ Append to final results
     final_results.append(item)
 
 
