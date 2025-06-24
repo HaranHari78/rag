@@ -637,7 +637,7 @@ def batchify(lst, n):
 
 def is_historical_context(text):
     # Milder version — only skip if 2+ historical markers appear
-    hist_terms = ["diagnosed with", "at diagnosis", "baseline"]
+    hist_terms = ["baseline", "diagnosed in", "initial labs", "presented with", "history of",  "at diagnosis"]
     return sum(kw in text.lower() for kw in hist_terms) >= 2
 
 # --- Load dataset ---
