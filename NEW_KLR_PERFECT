@@ -247,6 +247,20 @@ Respond only in strict JSON format:
             item["context"] = json.dumps(item, indent=2)
             final_results.append(item)
 
+TRY :
+for item, title in zip(batch_result, titles):
+    evidence_text = " ".join(item.get("evidence_sentences", []))
+
+    # ✅ Enhanced handling: preserve symbols and units if already present
+    item["kappa_flc"] = item["kappa_flc"].strip() if "<" in item["kappa_flc"] or ">" in item["kappa_flc"] else enrich_value_with_units(clean_numeric(item["kappa_flc"]), evidence_text)
+    item["lambda_flc"] = item["lambda_flc"].strip() if "<" in item["lambda_flc"] or ">" in item["lambda_flc"] else enrich_value_with_units(clean_numeric(item["lambda_flc"]), evidence_text)
+    item["kappa_lambda_ratio"] = item["kappa_lambda_ratio"].strip() if item["kappa_lambda_ratio"] and ("<" in item["kappa_lambda_ratio"] or ">" in item["kappa_lambda_ratio"]) else enrich_value_with_units(clean_numeric(item["kappa_lambda_ratio"]), evidence_text) if item["kappa_lambda_ratio"] else None
+
+    item["source_document"] = title
+    item["context"] = json.dumps(item, indent=2)
+    final_results.append(item)
+
+
     except Exception as e:
         print(f"❌ Failed batch {i+1}: {e}")
 
