@@ -137,6 +137,30 @@ for doc in results:
     if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
         filtered_chunks.append({"title": source_title, "content": content})
 
+JUST TRY 
+filtered_chunks = []
+
+# Define all full terms and abbreviations
+search_terms = [
+    "kappa", "lambda", "ratio",
+    "kappa/lambda", "kappa_lambda",
+    "klc", "llc", "k/l",
+    "kappa light", "lambda light"
+]
+
+for doc in results:
+    source_title = doc.metadata.get("source", "Unknown")
+    content = doc.page_content
+    norm = content.lower()
+
+    # Check if any term is present in the content
+    if any(term in norm for term in search_terms):
+        filtered_chunks.append({
+            "title": source_title,
+            "content": content
+        })
+
+
 # --- LLM setup ---
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
