@@ -722,12 +722,21 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
     full_prompt = f"""
 You are a clinical data extraction assistant. From the given medical note, extract **only the most recent and clinically relevant** lab values.
 
-Do NOT extract values that are from diagnosis summaries, history, or baseline descriptions.
+You must **avoid values** if they appear:
+- In historical summaries (e.g., "baseline labs", "diagnosed in", "initial presentation")
+- As part of context for diagnosis
 
-Only extract values from actual **lab result sections** such as:
-- Laboratory studies
-- Lab results
-- CBC / Chemistry / Immunoglobulin panels
+Only extract values from **actual lab results**, usually under sections like:
+- "Lab results", "Laboratory studies", "Recent labs", "CBC", or "Chemistry"
+
+🔍 Extract the following:
+1. `kappa_flc`: numeric + unit (prefer mg/dL or mg/L)
+2. `lambda_flc`: numeric + unit (prefer mg/dL or mg/L)
+3. `kappa_lambda_ratio`: with possible <, >, or null
+
+Also extract:
+- `date_of_lab`: exact date tied to the values (or nearest found)
+- `evidence_sentences`: only use recent or dated lab mentions, not diagnosis history
 
 Return JSON like:
 [
