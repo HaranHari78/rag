@@ -377,6 +377,14 @@ Respond only in strict JSON format:
 
 df = pd.DataFrame(final_results)
 
+df["completeness_score"] = df[["kappa_flc", "lambda_flc", "kappa_lambda_ratio"]].notna().sum(axis=1)
+
+# ✅ Sort so that the most complete row comes first per source_document + date
+df = df.sort_values(by=["source_document", "date_of_lab", "completeness_score"], ascending=[True, True, False])
+
+# 🧹 Drop duplicates keeping the most complete per document and date
+df = df.drop_duplicates(subset=["source_document", "date_of_lab"], keep="first")
+
 cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences",
         "context"]
 
