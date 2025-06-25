@@ -243,6 +243,15 @@ Respond only in strict JSON format:
 {json.dumps(json_context, indent=2)}
 """
 
+TRT::::2
+🧠 Extraction Rules:
+- Extract `kappa_flc` and `lambda_flc` if they are **clearly stated with units** (e.g., mg/dL or mg/L), even if the ratio is not present.
+- If the ratio is **not explicitly stated**, return `"kappa_lambda_ratio": null`. ❗ Never guess or calculate it.
+- Always keep `<`, `>` or `=` symbols if mentioned.
+- If multiple values are mentioned, extract only the **most clinically recent or relevant** one.
+- Do not repeat the same values from multiple parts unless they represent a different time or state.
+
+
     try:
         print(f"\n Running batch {i + 1}...")
         response = llm.invoke(full_prompt)
