@@ -241,30 +241,44 @@ cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "dat
 if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
 
-    # 🔥 PATCH: Deduplication fix — normalize and remove duplicates
-    def normalize_val(val):
-        if isinstance(val, str):
-            return val.strip().lower()
-        return val
+    # 🔥 SMART DEDUPLICATION: Match kappa + ratio, allow lambda mismatch if one is null
+    def norm(val):
+        return str(val).lower().strip() if pd.notna(val) else None
 
-    df["kappa_flc_norm"] = df["kappa_flc"].apply(normalize_val)
-    df["lambda_flc_norm"] = df["lambda_flc"].apply(normalize_val)
-    df["kappa_lambda_ratio_norm"] = df["kappa_lambda_ratio"].apply(normalize_val)
+    df["kappa_norm"] = df["kappa_flc"].apply(norm)
+    df["lambda_norm"] = df["lambda_flc"].apply(norm)
+    df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
 
-    df.drop_duplicates(
-        subset=["kappa_flc_norm", "lambda_flc_norm", "kappa_lambda_ratio_norm"],
-        keep="first", inplace=True
-    )
+    keep_indices = []
+    seen = {}
 
-    df.drop(columns=["kappa_flc_norm", "lambda_flc_norm", "kappa_lambda_ratio_norm"], inplace=True)
+    for idx, row in df.iterrows():
+        k = row["kappa_norm"]
+        r = row["ratio_norm"]
+        l = row["lambda_norm"]
+        key = (k, r)
 
+        if key not in seen:
+            seen[key] = l
+            keep_indices.append(idx)
+        else:
+            prev_lambda = seen[key]
+            if prev_lambda is None or l is None or prev_lambda == l:
+                continue  # drop as duplicate
+            else:
+                # different lambda, keep both
+                seen[key + (l,)] = l
+                keep_indices.append(idx)
+
+    df = df.loc[keep_indices].drop(columns=["kappa_norm", "lambda_norm", "ratio_norm"])
+
+    # 🔄 Save results
     os.makedirs("output", exist_ok=True)
     df.to_excel("output/Output4.xlsx", index=False)
     df.to_json("output/Output4.json", orient="records", indent=2)
     print("\n ✅ Output saved to 'output/' folder.")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
-
 
 
 
