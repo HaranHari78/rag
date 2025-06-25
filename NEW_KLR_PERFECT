@@ -140,9 +140,15 @@ for doc in results:
     source_title = doc.metadata.get("source", "Unknown")
     content = doc.page_content
     norm = content.lower()
-    if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
-        filtered_chunks.append(Document(page_content=content,metadata={"source":source_title}))
-        # filtered_chunks.append({"title": source_title, "content": content})
+    title_lower = source_title.lower()
+
+    if (
+        ("progress" in title_lower or "imtx conference" in title_lower) and
+        (("kappa" in norm and "lambda" in norm and "ratio" in norm) or
+         ("kappa/lambda" in norm and "kappa_lambda" in norm))
+    ):
+        filtered_chunks.append(Document(page_content=content, metadata={"source": source_title}))
+
 
 
 # --- LLM setup ---
