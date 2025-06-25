@@ -337,8 +337,39 @@ Respond only in strict JSON format:
             item["context"] = json.dumps(item, indent=2)
             final_results.append(item)
 
+
+TRY ::::
+
+for item in batch_result:
+    title = item.get("source_document") or item.get("title")
+
+    matched_doc = next((doc for doc in batch if doc.metadata.get("source") == title), None)
+    if not matched_doc:
+        print(f"⚠️ No matching doc for title: {title}")
+        continue
+
+    evidence_text = " ".join(item.get("evidence_sentences", []))
+    kappa = clean_numeric(item.get("kappa_flc", ""))
+    lambda_ = clean_numeric(item.get("lambda_flc", ""))
+    ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
+
+    item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
+    item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
+    item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
+    item["source_document"] = title
+
+    item["context"] = json.dumps({
+        "title": matched_doc.metadata.get("source", ""),
+        "content": matched_doc.page_content
+    }, indent=2)
+
+    final_results.append(item)
+
+
     except Exception as e:
         print(f"❌ Failed batch {i + 1}: {e}")
+
+
 
 df = pd.DataFrame(final_results)
 
