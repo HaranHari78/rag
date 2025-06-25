@@ -326,6 +326,11 @@ if not df.empty and all(col in df.columns for col in cols):
     # 🔁 Drop duplicates
     df = df.drop_duplicates(subset=["dedup_key"], keep="first")
 
+    df["parsed_date"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+    df.sort_values(by="parsed_date", ascending=False, inplace=True)
+    df = df.drop_duplicates(subset=["source_document"], keep="first")
+    df.drop(columns=["parsed_date"], inplace=True)
+
     # 🧹 Cleanup
     df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "dedup_key"], inplace=True)
 
