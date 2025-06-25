@@ -1,139 +1,3 @@
-C:\Users\HariharaM12\PycharmProjects\T_2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\T_2\main.py 
-100%|██████████| 517/517 [00:00<00:00, 623.96it/s]
-100%|██████████| 164/164 [00:18<00:00,  8.69it/s]
-
- Running batch 1...
-
- Raw LLM response:
- ```json
-[
-  {
-    "kappa_flc": "56.21 mg/dL",
-    "lambda_flc": "<3.08 mg/dL",
-    "kappa_lambda_ratio": ">115.57",
-    "date_of_lab": "2024-02-22",
-    "evidence_sentences": [
-      "Kappa Free Light Chain 0.76 - 6.83 mg/dL 56.21 (H)",
-      "Lambda Free Light Chain 0.68 - 4.58 mg/dL <3.08 (L)",
-      "Kappa/Lambda FLC Ratio 0.66 - 2.22  >115.57 (H)"
-    ]
-  },
-  {
-    "kappa_flc": "56.21 mg/dL",
-    "lambda_flc": "<3.08 mg/dL",
-    "kappa_lambda_ratio": ">115.57",
-    "date_of_lab": "2024-02-22",
-    "evidence_sentences": [
-      "Kappa Free Light Chain 0.76 - 6.83 mg/dL 56.21 (H)",
-      "Lambda Free Light Chain 0.68 - 4.58 mg/dL <3.08 (L)",
-      "Kappa/Lambda FLC Ratio 0.66 - 2.22  >115.57 (H)"
-    ]
-  },
-  {
-    "kappa_flc": "203.94 mg/dL",
-    "lambda_flc": "<0.15 mg/dL",
-    "kappa_lambda_ratio": ">1456.71",
-    "date_of_lab": "2024-02-08",
-    "evidence_sentences": [
-      "Kappa Free Light Chain 203.94 (H) 0.76 - 6.83 mg/dL",
-      "Lambda Free Light Chain <0.15 (L) 0.68 - 4.
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-
- Running batch 2...
-
- Raw LLM response:
- ```json
-[
-  {
-    "kappa_flc": "64.9 mg/dL",
-    "lambda_flc": "0.34 mg/dL",
-    "kappa_lambda_ratio": "190",
-    "date_of_lab": "2019-03-XX",
-    "evidence_sentences": [
-      "Diagnoses in 3/2019.M-spike of 6,calcium of 9.7, an IgG of 5610,kappa FLC 64.9, kappa/lambda ratio of 190, total protein 10.7, UPEP was positiveby immunofixation,and bone marrow showed myeloma."
-    ]
-  },
-  {
-    "kappa_flc": "20.78 mg/dL",
-    "lambda_flc": "0.24 mg/dL",
-    "kappa_lambda_ratio": "86.58",
-    "date_of_lab": "2021-06-XX",
-    "evidence_sentences": [
-      "In 6/2021, he had kappa FLC of 20.78, lambda FLC of 0.24, kappa/lambda ratio of 86.58."
-    ]
-  },
-  {
-    "kappa_flc": "1.24 mg/dL",
-    "lambda_flc": "0.72 mg/dL",
-    "kappa_lambda_ratio": "1.72",
-    "date_of_lab": "2021-12-15",
-    "evidence_sentences": [
-      "12/15: SPEP IgG kappa M spike of 0.1, Kappa light chain 1.24, lambda light chain 0.72. Kappa/ lambda ratio 1.72, beta 2 microglobulin 1.3"
-    ]
-  },
-  {
-    "kappa_flc": "1.45 
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-
- Running batch 3...
-
- Raw LLM response:
- ```json
-[
-  {
-    "kappa_flc": "65 mg/dL",
-    "lambda_flc": "0.34 mg/dL",
-    "kappa_lambda_ratio": "190",
-    "date_of_lab": "2021-XX-XX",
-    "evidence_sentences": [
-      "baseline labs showing an IgG kappa monoclonal protein of 6 g/dL, with kappa light chain of 65, lambda of 0.34 and ratio of 190."
-    ]
-  },
-  {
-    "kappa_flc": "<0.06 mg/dL",
-    "lambda_flc": "<1.61 mg/dL",
-    "kappa_lambda_ratio": null,
-    "date_of_lab": "2024-04-08",
-    "evidence_sentences": [
-      "Labs from 4/8/2024: Kappa <0.06 mg/dL, Lambda <1.61 mg/dL, SPEP with M-spike 0.3 g/dL, IgG kappa"
-    ]
-  },
-  {
-    "kappa_flc": "64.9 mg/dL",
-    "lambda_flc": null,
-    "kappa_lambda_ratio": "190",
-    "date_of_lab": "2019-03-XX",
-    "evidence_sentences": [
-      "At diagnosis M-spike was 6, Hgb 8.4, calcium of 9.7, albumin 2.3, adjusted calcium level 11.1, creatinine 0.99. IgG of 5610, kappa FLC 64.9, lappa/lambda ratio of 190, total protein 10.7."
-    ]
-  },
-  {
-    "kappa_flc": "129.54 mg/dL",
-    "lamb
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
-No matching doc for title: None
- No results to save. The final DataFrame is empty or missing expected columns.
-
-Process finished with exit code 0
-
-
-
 import os
 import re
 import json
@@ -276,8 +140,7 @@ for doc in results:
     source_title = doc.metadata.get("source", "Unknown")
     content = doc.page_content
     norm = content.lower()
-    if ("kappa" in norm and "lambda" in norm and 'ratio' in norm or
-            ("kappa/lambda" in norm and "kappa_lambda" in norm)):
+    if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
         filtered_chunks.append(Document(page_content=content,metadata={"source":source_title}))
         # filtered_chunks.append({"title": source_title, "content": content})
 
@@ -306,15 +169,19 @@ for i, batch in enumerate(batchify(filtered_chunks, 10)):
 You are a clinical data extraction assistant. For the given document, extract if at least **kappa and lambda** are found with correct units (mg/dL or mg/L).  
 If `kappa_lambda_ratio` is missing in the sentence, set it to null.
  
+  
 Recognize alternate names:
 - `KLC`, `Kappa light`, `Kappa FLC` = `kappa_flc`
 - `LLC`, `Lambda light`, `Lambda FLC` = `lambda_flc`
 - `K/L`, `kappa/lambda`, `kappa_lambda` = `kappa_lambda_ratio`
-- If the date is incomplete (e.g., only month and year), fill the missing parts with "XX".
+
+Extraction rules:
+
+- If multiple similar entries exist pick the one with the most complete values and latest date.
+- Avoid repeating the same values from different parts unless they show a meaningful change.
+- Do NOT extract values that appear in diagnosis summaries, baseline history, or older context.
+- If the date is incomplete (e.g., only month/year), format missing parts as "XX". E.g., "2021-06-XX".
 - DO NOT guess or infer dates
-- If multiple partial rows are found (e.g., one has kappa+ratio, another has kappa+lambda), combine them **only if they belong to the same lab date** and clearly reference the same lab context.
-- Prefer values where all three fields appear in close proximity (same paragraph or sentence).
-- If multiple rows with similar values (e.g., 64.9 vs 65) exist, keep the one with **more fields present** and **clear unit** (mg/dL or mg/L).
  
 Example:
 {{
@@ -328,6 +195,7 @@ Example:
 Respond only in strict JSON format:
 [
   {{
+    "title":"<EXACTLY MATCHT THE TITLE FIELD FROM THE INPUT>"
     "kappa_flc": "...",
     "lambda_flc": "...",
     "kappa_lambda_ratio": "...",
@@ -377,14 +245,6 @@ Respond only in strict JSON format:
 
 df = pd.DataFrame(final_results)
 
-df["completeness_score"] = df[["kappa_flc", "lambda_flc", "kappa_lambda_ratio"]].notna().sum(axis=1)
-
-# ✅ Sort so that the most complete row comes first per source_document + date
-df = df.sort_values(by=["source_document", "date_of_lab", "completeness_score"], ascending=[True, True, False])
-
-# 🧹 Drop duplicates keeping the most complete per document and date
-df = df.drop_duplicates(subset=["source_document", "date_of_lab"], keep="first")
-
 cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences",
         "context"]
 
@@ -392,8 +252,8 @@ if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
     df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
     os.makedirs("output", exist_ok=True)
-    df.to_excel("output/Output2.xlsx", index=False)
-    df.to_json("output/Output2.json", orient="records", indent=2)
+    df.to_excel("output/Output4.xlsx", index=False)
+    df.to_json("output/Output4.json", orient="records", indent=2)
     print("\n Output saved to 'output/' folder")
 else:
     print(" No results to save. The final DataFrame is empty or missing expected columns.")
