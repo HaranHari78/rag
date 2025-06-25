@@ -21,6 +21,7 @@ EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
 EMBEDDING_MODEL = "text-embedding-3-large"
 GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
 
+
 # --- Helpers ---
 def parse_llm_json(raw_text: str) -> str:
     if not raw_text.strip():
@@ -47,17 +48,20 @@ def parse_llm_json(raw_text: str) -> str:
 
     return json.dumps(parsed)
 
+
 def normalize_text(text):
     text = text.lower()
     text = re.sub(r'[^a-z0-9]', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
+
 def clean_numeric(val: str) -> str:
     if not isinstance(val, str):
         return val
     match = re.search(r"[0-9]+\.?[0-9]*", val)
     return match.group(0) if match else ""
+
 
 def enrich_value_with_units(value: str, evidence: str) -> str:
     if not value or not evidence:
@@ -70,9 +74,11 @@ def enrich_value_with_units(value: str, evidence: str) -> str:
     match = pattern.search(evidence)
     return match.group(1).strip() if match else value
 
+
 def batchify(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
+
 
 # --- Load dataset ---
 csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
@@ -137,64 +143,6 @@ for doc in results:
     if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
         filtered_chunks.append({"title": source_title, "content": content})
 
-
-search_terms = [
-    "kappa", "lambda", "ratio",
-    "kappa/lambda", "kappa_lambda",
-    "klc", "llc", "k/l",
-    "kappa light", "lambda light"
-]
-
-filtered_chunks = []
-for doc in results:
-    source_title = doc.metadata.get("source", "Unknown")
-    content = doc.page_content
-    norm = content.lower()
-    if any(term in norm for term in search_terms):
-        filtered_chunks.append({"title": source_title, "content": content})
-
-JUST TRY :1
-filtered_chunks = []
-
-# Define all full terms and abbreviations
-search_terms = [
-    "kappa", "lambda", "ratio",
-    "kappa/lambda", "kappa_lambda",
-    "klc", "llc", "k/l",
-    "kappa light", "lambda light"
-]
-
-for doc in results:
-    source_title = doc.metadata.get("source", "Unknown")
-    content = doc.page_content
-    norm = content.lower()
-
-    # Check if any term is present in the content
-    if any(term in norm for term in search_terms):
-        filtered_chunks.append({
-            "title": source_title,
-            "content": content
-        })
-JUS TRY :2
-filtered_chunks = []
-
-for doc in results:
-    source_title = doc.metadata.get("source", "Unknown")
-    content = doc.page_content
-    norm = content.lower()
-
-    # If full OR abbreviation exists for any field
-    if (
-        "kappa" in norm or "klc" in norm or "kappa light" in norm or
-        "lambda" in norm or "llc" in norm or "lambda light" in norm or
-        "ratio" in norm or "k/l" in norm or "kappa/lambda" in norm or "kappa_lambda" in norm
-    ):
-        filtered_chunks.append({
-            "title": source_title,
-            "content": content
-        })
-
-
 # --- LLM setup ---
 llm = AzureChatOpenAI(
     deployment_name=GPT_DEPLOYMENT,
@@ -219,6 +167,8 @@ Recognize alternate names:
 - `KLC`, `Kappa light`, `Kappa FLC` = `kappa_flc`
 - `LLC`, `Lambda light`, `Lambda FLC` = `lambda_flc`
 - `K/L`, `kappa/lambda`, `kappa_lambda` = `kappa_lambda_ratio`
+- If the date is incomplete (e.g., only month and year), fill the missing parts with "XX".
+- DO NOT guess or infer dates
 
 Example:
 {{
@@ -245,7 +195,7 @@ Respond only in strict JSON format:
 """
 
     try:
-        print(f"\n🧠 Running batch {i+1}...")
+        print(f"\n🧠 Running batch {i + 1}...")
         response = llm.invoke(full_prompt)
         print("\n🔎 Raw LLM response:\n", response.content[:1000])
         cleaned = parse_llm_json(response.content)
@@ -263,68 +213,20 @@ Respond only in strict JSON format:
             item["context"] = json.dumps(item, indent=2)
             final_results.append(item)
 
-TRY :
-for item, title in zip(batch_result, titles):
-    # 🔍 Combine evidence sentences into a single string
-    evidence_text = " ".join(item.get("evidence_sentences", []))
-
-    # --- Process kappa_flc ---
-    kappa_raw = item.get("kappa_flc", "")
-    if "<" in kappa_raw or ">" in kappa_raw:
-        item["kappa_flc"] = kappa_raw.strip()
-    else:
-        kappa_clean = clean_numeric(kappa_raw)
-        item["kappa_flc"] = enrich_value_with_units(kappa_clean, evidence_text)
-
-    # --- Process lambda_flc ---
-    lambda_raw = item.get("lambda_flc", "")
-    if "<" in lambda_raw or ">" in lambda_raw:
-        item["lambda_flc"] = lambda_raw.strip()
-    else:
-        lambda_clean = clean_numeric(lambda_raw)
-        item["lambda_flc"] = enrich_value_with_units(lambda_clean, evidence_text)
-
-    # --- Process kappa_lambda_ratio ---
-    ratio_raw = item.get("kappa_lambda_ratio", "")
-    if ratio_raw:
-        if "<" in ratio_raw or ">" in ratio_raw:
-            item["kappa_lambda_ratio"] = ratio_raw.strip()
-        else:
-            ratio_clean = clean_numeric(ratio_raw)
-            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio_clean, evidence_text)
-    else:
-        item["kappa_lambda_ratio"] = None  # Handle nulls
-
-    # Add metadata
-    item["source_document"] = title
-    item["context"] = json.dumps(item, indent=2)
-
-    # ✅ Append to final results
-    final_results.append(item)
-
-
     except Exception as e:
-        print(f"❌ Failed batch {i+1}: {e}")
+        print(f"❌ Failed batch {i + 1}: {e}")
 
-# --- Save results --- got 203,16,0.08
 df = pd.DataFrame(final_results)
 
-# 🔍 Filter by most recent lab year dynamically
-df["date_of_lab"] = df["date_of_lab"].astype(str)
-lab_years = df["date_of_lab"].str.extract(r"(20\d{2})")[0].dropna()
-lab_years = lab_years[lab_years.astype(int) <= 2100]
-latest_year = lab_years.astype(int).max()
-print(f"🕒 Filtering for latest lab year: {latest_year}")
-df = df[df["date_of_lab"].str.contains(str(latest_year), na=False)]
-
-cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences",
+        "context"]
 
 if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
     df.drop_duplicates(subset=["kappa_flc", "lambda_flc", "kappa_lambda_ratio"], keep='first', inplace=True)
     os.makedirs("output", exist_ok=True)
-    df.to_excel("output/Output.xlsx", index=False)
-    df.to_json("output/Output.json", orient="records", indent=2)
+    df.to_excel("output/Output2.xlsx", index=False)
+    df.to_json("output/Output2.json", orient="records", indent=2)
     print("\n✅ Output saved to 'output/' folder")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
