@@ -197,13 +197,20 @@ You are a clinical data extraction assistant. From the given medical notes, extr
 - `date_of_lab`: exact or partial date near the lab values
 - `evidence_sentences`: the exact sentence(s) where these values are mentioned
 
-🧠 Rules:
+full_prompt = f"""
+You are a clinical data extraction assistant. From the given medical notes, extract the following lab values:
+
+- `kappa_flc`: Kappa Free Light Chain (with unit like mg/dL or mg/L)
+- `lambda_flc`: Lambda Free Light Chain (same unit)
+- `kappa_lambda_ratio`: the ratio if present (may include `<`, `>`, or be null if not given)
+- `date_of_lab`: exact or partial date near the lab values
+- `evidence_sentences`: the exact sentence(s) where these values are mentioned
+
+🧠 Extraction Rules:
 - Only extract `kappa` or `lambda` values that are **clearly stated with proper units** (e.g., mg/dL or mg/L).
-- If `kappa_lambda_ratio` is **not available or not explicitly stated**, return it as `null`.
-- ❌ Do not hallucinate or guess the ratio.
-- If multiple values are mentioned, extract only the **most clinically recent or relevant** one.
-- Avoid re-extracting the same value multiple times unless there is a **meaningful change** in context or interpretation.
-- Ignore ambiguous or outdated mentions unless they're clearly labeled as the latest.
+- If the ratio is **not explicitly stated**, return `"kappa_lambda_ratio": null`. Never infer or guess the value.
+- If multiple sets of values appear, extract only the **most clinically recent or relevant** one.
+- Avoid repeating the same values across different sections of the same document unless there is a **clear change**.
 
 📅 Date Handling Rules:
 - Extract `date_of_lab` only if it is **explicitly present near the values**.
@@ -212,25 +219,13 @@ You are a clinical data extraction assistant. From the given medical notes, extr
 - If the date is vague (e.g., "baseline", "prior", "at diagnosis"), return `"date_of_lab": null`.
 - ❗ Never infer or guess the date based on clinical stage descriptions.
 
-🔁 Recognize alternate names:
-- `KLC`, `Kappa light`, `Kappa FLC` = `kappa_flc`
-- `LLC`, `Lambda light`, `Lambda FLC` = `lambda_flc`
-- `K/L`, `kappa/lambda`, `kappa_lambda` = `kappa_lambda_ratio`
+🗂️ Output Matching:
+- Each input note contains a `title` field. You must include `"title"` in each extracted result exactly as received. This is required for correct matching.
 
-🗂️ Each input document has a `title`. You MUST return the **same `title`** in every extracted result so we can match back to the input document.
-
-Example:
-{{
-  "kappa_flc": "1.91 mg/dL",
-  "lambda_flc": "<0.15 mg/dL",
-  "kappa_lambda_ratio": null,
-  "date_of_lab": "...",
-  "evidence_sentences": ["..."]
-}}
-
-Respond only in strict JSON format:
+🧾 Format the output in strict JSON:
 [
   {{
+    "title": "<exact title from the input>",
     "kappa_flc": "...",
     "lambda_flc": "...",
     "kappa_lambda_ratio": "...",
@@ -242,6 +237,7 @@ Respond only in strict JSON format:
 --- Context:
 {json.dumps(json_context, indent=2)}
 """
+
 
 TRT::::2
 🧠 Extraction Rules:
