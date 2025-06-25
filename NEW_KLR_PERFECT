@@ -241,7 +241,7 @@ cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "dat
 if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
 
-    # 🔥 SMART DEDUPLICATION: Match kappa + ratio, allow lambda mismatch if one is null
+    # ✅ SMART DEDUPLICATION BASED ON COMPLETENESS SCORE
     def norm(val):
         return str(val).lower().strip() if pd.notna(val) else None
 
@@ -249,36 +249,33 @@ if not df.empty and all(col in df.columns for col in cols):
     df["lambda_norm"] = df["lambda_flc"].apply(norm)
     df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
 
-    keep_indices = []
-    seen = {}
+    # 💯 Assign completeness score (how many fields are non-null)
+    df["score"] = df.apply(lambda row: sum([
+        bool(row["kappa_norm"]),
+        bool(row["lambda_norm"]),
+        bool(row["ratio_norm"])
+    ]), axis=1)
 
-    for idx, row in df.iterrows():
-        k = row["kappa_norm"]
-        r = row["ratio_norm"]
-        l = row["lambda_norm"]
-        key = (k, r)
+    # 🎯 Build dedup key based on kappa + ratio only
+    df["dedup_key"] = df["kappa_norm"] + "|" + df["ratio_norm"]
 
-        if key not in seen:
-            seen[key] = l
-            keep_indices.append(idx)
-        else:
-            prev_lambda = seen[key]
-            if prev_lambda is None or l is None or prev_lambda == l:
-                continue  # drop as duplicate
-            else:
-                # different lambda, keep both
-                seen[key + (l,)] = l
-                keep_indices.append(idx)
+    # 📊 Sort so more complete rows are preferred
+    df.sort_values(by="score", ascending=False, inplace=True)
 
-    df = df.loc[keep_indices].drop(columns=["kappa_norm", "lambda_norm", "ratio_norm"])
+    # 🔁 Drop duplicates: only one row per unique (kappa + ratio) is kept
+    df = df.drop_duplicates(subset=["dedup_key"], keep="first")
 
-    # 🔄 Save results
+    # 🧹 Clean temp columns
+    df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "dedup_key"], inplace=True)
+
+    # ✅ Save
     os.makedirs("output", exist_ok=True)
     df.to_excel("output/Output4.xlsx", index=False)
     df.to_json("output/Output4.json", orient="records", indent=2)
     print("\n ✅ Output saved to 'output/' folder.")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+
 
 
 
