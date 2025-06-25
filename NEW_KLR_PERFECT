@@ -312,6 +312,9 @@ Recognize alternate names:
 - `K/L`, `kappa/lambda`, `kappa_lambda` = `kappa_lambda_ratio`
 - If the date is incomplete (e.g., only month and year), fill the missing parts with "XX".
 - DO NOT guess or infer dates
+- If multiple partial rows are found (e.g., one has kappa+ratio, another has kappa+lambda), combine them **only if they belong to the same lab date** and clearly reference the same lab context.
+- Prefer values where all three fields appear in close proximity (same paragraph or sentence).
+- If multiple rows with similar values (e.g., 64.9 vs 65) exist, keep the one with **more fields present** and **clear unit** (mg/dL or mg/L).
  
 Example:
 {{
