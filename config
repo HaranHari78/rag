@@ -1,3 +1,26 @@
+Guys
+ 
+can you try running your code with your current model which is gpt 4o
+ 
+and then with this model 4.1 mini and compre the accuracy 
+ 
+https://omh-eus-2-test-01.openai.azure.com/openai/deployments/M1-GPT-4.1-MINI-EUS-2-TEST-01/chat/completions?api-version=2025-01-01-preview
+ 
+
+
+endpoint = "https://omh-eus-2-test-01.openai.azure.com/"
+
+model_name = "gpt-4.1-mini"
+
+deployment = "M1-GPT-4.1-MINI-EUS-2-TEST-01"
+ 
+subscription_key = "<your-api-key>"
+
+api_version = "2024-12-01-preview"
+ 
+api key is same
+
+
 [azure_openai]
 api_key = 8804263e0e884a73b493a58f22505cc6
 endpoint = https://omh-eus-2-test-01.openai.azure.com/
