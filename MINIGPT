@@ -2,6 +2,9 @@
 - If multiple lab results exist, **always choose the most recent full date** with valid values.
 - Prefer values with a valid unit (mg/dL) and closest to today.
 - Ignore older lab panels if newer complete ones exist.
+- If `kappa_flc` and `lambda_flc` are present but `kappa_lambda_ratio` is missing, set `kappa_lambda_ratio` to null — do not discard.
+- Accept partial entries: kappa and lambda values are enough to return a record.
+- Do NOT hallucinate the ratio. If not found clearly, return `null`.
 
 
 
