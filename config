@@ -33,6 +33,8 @@ model_gpt4o = OMH-EUS2-GPT4O-1
 text_embedding_3_large = text-embedding-3-large-EUS-2-01
 
 
+GPT_DEPLOYMENT = "M1-GPT-4.1-MINI-EUS-2-TEST-01"
+GPT_API_VERSION = "2024-12-01-preview"
 [azure_openai]
 api_key = 8804263e0e884a73b493a58f22505cc6
 endpoint = https://omh-eus-2-test-01.openai.azure.com/
