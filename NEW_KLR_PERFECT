@@ -277,6 +277,66 @@ else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
 
 
+THIS IS ALSO CRT:::
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+
+    # ✅ Normalize fields
+    def norm(val):
+        return str(val).lower().strip() if pd.notna(val) else None
+
+    df["kappa_norm"] = df["kappa_flc"].apply(norm)
+    df["lambda_norm"] = df["lambda_flc"].apply(norm)
+    df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
+
+    # 🔍 Build base score (field presence)
+    df["score"] = df.apply(lambda row: sum([
+        bool(row["kappa_norm"]),
+        bool(row["lambda_norm"]),
+        bool(row["ratio_norm"])
+    ]), axis=1)
+
+    # 🧠 Contextual scoring from evidence_sentences
+    def context_score(row):
+        bonus = 0
+        ev = " ".join(row["evidence_sentences"]).lower()
+
+        # Bonus: all values in one sentence
+        if all(key in ev for key in ["kappa", "lambda", "ratio"]):
+            bonus += 2
+
+        # Bonus: if lab-like context
+        if any(kw in ev for kw in ["lab", "labs", "test", "reference range"]):
+            bonus += 1
+
+        # Bonus: if date is included
+        if re.search(r"\b(20\\d{2}|\\d{1,2}/\\d{1,2})\b", ev):
+            bonus += 1
+
+        return bonus
+
+    df["score"] += df.apply(context_score, axis=1)
+
+    # 🏷️ Key = kappa + ratio
+    df["dedup_key"] = df["kappa_norm"] + "|" + df["ratio_norm"]
+
+    # 🔢 Highest scoring (most reliable) evidence first
+    df.sort_values(by="score", ascending=False, inplace=True)
+
+    # 🔁 Drop duplicates
+    df = df.drop_duplicates(subset=["dedup_key"], keep="first")
+
+    # 🧹 Cleanup
+    df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "dedup_key"], inplace=True)
+
+    # 💾 Save
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output4.xlsx", index=False)
+    df.to_json("output/Output4.json", orient="records", indent=2)
+    print("\n ✅ Output saved to 'output/' folder.")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+
 
 
 
