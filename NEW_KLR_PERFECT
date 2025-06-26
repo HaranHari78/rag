@@ -342,7 +342,60 @@ if not df.empty and all(col in df.columns for col in cols):
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
 
+TRY :::
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
 
+    # Normalize
+    def norm(val):
+        return str(val).lower().strip() if pd.notna(val) else None
+
+    df["kappa_norm"] = df["kappa_flc"].apply(norm)
+    df["lambda_norm"] = df["lambda_flc"].apply(norm)
+    df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
+
+    # Base score
+    df["score"] = df.apply(lambda row: sum([
+        bool(row["kappa_norm"]),
+        bool(row["lambda_norm"]),
+        bool(row["ratio_norm"])
+    ]), axis=1)
+
+    # Context-aware scoring
+    def context_score(row):
+        bonus = 0
+        ev = " ".join(row["evidence_sentences"]).lower()
+
+        if all(k in ev for k in ["kappa", "lambda", "ratio"]):
+            bonus += 2
+        if any(kw in ev for kw in ["lab", "labs", "reference range"]):
+            bonus += 1
+        if re.search(r"\\b(20\\d{2}|\\d{1,2}/\\d{1,2})\\b", ev):
+            bonus += 1
+
+        return bonus
+
+    df["score"] += df.apply(context_score, axis=1)
+
+    # Parse date
+    df["parsed_date"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+
+    # Sort by date and score together
+    df.sort_values(by=["source_document", "parsed_date", "score"], ascending=[True, False, False], inplace=True)
+
+    # ✅ KEEP ONLY latest entry per source_document
+    df = df.drop_duplicates(subset=["source_document"], keep="first")
+
+    # Cleanup
+    df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "parsed_date"], inplace=True)
+
+    # Save
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output4.xlsx", index=False)
+    df.to_json("output/Output4.json", orient="records", indent=2)
+    print("\\n ✅ Output saved to 'output/' folder.")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
 
 
 
