@@ -397,6 +397,56 @@ if not df.empty and all(col in df.columns for col in cols):
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
 
+TRY """"3"""
+
+def norm(val):
+    return str(val).lower().strip() if pd.notna(val) else None
+
+df["kappa_norm"] = df["kappa_flc"].apply(norm)
+df["lambda_norm"] = df["lambda_flc"].apply(norm)
+df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
+
+# 👇 Count how many non-null fields are present per row
+df["score"] = df.apply(lambda row: sum([
+    bool(row["kappa_norm"]),
+    bool(row["lambda_norm"]),
+    bool(row["ratio_norm"])
+]), axis=1)
+
+# 🔍 Identify most complete field pair per row
+def dedup_key(row):
+    k = row["kappa_norm"]
+    l = row["lambda_norm"]
+    r = row["ratio_norm"]
+
+    if k and l:
+        return f"{k}|{l}"
+    elif k and r:
+        return f"{k}|{r}"
+    elif l and r:
+        return f"{l}|{r}"
+    elif k:
+        return k
+    elif l:
+        return l
+    elif r:
+        return r
+    else:
+        return "unknown"
+
+df["dedup_key"] = df.apply(dedup_key, axis=1)
+
+# 🔽 Sort and drop duplicates using score + date
+df["parsed_date"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+df.sort_values(by=["score", "parsed_date"], ascending=[False, False], inplace=True)
+df = df.drop_duplicates(subset=["dedup_key"], keep="first")
+
+# ✅ Keep one best row per document
+df.sort_values(by=["source_document", "parsed_date", "score"], ascending=[True, False, False], inplace=True)
+df = df.drop_duplicates(subset=["source_document"], keep="first")
+
+# 🧼 Clean up
+df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "parsed_date", "dedup_key"], inplace=True)
 
 
 
