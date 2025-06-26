@@ -78,26 +78,19 @@ def batchify(lst, n):
 csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
 df = pd.read_csv(csv_path)
 
-# --- Create documents ---
-all_documents = []
+# --- Create full documents ---
+documents = []
 for _, row in tqdm(df.iterrows(), total=len(df)):
     if pd.isna(row["text"]):
         continue
-    text = row["text"]
-    source = row["title"]
-    word_count = len(text.split())
-    if word_count < 500:
-        chunk_size = 1000
-        chunk_overlap = 0
-    elif word_count < 2000:
-        chunk_size = 1500
-        chunk_overlap = 250
-    else:
-        chunk_size = 3000
-        chunk_overlap =500
-    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    chunks = splitter.split_text(text)
-    all_documents.extend([Document(page_content=chunk, metadata={"source": source}) for chunk in chunks])
+    documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
+
+# --- Apply fixed chunking ---
+splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=0)
+chunks = splitter.split_documents(documents)
+
+# --- Create batches for indexing ---
+grouped_batches = list(batchify(chunks, 20))
 
 # --- Embedding & FAISS index ---
 embedding_model = AzureOpenAIEmbeddings(
@@ -109,7 +102,6 @@ embedding_model = AzureOpenAIEmbeddings(
     chunk_size=1000
 )
 
-grouped_batches = list(batchify(all_documents, 10))
 sub_indexes = []
 with ThreadPoolExecutor(max_workers=4) as executor:
     futures = {executor.submit(FAISS.from_documents, batch, embedding_model): batch for batch in grouped_batches}
@@ -149,7 +141,7 @@ llm = AzureChatOpenAI(
 
 # --- Extraction ---
 final_results = []
-for i, batch in enumerate(batchify(filtered_chunks, 10)):
+for i, batch in enumerate(batchify(filtered_chunks, 20)):
     json_context = [{"note_id": j + 1,
                      "title": doc.metadata.get("source", ""),
                      "content": doc.page_content
@@ -167,7 +159,6 @@ Recognize alternate names:
 - `K/L`, `kappa/lambda`, `kappa_lambda` = `kappa_lambda_ratio`
 
 Extraction rules:
-
 - Do NOT extract values that appear in diagnosis summaries, baseline history, or older context.
 - If the same evidence or sentence appears across multiple notes, extract it only once (skip duplicates).
 - If the date is incomplete (e.g., only month/year), format missing parts as "XX". E.g., "2021-06-XX".
@@ -207,7 +198,6 @@ Respond only in strict JSON format:
 
         for item in batch_result:
             title = item.get("source_document") or item.get("title")
-
             matched_doc = next((doc for doc in batch if doc.metadata.get("source") == item.get("title")), None)
             if not matched_doc:
                 print(f"No matching doc for title: {title}")
@@ -236,19 +226,15 @@ Respond only in strict JSON format:
 df = pd.DataFrame(final_results)
 
 cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
-
-
 if not df.empty and all(col in df.columns for col in cols):
     df = df[cols]
 
     def norm(val):
         return str(val).lower().strip() if pd.notna(val) else None
 
-
     df["kappa_norm"] = df["kappa_flc"].apply(norm)
     df["lambda_norm"] = df["lambda_flc"].apply(norm)
     df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
-
 
     df["score"] = df.apply(lambda row: sum([
         bool(row["kappa_norm"]),
@@ -276,23 +262,19 @@ if not df.empty and all(col in df.columns for col in cols):
         else:
             return "unknown"
 
-
     df["dedup_key"] = df.apply(dedup_key, axis=1)
-
     df["parsed_date"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+
     df.sort_values(by=["score", "parsed_date"], ascending=[False, False], inplace=True)
     df = df.drop_duplicates(subset=["dedup_key"], keep="first")
-
-
     df.sort_values(by=["source_document", "parsed_date", "score"], ascending=[True, False, False], inplace=True)
     df = df.drop_duplicates(subset=["source_document"], keep="first")
     df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "parsed_date", "dedup_key"], inplace=True)
 
-
     os.makedirs("output", exist_ok=True)
     df.to_excel("output/Output4.xlsx", index=False)
     df.to_json("output/Output4.json", orient="records", indent=2)
-    print("n ✅ Output saved to 'output/' folder.")
+    print("✅ Output saved to 'output/' folder.")
 else:
     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
 
