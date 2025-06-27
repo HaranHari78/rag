@@ -242,6 +242,15 @@ if not df.empty and all(col in df.columns for col in cols):
         bool(row["ratio_norm"])
     ]), axis=1)
 
+
+  def context_score(row):
+    ev = " ".join(row.get("evidence_sentences", [])).lower()
+    if any(kw in ev for kw in ["lab", "labs", "reference range"]):
+        return 1
+    return 0
+
+df["score"] += df.apply(context_score, axis=1)
+
     def dedup_key(row):
         k = row["kappa_norm"]
         l = row["lambda_norm"]
