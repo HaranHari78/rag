@@ -203,6 +203,60 @@ else:
     print("⚠️ Data is empty or missing required columns.")
 
 
+ANOTHER DEDUP"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+cols = ["title", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences_for_lab_values"]
+
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+
+    def norm(val):
+        return str(val).lower().strip() if pd.notna(val) else None
+
+    df["kappa_norm"] = df["kappa_flc"].apply(norm)
+    df["lambda_norm"] = df["lambda_flc"].apply(norm)
+    df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
+
+    df["score"] = df.apply(lambda row: sum([
+        bool(row["kappa_norm"]),
+        bool(row["lambda_norm"]),
+        bool(row["ratio_norm"])
+    ]), axis=1)
+
+    def dedup_key(row):
+        k, l, r = row["kappa_norm"], row["lambda_norm"], row["ratio_norm"]
+        if k and l:
+            return f"{k}|{l}"
+        elif k and r:
+            return f"{k}|{r}"
+        elif l and r:
+            return f"{l}|{r}"
+        elif k:
+            return k
+        elif l:
+            return l
+        elif r:
+            return r
+        else:
+            return "unknown"
+
+    df["dedup_key"] = df.apply(dedup_key, axis=1)
+    df["parsed_date"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+
+    df.sort_values(by=["score", "parsed_date"], ascending=[False, True], inplace=True)
+    df = df.drop_duplicates(subset=["dedup_key"], keep="first")
+
+    df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "parsed_date", "dedup_key"], inplace=True)
+
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output_gpt4o.xlsx", index=False)
+    df.to_json("output/Output_gpt4o.json", orient="records", indent=2)
+    print("✅ Deduplicated output saved to 'output/' folder.")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+
+
+
 QUERY"""""""""""""""""""""""""""""""
 
 queries = [
