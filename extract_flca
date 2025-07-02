@@ -169,3 +169,35 @@ if __name__ == "__main__":
 
     # Display the DataFrame
     df.to_excel('flca.xlsx')
+
+
+FOR DEDUP:::::::::::::::
+
+
+if __name__ == "__main__":
+    result = app.invoke({})  # Optionally pass input: {"user_input_id": "91111"}
+
+    validated = result.get("validated_data", [])
+
+    # ✅ Deduplication logic
+    seen = set()
+    dedup = []
+
+    for item in validated:
+        key = (
+            item.get("title", "").strip(),
+            item.get("kappa_flc", "").strip(),
+            item.get("lambda_flc", "").strip(),
+            item.get("kappa_lambda_ratio", "").strip()
+        )
+        if key not in seen:
+            seen.add(key)
+            dedup.append(item)
+
+    print(f"✅ Total validated: {len(validated)}")
+    print(f"✅ After deduplication: {len(dedup)}")
+
+    # Save to Excel
+    df = pd.DataFrame(dedup)
+    df.to_excel("deduplicated_flca.xlsx", index=False)
+
