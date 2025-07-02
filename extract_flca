@@ -174,30 +174,30 @@ if __name__ == "__main__":
 FOR DEDUP:::::::::::::::
 
 
-if __name__ == "__main__":
-    result = app.invoke({})  # Optionally pass input: {"user_input_id": "91111"}
+import os
+import pandas as pd
 
-    validated = result.get("validated_data", [])
+validated = result.get("validated_data", [])
+df = pd.DataFrame(validated)
 
-    # ✅ Deduplication logic
-    seen = set()
-    dedup = []
+# ✅ Only run if required columns are present
+required_cols = ["title", "kappa_flc", "lambda_flc", "kappa_lambda_ratio"]
+if not df.empty and all(col in df.columns for col in required_cols):
+    
+    # 🧹 Clean up whitespace and lowercase for consistency
+    for col in required_cols:
+        df[col] = df[col].astype(str).str.strip().str.lower()
 
-    for item in validated:
-        key = (
-            item.get("title", "").strip(),
-            item.get("kappa_flc", "").strip(),
-            item.get("lambda_flc", "").strip(),
-            item.get("kappa_lambda_ratio", "").strip()
-        )
-        if key not in seen:
-            seen.add(key)
-            dedup.append(item)
+    # ✅ Drop exact duplicates based on core lab fields
+    df = df.drop_duplicates(
+        subset=["title", "kappa_flc", "lambda_flc", "kappa_lambda_ratio"],
+        keep="first"
+    )
 
-    print(f"✅ Total validated: {len(validated)}")
-    print(f"✅ After deduplication: {len(dedup)}")
+    # 💾 Save final result
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Deduplicated_KeepFirst.xlsx", index=False)
+    print("✅ Saved deduplicated lab results to 'output/Deduplicated_KeepFirst.xlsx'")
 
-    # Save to Excel
-    df = pd.DataFrame(dedup)
-    df.to_excel("deduplicated_flca.xlsx", index=False)
-
+else:
+    print("⚠️ Data is empty or missing required columns.")
