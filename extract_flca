@@ -201,3 +201,15 @@ if not df.empty and all(col in df.columns for col in required_cols):
 
 else:
     print("⚠️ Data is empty or missing required columns.")
+
+
+QUERY"""""""""""""""""""""""""""""""
+
+queries = [
+    "kappa", "lambda", "ratio",
+    "klc", "llc", 
+    "kappa flc", "lambda flc",
+    "kappa/lambda", "kappa_lambda",
+    "free light chain", "flc", 
+    "kappa light", "lambda light"
+]
