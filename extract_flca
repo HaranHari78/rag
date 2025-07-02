@@ -213,3 +213,12 @@ queries = [
     "free light chain", "flc", 
     "kappa light", "lambda light"
 ]
+
+
+
+VALIDATION""""""""""""""""""""""""""""
+
+Avoid including duplicates**: if multiple records contain the same combination of kappa, lambda, and ratio values, return only one of them.
+    - If dates are present, prefer the **earliest** date.
+    - If evidence varies, keep the one with more **complete or clearer evidence**.
+
