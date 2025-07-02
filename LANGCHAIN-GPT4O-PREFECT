@@ -1,0 +1,599 @@
+import os
+import re
+import json
+import pandas as pd
+import configparser
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+
+# --- Load config.ini ---
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+EMBEDDING_MODEL = "text-embedding-3-large"
+GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+
+# --- Helpers ---
+def parse_llm_json(raw_text: str) -> str:
+    if not raw_text.strip():
+        print("⚠️ Warning: Empty LLM response")
+        return "[]"
+
+    pattern = r"```(?:json)?\s*(.*?)```"
+    match = re.search(pattern, raw_text, flags=re.DOTALL)
+    raw_text = match.group(1).strip() if match else raw_text.strip()
+
+    if raw_text.startswith("json"):
+        raw_text = raw_text[len("json"):].strip()
+
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError:
+        print("⚠️ JSON decode error, trying to fix quotes")
+        fixed = raw_text.replace("'", '"')
+        try:
+            parsed = json.loads(fixed)
+        except Exception as e:
+            print("❌ Still failed:", e)
+            return "[]"
+
+    return json.dumps(parsed)
+
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+def clean_numeric(val: str) -> str:
+    if not isinstance(val, str):
+        return val
+    match = re.search(r"[0-9]+\.?[0-9]*", val)
+    return match.group(0) if match else ""
+
+def enrich_value_with_units(value: str, evidence: str) -> str:
+    if not value or not evidence:
+        return value
+    try:
+        float_value = float(value)
+    except:
+        return value
+    pattern = re.compile(rf"([<>]?\s*{re.escape(value)}\s*(?:mg/dl|mg/l)?)", re.IGNORECASE)
+    match = pattern.search(evidence)
+    return match.group(1).strip() if match else value
+
+def batchify(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+# --- Load dataset ---
+csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+df = pd.read_csv(csv_path)
+
+# --- Create documents ---
+all_documents = []
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    if pd.isna(row["text"]):
+        continue
+    text = row["text"]
+    source = row["title"]
+    word_count = len(text.split())
+    if word_count < 500:
+        chunk_size = 800
+        chunk_overlap = 50
+    elif word_count < 3000:
+        chunk_size = 1200
+        chunk_overlap = 50
+    else:
+        chunk_size = 2000
+        chunk_overlap = 50
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    chunks = splitter.split_text(text)
+    all_documents.extend([Document(page_content=chunk, metadata={"source": source}) for chunk in chunks])
+
+# --- Embedding & FAISS index ---
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=EMBEDDING_DEPLOYMENT,
+    model=EMBEDDING_MODEL,
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    chunk_size=1000
+)
+
+grouped_batches = list(batchify(all_documents, 10))
+sub_indexes = []
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(FAISS.from_documents, batch, embedding_model): batch for batch in grouped_batches}
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        try:
+            sub_indexes.append(future.result())
+        except Exception as e:
+            print(f"Batch failed: {e}")
+
+main_index = sub_indexes[0]
+for sub_index in sub_indexes[1:]:
+    main_index.merge_from(sub_index)
+main_index.save_local("faiss_index")
+
+# --- Search relevant chunks ---
+vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
+query = "Extract the patient's kappa free light chain (mg/dL), lambda free light chain (mg/dL), and kappa/lambda ratio, along with the lab date and evidence."
+results = vectorstore.similarity_search(query, k=1000)
+
+filtered_chunks = []
+for doc in results:
+    source_title = doc.metadata.get("source", "Unknown")
+    content = doc.page_content
+    norm = content.lower()
+    if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
+        filtered_chunks.append(Document(page_content=content, metadata={"source": source_title}))
+
+# --- LLM setup ---
+llm = AzureChatOpenAI(
+    deployment_name=GPT_DEPLOYMENT,
+    model_name="gpt-4o",
+    openai_api_key=AZURE_OPENAI_API_KEY,
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version=AZURE_OPENAI_API_VERSION,
+    temperature=0
+)
+
+# --- Extraction ---
+final_results = []
+for i, batch in enumerate(batchify(filtered_chunks, 10)):
+    json_context = [{"note_id": j + 1,
+                     "title": doc.metadata.get("source", ""),
+                     "content": doc.page_content
+                     }
+                    for j, doc in enumerate(batch)]
+    titles = [doc.metadata.get("source", "") for doc in batch]
+
+    full_prompt = f"""
+You are a clinical data extraction assistant. For the given document, extract if at least **kappa and lambda** are found with correct units (mg/dL or mg/L).
+If `kappa_lambda_ratio` is missing in the sentence, set it to null.
+
+Recognize alternate names:
+- `KLC`, `Kappa light`, `Kappa FLC` = `kappa_flc`
+- `LLC`, `Lambda light`, `Lambda FLC` = `lambda_flc`
+- `K/L`, `kappa/lambda`, `kappa_lambda` = `kappa_lambda_ratio`
+
+Extraction rules:
+
+- If multiple lab results exist, **always choose the most recent full date** with valid values.
+- Prefer values with a valid unit (mg/dL) and closest to today.
+- Ignore older lab panels if newer complete ones exist.
+- If `kappa_flc` and `lambda_flc` are present but `kappa_lambda_ratio` is missing, set `kappa_lambda_ratio` to null — do not discard.
+- Accept partial entries: kappa and lambda values are enough to return a record.
+- Do NOT hallucinate the ratio. If not found clearly, return `null`.
+- Do NOT extract values that appear in diagnosis summaries, baseline history, or older context.
+- If the date is incomplete (e.g., only month/year), format missing parts as "XX". E.g., "2021-06-XX".
+- DO NOT guess or infer dates
+
+Example:
+{{
+  "kappa_flc": "1.91 mg/dL",
+  "lambda_flc": "<0.15 mg/dL",
+  "kappa_lambda_ratio": null,
+  "date_of_lab": "...",
+  "evidence_sentences": ["..."]
+}}
+
+Respond only in strict JSON format:
+[
+  {{
+    "title":"<EXACTLY MATCHT THE TITLE FIELD FROM THE INPUT>"
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences": ["...", "..."]
+  }}
+]
+
+--- Context:
+{json.dumps(json_context, indent=2)}
+"""
+
+    try:
+        print(f"\n Running batch {i + 1}...")
+        response = llm.invoke(full_prompt)
+        print("\n Raw LLM response:\n", response.content[:1000])
+        cleaned = parse_llm_json(response.content)
+        batch_result = json.loads(cleaned)
+
+        for item in batch_result:
+            title = item.get("source_document") or item.get("title")
+
+            matched_doc = next((doc for doc in batch if doc.metadata.get("source") == item.get("title")), None)
+            if not matched_doc:
+                print(f"No matching doc for title: {title}")
+                continue
+
+            evidence_text = " ".join(item.get("evidence_sentences", []))
+            kappa = clean_numeric(item.get("kappa_flc", ""))
+            lambda_ = clean_numeric(item.get("lambda_flc", ""))
+            ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
+
+            item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
+            item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
+            item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
+            item["source_document"] = title
+
+            item["context"] = json.dumps({
+                "title": matched_doc.metadata.get("source", ""),
+                "content": matched_doc.page_content
+            }, indent=2)
+
+            final_results.append(item)
+
+    except Exception as e:
+        print(f"Failed batch {i + 1}: {e}")
+
+df = pd.DataFrame(final_results)
+
+cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+
+
+if not df.empty and all(col in df.columns for col in cols):
+    df = df[cols]
+
+    def norm(val):
+        return str(val).lower().strip() if pd.notna(val) else None
+
+
+    df["kappa_norm"] = df["kappa_flc"].apply(norm)
+    df["lambda_norm"] = df["lambda_flc"].apply(norm)
+    df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
+
+
+    df["score"] = df.apply(lambda row: sum([
+        bool(row["kappa_norm"]),
+        bool(row["lambda_norm"]),
+        bool(row["ratio_norm"])
+    ]), axis=1)
+
+
+    def context_score(row):
+        ev = " ".join(row.get("evidence_sentences", [])).lower()
+        if any(kw in ev for kw in ["lab", "labs", "reference range"]):
+            return 1
+        return 0
+
+    df["score"] += df.apply(context_score, axis=1)
+
+    def dedup_key(row):
+        k = row["kappa_norm"]
+        l = row["lambda_norm"]
+        r = row["ratio_norm"]
+
+        if k and l:
+            return f"{k}|{l}"
+        elif k and r:
+            return f"{k}|{r}"
+        elif l and r:
+            return f"{l}|{r}"
+        elif k:
+            return k
+        elif l:
+            return l
+        elif r:
+            return r
+        else:
+            return "unknown"
+
+
+    df["dedup_key"] = df.apply(dedup_key, axis=1)
+
+    df["parsed_date"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+    df.sort_values(by=["score", "parsed_date"], ascending=[False, True], inplace=True)
+    df = df.drop_duplicates(subset=["dedup_key"], keep="first")
+    df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "parsed_date", "dedup_key"], inplace=True)
+
+
+    os.makedirs("output", exist_ok=True)
+    df.to_excel("output/Output_gpt4o.xlsx", index=False)
+    df.to_json("output/Output_gpt4o.json", orient="records", indent=2)
+    print("n ✅ Output saved to 'output/' folder.")
+else:
+    print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
+
+
+
+# import os
+# import re
+# import json
+# import pandas as pd
+# import configparser
+# from tqdm import tqdm
+# from concurrent.futures import ThreadPoolExecutor, as_completed
+# from langchain_core.documents import Document
+# from langchain.text_splitter import RecursiveCharacterTextSplitter
+# from langchain_community.vectorstores import FAISS
+# from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+#
+# # --- Load config.ini ---
+# config = configparser.ConfigParser()
+# config.read("config.ini")
+#
+# AZURE_OPENAI_API_KEY = config["azure_openai"]["api_key"]
+# AZURE_OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+# AZURE_OPENAI_API_VERSION = config["azure_openai"]["api_version"]
+# EMBEDDING_DEPLOYMENT = config["embedding_models"]["text_embedding_3_large"]
+# EMBEDDING_MODEL = "text-embedding-3-large"
+# GPT_DEPLOYMENT = config["gpt_models"]["model_gpt4o"]
+#
+# # --- Helpers ---
+# def parse_llm_json(raw_text: str) -> str:
+#     if not raw_text.strip():
+#         print("⚠️ Warning: Empty LLM response")
+#         return "[]"
+#
+#     pattern = r"```(?:json)?\s*(.*?)```"
+#     match = re.search(pattern, raw_text, flags=re.DOTALL)
+#     raw_text = match.group(1).strip() if match else raw_text.strip()
+#
+#     if raw_text.startswith("json"):
+#         raw_text = raw_text[len("json"):].strip()
+#
+#     try:
+#         parsed = json.loads(raw_text)
+#     except json.JSONDecodeError:
+#         print("⚠️ JSON decode error, trying to fix quotes")
+#         fixed = raw_text.replace("'", '"')
+#         try:
+#             parsed = json.loads(fixed)
+#         except Exception as e:
+#             print("❌ Still failed:", e)
+#             return "[]"
+#
+#     return json.dumps(parsed)
+#
+# def normalize_text(text):
+#     text = text.lower()
+#     text = re.sub(r'[^a-z0-9]', ' ', text)
+#     text = re.sub(r'\s+', ' ', text).strip()
+#     return text
+#
+# def clean_numeric(val: str) -> str:
+#     if not isinstance(val, str):
+#         return val
+#     match = re.search(r"[0-9]+\.?[0-9]*", val)
+#     return match.group(0) if match else ""
+#
+# def enrich_value_with_units(value: str, evidence: str) -> str:
+#     if not value or not evidence:
+#         return value
+#     try:
+#         float_value = float(value)
+#     except:
+#         return value
+#     pattern = re.compile(rf"([<>]?\s*{re.escape(value)}\s*(?:mg/dl|mg/l)?)", re.IGNORECASE)
+#     match = pattern.search(evidence)
+#     return match.group(1).strip() if match else value
+#
+# def batchify(lst, n):
+#     for i in range(0, len(lst), n):
+#         yield lst[i:i + n]
+#
+# # --- Load dataset ---
+# csv_path = "d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+# df = pd.read_csv(csv_path)
+#
+# # --- Create full documents ---
+# documents = []
+# for _, row in tqdm(df.iterrows(), total=len(df)):
+#     if pd.isna(row["text"]):
+#         continue
+#     documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
+#
+# # --- Apply fixed chunking ---
+# splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=50)
+# chunks = splitter.split_documents(documents)
+#
+# # --- Create batches for indexing ---
+# grouped_batches = list(batchify(chunks, 20))
+#
+# # --- Embedding & FAISS index ---
+# embedding_model = AzureOpenAIEmbeddings(
+#     deployment=EMBEDDING_DEPLOYMENT,
+#     model=EMBEDDING_MODEL,
+#     openai_api_key=AZURE_OPENAI_API_KEY,
+#     azure_endpoint=AZURE_OPENAI_ENDPOINT,
+#     openai_api_version=AZURE_OPENAI_API_VERSION,
+#     chunk_size=1000
+# )
+#
+# sub_indexes = []
+# with ThreadPoolExecutor(max_workers=4) as executor:
+#     futures = {executor.submit(FAISS.from_documents, batch, embedding_model): batch for batch in grouped_batches}
+#     for future in tqdm(as_completed(futures), total=len(futures)):
+#         try:
+#             sub_indexes.append(future.result())
+#         except Exception as e:
+#             print(f"Batch failed: {e}")
+#
+# main_index = sub_indexes[0]
+# for sub_index in sub_indexes[1:]:
+#     main_index.merge_from(sub_index)
+# main_index.save_local("faiss_index")
+#
+# # --- Search relevant chunks ---
+# vectorstore = FAISS.load_local("faiss_index", embeddings=embedding_model, allow_dangerous_deserialization=True)
+# query = "Extract the patient's kappa free light chain (mg/dL), lambda free light chain (mg/dL), and kappa/lambda ratio, along with the lab date and evidence."
+# results = vectorstore.similarity_search(query, k=500)
+#
+# filtered_chunks = []
+# for doc in results:
+#     source_title = doc.metadata.get("source", "Unknown")
+#     content = doc.page_content
+#     norm = content.lower()
+#     if "kappa" in norm and "lambda" in norm and 'ratio' in norm or ("kappa/lambda" in norm and "kappa_lambda" in norm):
+#         filtered_chunks.append(Document(page_content=content, metadata={"source": source_title}))
+#
+# # --- LLM setup ---
+# llm = AzureChatOpenAI(
+#     deployment_name=GPT_DEPLOYMENT,
+#     model_name="gpt-4o",
+#     openai_api_key=AZURE_OPENAI_API_KEY,
+#     azure_endpoint=AZURE_OPENAI_ENDPOINT,
+#     openai_api_version=AZURE_OPENAI_API_VERSION,
+#     temperature=0
+# )
+#
+# # --- Extraction ---
+# final_results = []
+# for i, batch in enumerate(batchify(filtered_chunks, 20)):
+#     json_context = [{"note_id": j + 1,
+#                      "title": doc.metadata.get("source", ""),
+#                      "content": doc.page_content
+#                      }
+#                     for j, doc in enumerate(batch)]
+#     titles = [doc.metadata.get("source", "") for doc in batch]
+#
+#     full_prompt = f"""
+# You are a clinical data extraction assistant. For the given document, extract if at least **kappa and lambda** are found with correct units (mg/dL or mg/L).
+# If `kappa_lambda_ratio` is missing in the sentence, set it to null.
+#
+# Recognize alternate names:
+# - `KLC`, `Kappa light`, `Kappa FLC` = `kappa_flc`
+# - `LLC`, `Lambda light`, `Lambda FLC` = `lambda_flc`
+# - `K/L`, `kappa/lambda`, `kappa_lambda` = `kappa_lambda_ratio`
+#
+# Extraction rules:
+# - If multiple lab results exist, **always choose the most recent full date** with valid values.
+# - Prefer values with a valid unit (mg/dL) and closest to today.
+# - Ignore older lab panels if newer complete ones exist.
+# - If `kappa_flc` and `lambda_flc` are present but `kappa_lambda_ratio` is missing, set `kappa_lambda_ratio` to null — do not discard.
+# - Accept partial entries: kappa and lambda values are enough to return a record.
+# - Do NOT hallucinate the ratio. If not found clearly, return `null`.
+# - Do NOT extract values that appear in diagnosis summaries, baseline history, or older context.
+# - If the date is incomplete (e.g., only month/year), format missing parts as "XX". E.g., "2021-06-XX".
+# - DO NOT guess or infer dates
+#
+# Example:
+# {{
+#   "kappa_flc": "1.91 mg/dL",
+#   "lambda_flc": "<0.15 mg/dL",
+#   "kappa_lambda_ratio": null,
+#   "date_of_lab": "...",
+#   "evidence_sentences": ["..."]
+# }}
+#
+# Respond only in strict JSON format:
+# [
+#   {{
+#     "title":"<EXACTLY MATCHT THE TITLE FIELD FROM THE INPUT>"
+#     "kappa_flc": "...",
+#     "lambda_flc": "...",
+#     "kappa_lambda_ratio": "...",
+#     "date_of_lab": "...",
+#     "evidence_sentences": ["...", "..."]
+#   }}
+# ]
+#
+# --- Context:
+# {json.dumps(json_context, indent=2)}
+# """
+#
+#     try:
+#         print(f"\n Running batch {i + 1}...")
+#         response = llm.invoke(full_prompt)
+#         print("\n Raw LLM response:\n", response.content[:1000])
+#         cleaned = parse_llm_json(response.content)
+#         batch_result = json.loads(cleaned)
+#
+#         for item in batch_result:
+#             title = item.get("source_document") or item.get("title")
+#
+#             if not any([item.get("kappa_flc"),item.get("lambda_flc"),item.get("kappa_lambda_ratio")]):
+#                 continue
+#
+#             matched_doc = next((doc for doc in batch if doc.metadata.get("source") == item.get("title")), None)
+#             if not matched_doc:
+#                 print(f"No matching doc for title: {title}")
+#                 continue
+#
+#             evidence_text = " ".join(item.get("evidence_sentences", []))
+#             kappa = clean_numeric(item.get("kappa_flc", ""))
+#             lambda_ = clean_numeric(item.get("lambda_flc", ""))
+#             ratio = clean_numeric(item.get("kappa_lambda_ratio", ""))
+#
+#             item["kappa_flc"] = enrich_value_with_units(kappa, evidence_text)
+#             item["lambda_flc"] = enrich_value_with_units(lambda_, evidence_text)
+#             item["kappa_lambda_ratio"] = enrich_value_with_units(ratio, evidence_text) if ratio else None
+#             item["source_document"] = title
+#
+#             item["context"] = json.dumps({
+#                 "title": matched_doc.metadata.get("source", ""),
+#                 "content": matched_doc.page_content
+#             }, indent=2)
+#
+#             final_results.append(item)
+#
+#     except Exception as e:
+#         print(f"Failed batch {i + 1}: {e}")
+#
+# df = pd.DataFrame(final_results)
+#
+# cols = ["source_document", "kappa_flc", "lambda_flc", "kappa_lambda_ratio", "date_of_lab", "evidence_sentences", "context"]
+# if not df.empty and all(col in df.columns for col in cols):
+#     df = df[cols]
+#
+#     def norm(val):
+#         return str(val).lower().strip() if pd.notna(val) else None
+#
+#     df["kappa_norm"] = df["kappa_flc"].apply(norm)
+#     df["lambda_norm"] = df["lambda_flc"].apply(norm)
+#     df["ratio_norm"] = df["kappa_lambda_ratio"].apply(norm)
+#
+#     df["score"] = df.apply(lambda row: sum([
+#         bool(row["kappa_norm"]),
+#         bool(row["lambda_norm"]),
+#         bool(row["ratio_norm"])
+#     ]), axis=1)
+#
+#     def dedup_key(row):
+#         k = row["kappa_norm"]
+#         l = row["lambda_norm"]
+#         r = row["ratio_norm"]
+#
+#         if k and l:
+#             return f"{k}|{l}"
+#         elif k and r:
+#             return f"{k}|{r}"
+#         elif l and r:
+#             return f"{l}|{r}"
+#         elif k:
+#             return k
+#         elif l:
+#             return l
+#         elif r:
+#             return r
+#         else:
+#             return "unknown"
+#
+#     df["dedup_key"] = df.apply(dedup_key, axis=1)
+#
+#     df["parsed_date"] = pd.to_datetime(df["date_of_lab"], errors="coerce")
+#     df.sort_values(by=["score", "parsed_date"], ascending=[False,True], inplace=True)
+#     df = df.drop_duplicates(subset=["dedup_key"], keep="first")
+#
+#     # df.sort_values(by=["source_document", "parsed_date", "score"], ascending=[True,False,False], inplace=True)
+#     # df = df.drop_duplicates(subset=["source_document"], keep="first")
+#     df.drop(columns=["kappa_norm", "lambda_norm", "ratio_norm", "score", "parsed_date", "dedup_key"], inplace=True)
+#
+#     os.makedirs("output", exist_ok=True)
+#     df.to_excel("output/Output_gpt4o.xlsx", index=False)
+#     df.to_json("output/Output_gpt4o.json", orient="records", indent=2)
+#     print("✅ Output saved to 'output/' folder.")
+# else:
+#     print("⚠️ No results to save. The final DataFrame is empty or missing expected columns.")
