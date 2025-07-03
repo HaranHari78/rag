@@ -12,3 +12,14 @@ DEPLOYMENT_4_1_MINI=M1-GPT-4.1-MINI-EUS-2-TEST-01
 AZURE_OPENAI_API_VERSION_4_1_MINI=2024-12-01-preview
 
 TEXT_EMBEDDING_3_LARGE=text-embedding-3-large-EUS-2-01
+
+
+
+
+C:\Users\HariharaM12\Downloads\Langgraph\Langgraph\extract_flca.py:192: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
+
+For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
+
+
+  df['ratio_of_kappa_lambda'].replace(['', 'nan'], pd.NA, inplace=True)
