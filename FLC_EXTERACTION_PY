@@ -1,0 +1,9 @@
+from graphs.value_extraction import invoke_value_extraction
+
+#### Extract FLCA #####
+
+results = invoke_value_extraction(
+    queries=["lambda", "klc", "flc", "free light chain"],
+    prompt_extraction_file_path="prompts/labs/flca_extraction.txt",
+    prompt_validation_file_path="prompts/labs/flca_validation.txt"
+)
