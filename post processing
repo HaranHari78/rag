@@ -1,0 +1,20 @@
+for col in ['ratio_of_kappa_lambda', 'kappa_free_light_chains', 'lambda_free_light_chains']:
+    df[f'symbol_{col}'] = df[col].apply(lambda x: '>' if '>' in str(x) else '<' if '<' in str(x) else '')
+    df[col] = df[col].apply(
+        lambda x: float(re.findall(r"[\d.]+", str(x))[0]) if re.findall(r"[\d.]+", str(x)) else None)
+df.sort_values(by=['date_of_test', 'kappa_free_light_chains', 'Document_Note_ID'], inplace=True)
+df.drop_duplicates(
+    subset=['date_of_test', 'ratio_of_kappa_lambda', 'kappa_free_light_chains', 'lambda_free_light_chains'],
+    keep='first', inplace=True)
+df.sort_values(by=['date_of_test', 'kappa_free_light_chains', 'Document_Note_ID'], inplace=True)
+df.drop_duplicates(subset=['date_of_test'], keep='first', inplace=True)
+for col in ['kappa_free_light_chains', 'lambda_free_light_chains', 'ratio_of_kappa_lambda']:
+    df[col] = df[f'symbol_{col}'] + df[col].astype(str)
+    df.drop(columns=[f'symbol_{col}'], inplace=True)
+df['kappa_free_light_chains'].replace(['', 'nan'], pd.NA, inplace=True)
+df = df.dropna(subset=['kappa_free_light_chains'])
+df['lambda_free_light_chains'].replace(['', 'nan'], pd.NA, inplace=True)
+df = df.dropna(subset=['lambda_free_light_chains'])
+df['ratio_of_kappa_lambda'].replace(['', 'nan'], pd.NA, inplace=True)
+df['ratio_of_kappa_lambda'].fillna('Missing or unknown', inplace=True)
+
