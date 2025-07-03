@@ -1,0 +1,409 @@
+flc_extraction.py
+from graph.value_extraction import invoke_value_extraction
+import pandas as pd
+import re
+
+#### Extract FLCA #####
+
+results = invoke_value_extraction(
+    queries=["lambda", "kappa", "ratio" "flc", "free light chain"],
+    prompt_extraction_file_path="prompts/labs/flca_extraction.txt",
+    prompt_validation_file_path="prompts/labs/flca_validation.txt"
+)
+
+
+df = pd.DataFrame(results['validated_data'])
+
+df.rename(columns={
+        'title': 'Document_Note_ID',
+        'kappa_flc': 'kappa_free_light_chains',
+        'lambda_flc': 'lambda_free_light_chains',
+        'kappa_lambda_ratio': 'ratio_of_kappa_lambda',
+        'date_of_lab': 'date_of_test'
+    }, inplace=True)
+
+    # Add symbols and convert values to floats
+for col in ['ratio_of_kappa_lambda', 'kappa_free_light_chains', 'lambda_free_light_chains']:
+    df[f'symbol_{col}'] = df[col].apply(lambda x: '>' if '>' in str(x) else '<' if '<' in str(x) else '')
+    df[col] = df[col].apply(
+        lambda x: float(re.findall(r"[\d.]+", str(x))[0]) if re.findall(r"[\d.]+", str(x)) else None)
+
+df.sort_values(by=['date_of_test', 'kappa_free_light_chains', 'Document_Note_ID'], inplace=True)
+df.drop_duplicates(
+    subset=['date_of_test', 'ratio_of_kappa_lambda', 'kappa_free_light_chains', 'lambda_free_light_chains'],
+    keep='first', inplace=True)
+df.sort_values(by=['date_of_test', 'kappa_free_light_chains', 'Document_Note_ID'], inplace=True)
+df.drop_duplicates(subset=['date_of_test'], keep='first', inplace=True)
+
+for col in ['kappa_free_light_chains', 'lambda_free_light_chains', 'ratio_of_kappa_lambda']:
+    df[col] = df[f'symbol_{col}'] + df[col].astype(str)
+    df.drop(columns=[f'symbol_{col}'], inplace=True)
+
+df['kappa_free_light_chains'].replace(['', 'nan'], pd.NA, inplace=True)
+df = df.dropna(subset=['kappa_free_light_chains'])
+
+df['lambda_free_light_chains'].replace(['', 'nan'], pd.NA, inplace=True)
+df = df.dropna(subset=['lambda_free_light_chains'])
+
+df['ratio_of_kappa_lambda'].replace(['', 'nan'], pd.NA, inplace=True)
+df['ratio_of_kappa_lambda'].fillna('Missing or unknown', inplace=True)
+
+# Save final output
+df.to_excel("lca.xlsx", index=False)
+
+value_extraction.py
+from langchain_community.vectorstores import FAISS
+from langgraph.graph import StateGraph
+from typing import TypedDict, List, Dict, Any
+import json
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
+from config import config
+from util import batchify, parse_llm_json
+from tqdm import tqdm
+
+
+class GraphState(TypedDict, total=False):
+    queries: List[str]
+    prompt_extraction_file_name: str
+    prompt_validation_file_name: str
+    retrieved_documents: List[Dict[str, Any]]
+    extracted_labs: List[Dict[str, Any]]
+    validated_data: List[Dict[str, Any]]
+
+
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=config["embedding_models"]["text_embedding_3_large"],
+    model="text-embedding-3-large",
+    openai_api_key=config["azure_openai"]["api_key"],
+    azure_endpoint=config["azure_openai"]["endpoint"],
+    openai_api_version=config["azure_openai_4O"]["api_version"],
+)
+
+faiss_index = FAISS.load_local("../faiss_index", embedding_model, allow_dangerous_deserialization=True)
+
+llm = AzureChatOpenAI(
+    deployment_name=config["azure_openai_4O"]["deployment"],
+    api_key=config["azure_openai"]["api_key"],
+    api_version=config["azure_openai_4O"]["api_version"],
+    azure_endpoint=config["azure_openai"]["endpoint"],
+    temperature=0,
+    model=config["azure_openai_4O"]["model"]
+)
+
+
+def get_prompt(prompt_file_name: str, context: any) -> str:
+    with open("prompts/labs/{0}.txt".format(prompt_file_name), "r", encoding="utf-8") as file:
+        template = file.read()
+    return template.format(context=json.dumps(context, indent=2))
+
+
+def retrieve_docs_agent(state: GraphState) -> GraphState:
+    print(f"[RetrieveDocs] Incoming state keys: {list(state.keys())}")
+    # queries = ["lambda", "klc", "flc", "free light chain"]
+    all_results = []
+
+    for query in state["queries"]:
+        try:
+            docs = faiss_index.similarity_search(query, k=1000)
+            filtered_docs = [doc for doc in docs if query.lower() in doc.page_content.lower()]
+            all_results.extend(filtered_docs)
+        except Exception as e:
+            print(f"[RetrieveDocs] Error retrieving for query '{query}': {e}")
+
+    unique_documents = set()
+    final_documents = []
+
+    for doc in all_results:
+        source = doc.metadata.get("source", "unknown_source")
+        key = (source, doc.page_content.strip())
+        if key not in unique_documents:
+            unique_documents.add(key)
+            final_documents.append({
+                "title": source,
+                "medical_notes": doc.page_content.strip()
+            })
+
+    print(f"[RetrieveDocs] Retrieved {len(final_documents)} unique documents.")
+    new_state: GraphState = {
+        **state,
+        "retrieved_documents": final_documents
+    }
+
+    return new_state
+
+
+def extraction_agent(state: GraphState) -> GraphState:
+    print("[ExtractLabs] Function entered")
+    retrieved_documents = state.get("retrieved_documents", [])
+    extracted = []
+
+    # Ensure batchify is available in util.py
+    for batch in tqdm(batchify(retrieved_documents, 10)):
+        try:
+            prompt = get_prompt(state['prompt_extraction_file_name'], batch)
+            result = llm.invoke(prompt)
+            parsed = json.loads(parse_llm_json(result.content))
+            if isinstance(parsed, list):
+                extracted.extend(parsed)
+            else:
+                print(f"[ExtractLabs] Unexpected response format: {parsed}")
+        except Exception as e:
+            print(f"[ExtractLabs] Extraction failed for batch: {e}")
+
+    updated_state: GraphState = {
+        **state,
+        "extracted_labs": extracted
+    }
+
+    print(f"[ExtractLabs] Returning {len(extracted)} extracted records.")
+    return updated_state
+
+
+def validate_extraction_agent(state: GraphState) -> GraphState:
+    extracted_data = state.get("extracted_labs", [])
+    batches = list(batchify(extracted_data, 10))
+    validated = []
+
+    for batch in batches:
+        prompt = get_prompt(state['prompt_extraction_file_name'], batch)
+        try:
+            response = llm.invoke(prompt)
+            parsed = json.loads(parse_llm_json(response.content))
+            if isinstance(parsed, list):
+                validated.extend(parsed)
+        except Exception as e:
+            print(f"[Validate] Validation parsing error: {e}")
+
+    return {**state, "validated_data": validated}
+
+
+# Graph setup
+builder = StateGraph(GraphState)
+builder.add_node("RetrieveDocs", retrieve_docs_agent)
+builder.add_node("Extract", extraction_agent)
+builder.add_node("Validate", validate_extraction_agent)
+
+builder.set_entry_point("RetrieveDocs")
+builder.add_edge("RetrieveDocs", "Extract")
+builder.add_edge("Extract", "Validate")
+builder.set_finish_point("Validate")
+
+graph = builder.compile()
+print("[LangGraph] Graph compiled")
+
+app = graph
+
+
+def invoke_value_extraction(queries, prompt_extraction_file_path, prompt_validation_file_path):
+    result = app.invoke(
+        {
+            "queries": queries,
+            "prompt_extraction_file_name": prompt_extraction_file_path,
+            "prompt_validation_file_name": prompt_validation_file_path
+        }
+    )
+
+    return result
+
+flc_extraction.txt
+
+**You are a clinical data extraction assistant.**
+
+Your task is to extract **kappa** and **lambda** values from each of the medical notes given in json list. Focus on extracting that contains kappa and lambda values, following these strict rules:
+
+
+
+###  **Key Terminology Mapping**
+
+Recognize the following alternate forms:
+
+* **kappa_flc**: "KLC", "Kappa light", "Kappa FLC"
+* **lambda_flc**: "LLC", "Lambda light", "Lambda FLC"
+* **kappa_lambda_ratio**: "K/L", "kappa/lambda", "kappa_lambda"
+
+
+
+###  **Extraction Rules**
+
+* For dates:
+  *Avoid including duplicates**: if multiple records contain the same combination of kappa, lambda, and ratio values, return only one of them.
+        - If dates are present, prefer the **earliest** date.
+        - If evidence varies, keep the one with more **complete or clearer evidence.
+  * Prefer **complete dates** ('YYYY-MM-DD')
+  * If partially mentioned (e.g., 'June 2021'), format missing parts as '"XX"' → '"2021-06-XX"'
+  * **Do not infer or guess missing dates**
+
+
+### **Response Format (Strict JSON)**
+
+Return **only** in the following format:
+
+json
+[
+  {{
+    "title": "<EXACTLY MATCH THE TITLE FIELD FROM THE INPUT>",
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences_for_lab_values": ["..."],
+    "evidence_sentences_for_lab_date": ["..."]
+  }}
+]
+
+
+
+### **Context**:
+
+{context}
+
+flc_validations :
+
+You are a clinical validation assistant.
+
+Given a list of extracted records, validate each one by checking if all fields —
+"kappa_flc", "lambda_flc", "kappa_lambda_ratio", and "date_of_lab" — are clearly and exactly supported
+by the provided 'evidence_sentences_for_lab_values' and 'evidence_sentences_for_lab_date'. If a field is not clearly present or verifiable, discard that record.
+* Avoid extracting duplicate values across multiple documents **if the same value-date pair is already captured earlier** in the batch.
+* If a value appears to be a historical reference (e.g., "as seen in prior report..."), skip it unless no other values are available.
+
+
+Return ONLY the valid records in the following **strict JSON format**:
+
+[
+  {{
+    "title": "<EXACTLY MATCH THE TITLE FIELD FROM THE INPUT>",
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences_for_lab_values": ["..."],
+    "evidence_sentences_for_lab_date": ["..."]
+  }},
+  ...
+]
+
+Here is the data:
+{context}
+
+vectorize.py
+
+import pandas as pd
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+from util import *
+from langchain_community.vectorstores import FAISS
+from langchain_openai import AzureOpenAIEmbeddings
+from config import *
+
+# --- Embedding & FAISS index ---
+embedding_model = AzureOpenAIEmbeddings(
+    deployment=config["embedding_models"]["text_embedding_3_large"],
+    model="text-embedding-3-large",
+    openai_api_key=config["azure_openai"]["api_key"],
+    azure_endpoint=config["azure_openai"]["endpoint"],
+    openai_api_version=config["azure_openai_4O"]["api_version"]
+)
+
+
+def build_faiss(batch):
+    return FAISS.from_documents(batch, embedding_model)
+
+
+def vectorize_patient(emr_path, vector_path, chunk_size=500, chunk_overlap=50):
+    emr_path = "temp/d2c1f46e2b3267d315fb03f76724aa7036ea01b3f1803e94126e26dc26881629.csv"
+    df = pd.read_csv(emr_path)
+    documents = []
+    for _, row in tqdm(df.iterrows(), total=len(df)):
+        if pd.isna(row["text"]):
+            continue
+        documents.append(Document(page_content=row["text"], metadata={"source": row["title"]}))
+
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    chunks = splitter.split_documents(documents)
+
+    batches = list(batchify(chunks, 20))
+    sub_indexes = []
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {executor.submit(build_faiss, batch): batch for batch in batches}
+        for future in tqdm(as_completed(futures), total=len(futures)):
+            try:
+                sub_indexes.append(future.result())
+            except Exception as e:
+                print(f"Batch failed: {e}")
+
+    # Merge all sub-indexes into one
+    print("Merging FAISS indexes...")
+    main_index = sub_indexes[0]
+    for sub_index in sub_indexes[1:]:
+        main_index.merge_from(sub_index)
+
+    # Save final FAISS index
+    print("Saving FAISS index...")
+    main_index.save_local(vector_path)
+
+
+config .py
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+config = {
+    "azure_openai_4O": {
+        "api_version": os.environ.get("AZURE_OPENAI_API_VERSION_4O"),
+        "model": os.environ.get("MODEL_4O"),
+        "deployment": os.environ.get("DEPLOYMENT_4O")
+    },
+    "azure_openai_4_1_mini": {
+        "api_version": os.environ.get("AZURE_OPENAI_API_VERSION_4_1_MINI"),
+        "model": os.environ.get("MODEL_4_1_MINI"),
+        "deployment": os.environ.get("DEPLOYMENT_4_1_MINI")
+    },
+    "embedding_models": {
+        "text_embedding_3_large": os.environ.get("TEXT_EMBEDDING_3_LARGE")
+    },
+    "azure_openai": {
+        "api_key": os.environ.get("AZURE_OPENAI_API_KEY"),
+        "endpoint": os.environ.get("AZURE_OPENAI_ENDPOINT")
+    }
+}
+
+.env
+
+AZURE_OPENAI_API_KEY=8804263e0e884a73b493a58f22505cc6
+AZURE_OPENAI_ENDPOINT=https://omh-eus-2-test-01.openai.azure.com/
+
+
+MODEL_4O=gpt-4o
+DEPLOYMENT_4O=OMH-EUS2-GPT4O-1
+AZURE_OPENAI_API_VERSION_4O=2024-02-01
+
+
+MODEL_4_1_MINI=gpt-4.1-mini
+DEPLOYMENT_4_1_MINI=M1-GPT-4.1-MINI-EUS-2-TEST-01
+AZURE_OPENAI_API_VERSION_4_1_MINI=2024-12-01-preview
+
+TEXT_EMBEDDING_3_LARGE=text-embedding-3-large-EUS-2-01
+
+error::::::::::::::::::::::
+
+
+C:\Users\HariharaM12\PycharmProjects\L2\.venv\Scripts\python.exe C:\Users\HariharaM12\PycharmProjects\L2\laboratory\flc_extraction.py 
+Traceback (most recent call last):
+  File "C:\Users\HariharaM12\PycharmProjects\L2\laboratory\flc_extraction.py", line 1, in <module>
+    from graph.value_extraction import invoke_value_extraction
+  File "C:\Users\HariharaM12\PycharmProjects\L2\graph\value_extraction.py", line 28, in <module>
+    faiss_index = FAISS.load_local("../faiss_index", embedding_model, allow_dangerous_deserialization=True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\L2\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 1205, in load_local
+    index = faiss.read_index(str(path / f"{index_name}.faiss"))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HariharaM12\PycharmProjects\L2\.venv\Lib\site-packages\faiss\swigfaiss_avx2.py", line 11141, in read_index
+    return _swigfaiss_avx2.read_index(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error in __cdecl faiss::FileIOReader::FileIOReader(const char *) at D:\a\faiss-wheels\faiss-wheels\faiss\faiss\impl\io.cpp:68: Error: 'f' failed: could not open ..\faiss_index\index.faiss for reading: No such file or directory
+
+Process finished with exit code 1
