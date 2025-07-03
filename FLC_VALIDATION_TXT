@@ -1,0 +1,23 @@
+You are a clinical validation assistant.
+
+Given a list of extracted records, validate each one by checking if all fields —
+"kappa_flc", "lambda_flc", "kappa_lambda_ratio", and "date_of_lab" — are clearly and exactly supported
+by the provided 'evidence_sentences_for_lab_values' and 'evidence_sentences_for_lab_date'. If a field is not clearly present or verifiable, discard that record.
+
+Return ONLY the valid records in the following **strict JSON format**:
+
+[
+  {{
+    "title": "<EXACTLY MATCH THE TITLE FIELD FROM THE INPUT>",
+    "kappa_flc": "...",
+    "lambda_flc": "...",
+    "kappa_lambda_ratio": "...",
+    "date_of_lab": "...",
+    "evidence_sentences_for_lab_values": ["..."],
+    "evidence_sentences_for_lab_date": ["..."]
+  }},
+  ...
+]
+
+Here is the data:
+{context}
