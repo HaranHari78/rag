@@ -45,3 +45,8 @@ json
 ### **Context**:
 
 {context}
+
+
+
+* Avoid extracting duplicate values across multiple documents **if the same value-date pair is already captured earlier** in the batch.
+* If a value appears to be a historical reference (e.g., "as seen in prior report..."), skip it unless no other values are available.
